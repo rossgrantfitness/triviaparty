@@ -70,6 +70,7 @@ Run from the repo root (needs Node.js 22+; Godot 4.7 for the host).
 
 | Command | What it does |
 |---|---|
+| `start_game.bat` / `start_game.command` | Double-click launchers for Ross: install, find Godot (file picker on Windows), `npm run dev`, open the phone page |
 | `npm install` | Install dependencies (once, and after pulling dependency changes) |
 | `npm run dev` | Start server (port 8787) + phone page (port 5173) + Godot host window |
 | `npm run host` | Open just the Godot host window (`-- --editor` opens the editor) |

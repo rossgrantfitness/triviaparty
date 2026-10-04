@@ -10,7 +10,7 @@
 // commands godot / godot4 on PATH, then common install locations.
 
 import { spawnSync } from "node:child_process";
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -102,7 +102,28 @@ function run(godot, godotArgs) {
   return result.status ?? 1;
 }
 
-const godot = findGodot();
+/** On Windows, show a normal "open file" window so you can point at Godot once. */
+function askForGodot() {
+  if (process.platform !== "win32" || testMode) return null;
+  console.log("Couldn't find Godot by itself. A window will open: pick your Godot program (Godot_v4...exe).");
+  const script = [
+    "Add-Type -AssemblyName System.Windows.Forms",
+    "$d = New-Object System.Windows.Forms.OpenFileDialog",
+    "$d.Title = 'Find your Godot program (Godot_v4...exe)'",
+    "$d.Filter = 'Godot program|Godot*.exe|Any program|*.exe'",
+    "$d.InitialDirectory = [Environment]::GetFolderPath('UserProfile')",
+    "if ($d.ShowDialog() -eq 'OK') { $d.FileName }",
+  ].join("; ");
+  const result = spawnSync("powershell", ["-NoProfile", "-STA", "-Command", script], { encoding: "utf8" });
+  const picked = (result.stdout ?? "").trim();
+  if (!picked || !existsSync(picked)) return null;
+  // Remember it so you never have to pick again.
+  writeFileSync(join(repoRoot, ".godot-path"), picked + "\n");
+  console.log(`Saved. Using Godot at ${picked}`);
+  return picked;
+}
+
+const godot = findGodot() ?? askForGodot();
 if (!godot) {
   console.log(
     [

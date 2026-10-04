@@ -4,7 +4,14 @@ A high-stakes party trivia game for Steam. Players join from their phones; the
 Godot host runs on the TV. See `docs/MANIFEST.md` for the full plan and
 `docs/PROGRESS.md` for where things stand.
 
-## Quick start
+## Easiest way to play (no typing)
+
+1. Install [Node.js](https://nodejs.org/) (the LTS version) and [Godot 4.7](https://godotengine.org/download) (standard version, unzip it anywhere).
+2. Windows: double-click **`start_game.bat`** in this folder. Mac: double-click **`start_game.command`**.
+3. The first time, if it can't find Godot, a window opens: pick your Godot program (`Godot_v4.7...exe`). It remembers.
+4. The Godot game window opens with a room code, and a browser tab shows the phone page. Keep the black window open while you play; close it to stop.
+
+## Quick start (terminal)
 
 You need [Node.js](https://nodejs.org/) 22 or newer and [Godot](https://godotengine.org/download) 4.7 (standard build).
 

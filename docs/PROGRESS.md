@@ -25,6 +25,10 @@ starts everything, Vitest + GUT set up. Ross confirmed "Connected to server" on 
 - [x] Tests: 73 TypeScript (Vitest), 28 Godot (GUT)
 - [x] Verified here: Godot host + 5 bots + a browser phone played full games; 12-player two-row layout; 16-player cap
 
+### Added after Ross couldn't get it running
+
+- [x] Double-click launchers `start_game.bat` (Windows) and `start_game.command` (Mac); on Windows a file picker asks for Godot once and remembers it
+
 ### Waiting on the creative director
 
 - [ ] Play it on your PC with 2–4 real phones on home Wi-Fi (see "How to play a test game" in README.md)
