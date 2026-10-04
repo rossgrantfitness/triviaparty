@@ -1,0 +1,30 @@
+{
+  "name": "trivia-party",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Party trivia game: Godot host on the TV, phones as controllers, Node relay server.",
+  "type": "module",
+  "workspaces": [
+    "shared",
+    "server",
+    "client"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "concurrently --names server,client,host --prefix-colors blue,green,magenta \"npm:dev:server\" \"npm:dev:client\" \"npm:host\"",
+    "dev:server": "npm run dev --workspace server",
+    "dev:client": "npm run dev --workspace client",
+    "host": "node tools/run_host.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:host": "node tools/run_host.mjs --test",
+    "typecheck": "tsc -p shared && tsc -p server && tsc -p client && tsc -p tests"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  }
+}

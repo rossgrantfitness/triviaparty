@@ -1,0 +1,24 @@
+# Node
+node_modules/
+dist/
+*.log
+.vite/
+coverage/
+
+# Godot
+host/.godot/
+host/export/
+*.translation
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Local secrets
+.env
+.env.*
+!.env.example
+.godot-path

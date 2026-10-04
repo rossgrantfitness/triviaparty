@@ -1,0 +1,14 @@
+# Normalize text files so Windows and Mac checkouts stay identical.
+* text=auto eol=lf
+
+# Binary art and audio
+*.png binary
+*.jpg binary
+*.glb binary
+*.blend binary
+*.kra binary
+*.aseprite binary
+*.wav binary
+*.ogg binary
+*.ttf binary
+*.otf binary
