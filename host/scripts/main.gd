@@ -11,6 +11,7 @@ func _ready() -> void:
 
 func _on_server_state_changed(state: ServerConnection.State, detail: String) -> void:
 	_status_label.text = ServerConnection.status_text(state, detail)
+	print("[host] ", _status_label.text)
 	match state:
 		ServerConnection.State.CONNECTED:
 			_status_label.modulate = Color("6ee7a8")

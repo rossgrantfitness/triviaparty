@@ -18,7 +18,11 @@ static func hello() -> String:
 ## Parse a raw server message. Returns an empty Dictionary when the text is
 ## not a JSON object with a string "type".
 static func parse(raw: String) -> Dictionary:
-	var data: Variant = JSON.parse_string(raw)
+	# JSON.parse (unlike JSON.parse_string) reports bad input without logging an engine error.
+	var json: JSON = JSON.new()
+	if json.parse(raw) != OK:
+		return {}
+	var data: Variant = json.data
 	if typeof(data) != TYPE_DICTIONARY:
 		return {}
 	var message: Dictionary = data

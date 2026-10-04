@@ -12,7 +12,8 @@ Last updated: 2026-10-04
 - [x] Phone page (`client/`): connects, shows "Connected to server", reconnects automatically
 - [x] Godot host (`host/`): blank 1920×1080 screen that shows "Connected to server", reconnects automatically
 - [x] `npm run dev` starts server + phone page + Godot host together
-- [x] Test setups: Vitest (21 tests) and GUT 9.7.1 for Godot
+- [x] Test setups: Vitest (21 tests) and GUT 9.7.1 for Godot (11 tests)
+- [x] Verified with Godot 4.7.2: host connects to the server, and reconnects if the server starts later
 - [x] First commit
 
 ### Waiting on the creative director (Phase 0 "You do")
@@ -39,3 +40,4 @@ None yet.
 - Godot version: 4.7 (latest stable when the project started). GUT 9.7.1 is the matching test addon.
 - Dev server port 8787, phone page port 5173. The phone page connects to port 8787 on whatever machine served it, so phones on the same Wi-Fi work by opening `http://<your PC's IP>:5173`.
 - The host reads its server address from `host/config/network.json`.
+- Commit Godot's `.uid` and `.import` files next to scripts and assets; Godot uses them to keep references stable.
