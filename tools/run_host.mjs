@@ -129,5 +129,12 @@ if (testMode) {
   process.exit(run(godot, ["--headless", "--path", hostDir, "-s", "res://addons/gut/gut_cmdln.gd", "-gexit", ...passThrough]));
 }
 
+// First run on this computer: let Godot import the models, fonts and icons before
+// starting the game, otherwise it can't load them.
+if (!editorMode && !existsSync(join(hostDir, ".godot", "imported"))) {
+  console.log("First run: importing art into Godot (one time only)…");
+  run(godot, ["--headless", "--path", hostDir, "--import"]);
+}
+
 const modeArgs = editorMode ? ["--editor"] : [];
 process.exit(run(godot, ["--path", hostDir, ...modeArgs, ...passThrough]));

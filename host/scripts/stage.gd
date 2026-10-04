@@ -7,7 +7,10 @@ extends Node3D
 const MAX_ROW: int = 8
 const SEAT_SPACING: float = 1.45
 const BACK_ROW_Z: float = -1.3
-const BACK_ROW_LIFT: float = 0.45
+const BACK_ROW_LIFT: float = 0.4
+## Two rows of animals are shrunk so they stay below the question panel.
+const TWO_ROW_SCALE: float = 0.72
+const WINNER_SCALE: float = 1.3
 const CAMERA_MOVE_SECONDS: float = 0.9
 
 var _seats: Dictionary = {}  # player id -> Seat
@@ -89,9 +92,9 @@ func apply_state(game: Dictionary) -> void:
 		"lobby":
 			_move_camera(Vector3(0, 2.75, 12.5), Vector3(0, 2.35, 0))
 		"game_over":
-			_move_camera(Vector3(0, 2.4, 10.5), Vector3(0, 1.95, 0))
+			_move_camera(Vector3(0, 2.6, 10.5), Vector3(0, 2.2, 1.4))
 		_:
-			_move_camera(Vector3(0, 3.55, 12.5), Vector3(0, 3.15, 0))
+			_move_camera(Vector3(0, 3.18, 12.5), Vector3(0, 2.78, 0))
 
 
 func seat_count() -> int:
@@ -102,6 +105,8 @@ func _layout(players: Array, phase: String) -> void:
 	var winner_placed: bool = false
 	var count: int = players.size()
 	var front: int = count if count <= MAX_ROW else ceili(count / 2.0)
+	var size: float = 1.0 if count <= MAX_ROW else TWO_ROW_SCALE
+	var spacing: float = SEAT_SPACING * size
 	for i: int in count:
 		var seat: Seat = _seats.get(str(players[i].get("id", "")))
 		if seat == null:
@@ -109,16 +114,18 @@ func _layout(players: Array, phase: String) -> void:
 		var in_front: bool = i < front
 		var row_size: int = front if in_front else count - front
 		var slot: int = i if in_front else i - front
-		var x: float = (slot - (row_size - 1) / 2.0) * SEAT_SPACING
+		var x: float = (slot - (row_size - 1) / 2.0) * spacing
 		if not in_front:
-			x += SEAT_SPACING * 0.5 * (1 if row_size == front else 0)
-		var target: Vector3 = Vector3(x, 0.0, 0.0 if in_front else BACK_ROW_Z)
+			x += spacing * 0.5 * (1 if row_size == front else 0)
+		var target: Vector3 = Vector3(x, 0.0, 0.0 if in_front else BACK_ROW_Z * size)
+		seat.scale = Vector3.ONE * size
 		seat.set_tall(not in_front)
 		# The winner steps forward to centre stage.
 		if phase == "game_over" and int(players[i].get("rank", 0)) == 1 and not winner_placed:
 			winner_placed = true
 			target = Vector3(0, 0, 1.4)
 			seat.set_tall(false)
+			seat.scale = Vector3.ONE * WINNER_SCALE
 		if seat.position == Vector3.ZERO and not seat.placed:
 			seat.position = target
 			seat.placed = true
@@ -146,16 +153,17 @@ func _build_studio() -> void:
 	environment.background_color = Look.ASAGI
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	environment.ambient_light_color = Color("fff6e6")
-	environment.ambient_light_energy = 0.55
+	environment.ambient_light_energy = 0.38
 	environment.tonemap_mode = Environment.TONE_MAPPER_LINEAR
 	env.environment = environment
 	add_child(env)
 
 	var sun: DirectionalLight3D = DirectionalLight3D.new()
 	sun.rotation_degrees = Vector3(-48, -28, 0)
-	sun.light_energy = 1.05
+	sun.light_energy = 0.72
 	sun.light_color = Color("fff3e0")
 	sun.shadow_enabled = true
+	sun.shadow_opacity = 0.45
 	sun.directional_shadow_max_distance = 30.0
 	add_child(sun)
 
@@ -166,7 +174,7 @@ func _build_studio() -> void:
 	_camera.global_transform = Transform3D(Basis.IDENTITY, Vector3(0, 2.75, 12.5)).looking_at(Vector3(0, 2.35, 0), Vector3.UP)
 
 	# Floor and stage edge.
-	_add_box(Vector3(60, 0.2, 30), Vector3(0, -0.1, 0), Color("eadfc8"))
+	_add_box(Vector3(60, 0.2, 30), Vector3(0, -0.1, 0), Color("a8946f"))
 	_add_box(Vector3(60, 0.08, 0.25), Vector3(0, 0.0, 2.2), Look.SHU)
 	# Backdrop wall in asagi, a big shu sun and soft gofun clouds.
 	_add_box(Vector3(60, 24, 0.2), Vector3(0, 6, -5), Look.ASAGI, true)
@@ -274,6 +282,15 @@ class Seat:
 		disc_mesh.radius = 0.2
 		disc_mesh.height = 0.4
 		_badge_disc.mesh = disc_mesh
+		# A gofun ring so every badge color stands out against the backdrop.
+		var ring: MeshInstance3D = MeshInstance3D.new()
+		var ring_mesh: SphereMesh = SphereMesh.new()
+		ring_mesh.radius = 0.235
+		ring_mesh.height = 0.47
+		ring.mesh = ring_mesh
+		ring.position.z = -0.08
+		ring.material_override = Stage._flat(Look.GOFUN)
+		_badge_disc.add_child(ring)
 		_badge_disc.scale = Vector3(1, 1, 0.25)
 		_badge_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		_badge_disc.material_override = _badge_material

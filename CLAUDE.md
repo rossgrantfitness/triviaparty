@@ -58,7 +58,9 @@ Three programs talk through one relay server, which owns all game state
 - GDScript with static types in `host/`; TypeScript (strict) in `client/`, `server/`, `shared/`.
 - The server is the single source of truth for game state; host and phones only display it and send inputs. Phones never receive a correct answer before the reveal.
 - Every network message is defined once in `shared/src/protocol.ts`, documented in `docs/PROTOCOL.md`, and mirrored for Godot in `host/scripts/protocol.gd`. Change all three together.
-- Gameplay numbers live in `host/config/game_rules.json`, never hard-coded.
+- Gameplay numbers live in `host/config/game_rules.json`, never hard-coded. The host sends them with `start_game`; the server clamps them.
+- Colors and fonts for the TV live in `host/scripts/look.gd`; the phone's are CSS variables in `client/src/style.css`. Both use the asagi-shu palette (see `docs/ART_SPECS.md`).
+- Godot uses the Compatibility renderer (runs on more PCs). The host UI is built in code (`host_ui.gd`), the stage in `stage.gd`, characters are animated in code (`chibi_character.gd`).
 - File names: lowercase with underscores (`fox_idle.glb`, `science_general.json`). Exception: npm/tooling files that require a fixed name.
 - Each task ends with tests passing, `docs/PROGRESS.md` updated, and a git commit.
 
@@ -74,6 +76,13 @@ Run from the repo root (needs Node.js 22+; Godot 4.7 for the host).
 | `npm test` | TypeScript tests (Vitest) |
 | `npm run test:host` | Godot tests (GUT, headless) |
 | `npm run typecheck` | Type-check all TypeScript |
+| `npm run bots -- ABCD 15` | 15 fake players join room ABCD (`--fast`, `--churn` for drop/rejoin) |
+| `npm run bots -- --host 3 2` | Fake TV: create a room, 2 bots join, start when 3 players are in |
+| `npm run sync-art` | Copy `art/export/<animal>/` models and portraits into the host and phone page |
+| `python tools/art/make_chibi_animals.py` | Rebuild the placeholder animals (needs `pip install bpy`) |
+
+Host command-line extras (after `--`): `--server=ws://…` to use another server,
+`--autostart=N` to start automatically once N players joined (testing).
 
 Godot is located by `tools/run_host.mjs`: `GODOT` env var, then a `.godot-path`
 file at the repo root (untracked), then PATH, then common install folders.

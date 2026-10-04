@@ -75,6 +75,10 @@ describe("cleanName", () => {
   it("trims, collapses spaces and caps length", () => {
     expect(cleanName("   Sam    the   Great Destroyer  ")).toBe("Sam the Grea");
   });
+  it("strips emoji the TV font can't draw", () => {
+    expect(cleanName("Sam 🤖🎉")).toBe("Sam");
+    expect(cleanName("👍🏽")).toBe("");
+  });
   it("strips control characters", () => {
     expect(cleanName("A\u0000B\u0007C")).toBe("ABC");
   });

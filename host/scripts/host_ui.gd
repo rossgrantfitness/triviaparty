@@ -72,6 +72,8 @@ func _ready() -> void:
 	_header.add_child(spacer)
 	_counter_label = _label("", 30, Look.GOFUN)
 	_header.add_child(_pill(_counter_label, Look.ASAGI_DEEP))
+	_controls.add_theme_constant_override("separation", 12)
+	_header.add_child(_controls)
 	_timer.custom_minimum_size = Vector2(0, 22)
 	column.add_child(_timer)
 
@@ -84,12 +86,11 @@ func _ready() -> void:
 	var footer: HBoxContainer = HBoxContainer.new()
 	footer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_child(footer)
-	_status_label = _label("Connecting to server…", 22, Look.SUMI)
+	# Only shown while something is wrong, so it never covers the name plates.
+	_status_label = _label("Connecting to server…", 26, Look.SHU)
 	_status_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_status_label.size_flags_vertical = Control.SIZE_SHRINK_END
 	footer.add_child(_status_label)
-	_controls.add_theme_constant_override("separation", 12)
-	footer.add_child(_controls)
 	_pause_button = _button("Pause  [Space]", Look.ASAGI_DEEP, 24)
 	_pause_button.pressed.connect(func() -> void: pause_pressed.emit())
 	_controls.add_child(_pause_button)
@@ -117,7 +118,7 @@ func _process(delta: float) -> void:
 
 func set_connection_status(text: String, ok: bool) -> void:
 	_status_label.text = text
-	_status_label.add_theme_color_override("font_color", Look.GOOD if ok else Look.SHU)
+	_status_label.visible = not ok
 	_update_overlay()
 
 
@@ -226,7 +227,7 @@ func _render_lobby(game: Dictionary) -> void:
 	var count_text: String = "Waiting for players to join…" if players.is_empty() else "%d player%s ready" % [players.size(), "" if players.size() == 1 else "s"]
 	bottom.add_child(_pill(_label(count_text, 36, Look.GOFUN), Look.SUMI))
 	if not players.is_empty():
-		var start: Button = _button("Start game  ▶  [Enter]", Look.SHU, 40)
+		var start: Button = _button("Start game  [Enter]", Look.SHU, 40)
 		start.pressed.connect(func() -> void: start_pressed.emit())
 		bottom.add_child(start)
 
@@ -322,10 +323,23 @@ func _render_standings(game: Dictionary, final: bool) -> void:
 			names.append(str(w.get("name", "")))
 		var title: Label = _label("★  %s wins!  ★" % " & ".join(names) if winners.size() > 0 else "Game over", 92, Look.SHU, true)
 		_content.add_child(_centered(title))
-		var again: Button = _button("Play again  [Enter]", Look.SHU, 36)
+		# Top three in one row, so the winner on stage stays in view.
+		var podium: HBoxContainer = HBoxContainer.new()
+		podium.alignment = BoxContainer.ALIGNMENT_CENTER
+		podium.add_theme_constant_override("separation", 18)
+		for p: Dictionary in players.slice(0, 3):
+			var rank: int = int(p.get("rank", 0))
+			var line: HBoxContainer = HBoxContainer.new()
+			line.add_theme_constant_override("separation", 14)
+			line.add_child(_label(Look.ordinal(rank), 36, Look.SHU if rank == 1 else Look.ASAGI_DEEP))
+			line.add_child(_label(str(p.get("name", "")), 36, Look.SUMI))
+			line.add_child(_label(Look.format_points(int(p.get("score", 0))), 36, Look.MUTED))
+			podium.add_child(_card(line, Look.PAPER, 18, 14))
+		_content.add_child(podium)
+		var again: Button = _button("Play again  [Enter]", Look.SHU, 34)
 		again.pressed.connect(func() -> void: play_again_pressed.emit())
 		_content.add_child(_centered(again))
-		players = players.slice(0, 8)
+		return
 	else:
 		_content.add_child(_centered(_label("Standings", 72, Look.SUMI, true)))
 

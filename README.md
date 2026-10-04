@@ -20,6 +20,17 @@ npm run dev      # starts the server, the phone page, and the Godot host window
 If Godot isn't found, create a file named `.godot-path` in this folder containing the
 full path to the Godot program (e.g. `C:\Users\you\Godot\Godot_v4.7.2-stable_win64.exe`).
 
+## Playing a test game
+
+1. `npm run dev`. The TV window shows a room code and an address like `http://192.168.1.20:5173`.
+2. On your phone (same Wi-Fi), open that address, type the code and your name, pick an animal, tap **Join**.
+3. No friends handy? In a second terminal: `npm run bots -- ABCD 5` (use the code on the TV).
+4. Press **Enter** (or click **Start game**) on the TV.
+
+TV keys: **Enter** start / play again · **Space** pause · **N** skip ahead · **Tab** players (remove someone) · **F11** fullscreen.
+
+Tweak timers and points in `host/config/game_rules.json`, then restart.
+
 ## Tests
 
 ```sh

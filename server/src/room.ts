@@ -41,6 +41,8 @@ export function scoreAnswer(correct: boolean, remainingMs: number, durationMs: n
 export function cleanName(raw: string): string {
   return raw
     .replace(/[\u0000-\u001f\u007f]/g, "")
+    // The TV font has no emoji, so they would show as boxes.
+    .replace(/[\p{Extended_Pictographic}\u{1F3FB}-\u{1F3FF}\u200d\ufe0f]/gu, "")
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, MAX_NAME_LENGTH)

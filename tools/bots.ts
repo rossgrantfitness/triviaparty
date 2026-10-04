@@ -64,7 +64,7 @@ function connect(role: "host" | "player", onMessage: (m: ServerMessage, send: (m
 
 /** One fake phone. Votes and answers at random with human-ish delays. */
 async function runBot(code: string, index: number): Promise<void> {
-  const name = `${NAMES[index % NAMES.length]}${index >= NAMES.length ? index : ""} 🤖`.slice(0, 12);
+  const name = `${NAMES[index % NAMES.length]}${index >= NAMES.length ? index : ""}`.slice(0, 12);
   const animal = pick(ANIMALS);
   let token: string | undefined;
   let lastKey = "";
