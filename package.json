@@ -20,11 +20,17 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:host": "node tools/run_host.mjs --test",
-    "typecheck": "tsc -p shared && tsc -p server && tsc -p client && tsc -p tests"
+    "typecheck": "tsc -p shared && tsc -p server && tsc -p client && tsc -p tests && tsc -p tools",
+    "sync-art": "node tools/sync_art.mjs",
+    "bots": "tsx tools/bots.ts"
   },
   "devDependencies": {
+    "@types/node": "^22.20.5",
+    "@types/ws": "^8.18.2",
     "concurrently": "^10.0.5",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2",
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.3",
+    "ws": "^8.22.0"
   }
 }

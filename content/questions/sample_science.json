@@ -1,0 +1,218 @@
+{
+  "pack": "sample_science",
+  "questions": [
+    {
+      "id": "sci-0001",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 2,
+      "question": "Which planet has the shortest day?",
+      "choices": [
+        "Jupiter",
+        "Earth",
+        "Mars",
+        "Saturn"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Jupiter",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "space",
+        "planets"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "sci-0002",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 1,
+      "question": "What is the chemical symbol for gold?",
+      "choices": [
+        "Ag",
+        "Au",
+        "Gd",
+        "Go"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Gold",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "chemistry"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "sci-0003",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 1,
+      "question": "Which gas do plants take in from the air for photosynthesis?",
+      "choices": [
+        "Oxygen",
+        "Nitrogen",
+        "Carbon dioxide",
+        "Hydrogen"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Photosynthesis",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "biology",
+        "plants"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "sci-0004",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 2,
+      "question": "How many bones are in a typical adult human skeleton?",
+      "choices": [
+        "186",
+        "196",
+        "216",
+        "206"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Human_skeleton",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "human body"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "sci-0005",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 2,
+      "question": "What is the hardest mineral on the Mohs scale?",
+      "choices": [
+        "Diamond",
+        "Quartz",
+        "Topaz",
+        "Corundum"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Mohs_scale",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "geology"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "sci-0006",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 1,
+      "question": "Which particle in an atom has no electric charge?",
+      "choices": [
+        "Proton",
+        "Neutron",
+        "Electron",
+        "Positron"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Neutron",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "physics"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "sci-0007",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 1,
+      "question": "At sea level, water boils at what temperature in Fahrenheit?",
+      "choices": [
+        "180°F",
+        "200°F",
+        "212°F",
+        "232°F"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Boiling_point",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "physics"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "sci-0008",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 1,
+      "question": "Which planet is closest to the Sun?",
+      "choices": [
+        "Venus",
+        "Mars",
+        "Earth",
+        "Mercury"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Mercury_(planet)",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "space",
+        "planets"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "sci-0009",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 2,
+      "question": "What is the most abundant gas in Earth's atmosphere?",
+      "choices": [
+        "Nitrogen",
+        "Oxygen",
+        "Argon",
+        "Carbon dioxide"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Atmosphere_of_Earth",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "earth"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "sci-0010",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 2,
+      "question": "Which organ produces insulin?",
+      "choices": [
+        "Liver",
+        "Kidney",
+        "Pancreas",
+        "Spleen"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Insulin",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "human body"
+      ],
+      "time_sensitive": false
+    }
+  ]
+}

@@ -1,3 +1,15 @@
 {
-  "_comment": "Gameplay numbers (timers, points, wagers) live here, never in code. Filled in starting Phase 1."
+  "_comment": "Gameplay numbers. Edit these and restart the host to try different pacing. Times are in seconds.",
+  "questions_per_game": 10,
+  "questions_per_category": 5,
+  "category_choices": 3,
+  "vote_seconds": 12,
+  "question_seconds": 20,
+  "reveal_seconds": 6,
+  "scoreboard_seconds": 5,
+  "base_points": 1000,
+  "speed_bonus_max": 500,
+  "min_players": 1,
+  "max_players": 16,
+  "end_phase_when_everyone_acted": true
 }

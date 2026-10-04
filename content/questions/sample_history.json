@@ -1,0 +1,219 @@
+{
+  "pack": "sample_history",
+  "questions": [
+    {
+      "id": "his-0001",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 1,
+      "question": "In what year did Apollo 11 land on the Moon?",
+      "choices": [
+        "1965",
+        "1969",
+        "1971",
+        "1967"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Apollo_11",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "space"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "his-0002",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 1,
+      "question": "Who was the first President of the United States?",
+      "choices": [
+        "George Washington",
+        "John Adams",
+        "Thomas Jefferson",
+        "Benjamin Franklin"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/George_Washington",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "usa"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "his-0003",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 2,
+      "question": "In which year did the Berlin Wall fall?",
+      "choices": [
+        "1987",
+        "1991",
+        "1989",
+        "1985"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Fall_of_the_Berlin_Wall",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "europe",
+        "20th century"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "his-0004",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 2,
+      "question": "Which civilization built Machu Picchu?",
+      "choices": [
+        "Aztec",
+        "Maya",
+        "Olmec",
+        "Inca"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Machu_Picchu",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "americas"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "his-0005",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 1,
+      "question": "Which ship sank on its maiden voyage in April 1912?",
+      "choices": [
+        "Titanic",
+        "Lusitania",
+        "Britannic",
+        "Olympic"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Titanic",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "20th century"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "his-0006",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 2,
+      "question": "Who was the first woman to win a Nobel Prize?",
+      "choices": [
+        "Florence Nightingale",
+        "Marie Curie",
+        "Ada Lovelace",
+        "Rosalind Franklin"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Marie_Curie",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "science",
+        "nobel"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "his-0007",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 3,
+      "question": "In which city was Archduke Franz Ferdinand assassinated in 1914?",
+      "choices": [
+        "Vienna",
+        "Belgrade",
+        "Sarajevo",
+        "Budapest"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Assassination_of_Archduke_Franz_Ferdinand",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "europe",
+        "world war i"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "his-0008",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 1,
+      "question": "Genghis Khan founded which empire?",
+      "choices": [
+        "Ottoman Empire",
+        "Persian Empire",
+        "Roman Empire",
+        "Mongol Empire"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Genghis_Khan",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "asia"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "his-0009",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 3,
+      "question": "In which year was the Magna Carta first sealed?",
+      "choices": [
+        "1215",
+        "1066",
+        "1415",
+        "1314"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Magna_Carta",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "england",
+        "medieval"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "his-0010",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 1,
+      "question": "Which country gave the Statue of Liberty to the United States?",
+      "choices": [
+        "Spain",
+        "France",
+        "United Kingdom",
+        "Italy"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Statue_of_Liberty",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "usa"
+      ],
+      "time_sensitive": false
+    }
+  ]
+}

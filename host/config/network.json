@@ -1,4 +1,7 @@
 {
+  "_comment": "server_url: where the relay server is. phone_url: the address shown on the TV for phones; leave empty to use this PC's Wi-Fi address with the dev phone page (port 5173).",
   "server_url": "ws://localhost:8787",
+  "phone_url": "",
+  "phone_port": 5173,
   "reconnect_delay_seconds": 2.0
 }

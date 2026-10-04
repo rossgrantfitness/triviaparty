@@ -1,0 +1,220 @@
+{
+  "pack": "sample_animals_nature",
+  "questions": [
+    {
+      "id": "ani-0001",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 1,
+      "question": "What is the largest animal alive today?",
+      "choices": [
+        "Blue whale",
+        "Whale shark",
+        "African elephant",
+        "Giant squid"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Blue_whale",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "mammals",
+        "ocean"
+      ],
+      "time_sensitive": true
+    },
+    {
+      "id": "ani-0002",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 1,
+      "question": "What is a baby kangaroo called?",
+      "choices": [
+        "Cub",
+        "Joey",
+        "Kid",
+        "Pup"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Kangaroo",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "mammals",
+        "australia"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "ani-0003",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 2,
+      "question": "How many hearts does an octopus have?",
+      "choices": [
+        "One",
+        "Two",
+        "Three",
+        "Four"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Octopus",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "ocean"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "ani-0004",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 2,
+      "question": "Which bird is the fastest animal in a hunting dive?",
+      "choices": [
+        "Golden eagle",
+        "Common swift",
+        "Albatross",
+        "Peregrine falcon"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Peregrine_falcon",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "birds"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "ani-0005",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 1,
+      "question": "What is a group of lions called?",
+      "choices": [
+        "Pride",
+        "Pack",
+        "Herd",
+        "Gaggle"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Lion",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "mammals",
+        "words"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "ani-0006",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 2,
+      "question": "Which mammal is capable of true powered flight?",
+      "choices": [
+        "Flying squirrel",
+        "Bat",
+        "Sugar glider",
+        "Colugo"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Bat",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "mammals"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "ani-0007",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 1,
+      "question": "Frogs belong to which class of animals?",
+      "choices": [
+        "Reptiles",
+        "Fish",
+        "Amphibians",
+        "Mammals"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Frog",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "amphibians"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "ani-0008",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 1,
+      "question": "What makes up almost all of a giant panda's diet?",
+      "choices": [
+        "Eucalyptus",
+        "Fish",
+        "Fruit",
+        "Bamboo"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Giant_panda",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "mammals",
+        "asia"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "ani-0009",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 1,
+      "question": "Which tree produces acorns?",
+      "choices": [
+        "Oak",
+        "Maple",
+        "Pine",
+        "Birch"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Acorn",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "plants",
+        "trees"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "ani-0010",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 1,
+      "question": "How many legs does a spider have?",
+      "choices": [
+        "Six",
+        "Eight",
+        "Ten",
+        "Twelve"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Spider",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "bugs"
+      ],
+      "time_sensitive": false
+    }
+  ]
+}

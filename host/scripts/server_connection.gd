@@ -2,9 +2,16 @@ class_name ServerConnection
 extends Node
 ## Keeps a WebSocket open to the relay server and reconnects when it drops.
 ## Runs as the "Server" autoload, so every screen can reach it.
+## On connect it creates a room, or resumes the same room after a network blip.
 
 signal state_changed(state: State, detail: String)
 signal message_received(message: Dictionary)
+## A room is ready (new, or resumed after a reconnect).
+signal room_ready(code: String)
+## A full game state snapshot from the server.
+signal game_state_received(game_state: Dictionary)
+## The server rejected something (e.g. starting with no players).
+signal server_error(code: String, message: String)
 
 enum State { CONNECTING, CONNECTED, DISCONNECTED, ERROR }
 
@@ -14,6 +21,10 @@ var state: State = State.DISCONNECTED
 var server_url: String = "ws://localhost:8787"
 var reconnect_delay_seconds: float = 2.0
 var connection_id: String = ""
+var room_code: String = ""
+var host_token: String = ""
+## The latest game state from the server, or empty before the first one arrives.
+var game_state: Dictionary = {}
 
 var _socket: WebSocketPeer = null
 var _was_open: bool = false
@@ -33,11 +44,11 @@ func load_config(path: String) -> void:
 	if text.is_empty():
 		push_warning("Could not read %s; using default server settings." % path)
 		return
-	var data: Variant = JSON.parse_string(text)
-	if typeof(data) != TYPE_DICTIONARY:
+	var json: JSON = JSON.new()
+	if json.parse(text) != OK or typeof(json.data) != TYPE_DICTIONARY:
 		push_warning("%s is not a JSON object; using default server settings." % path)
 		return
-	var config: Dictionary = data
+	var config: Dictionary = json.data
 	server_url = str(config.get("server_url", server_url))
 	reconnect_delay_seconds = float(config.get("reconnect_delay_seconds", reconnect_delay_seconds))
 
@@ -53,6 +64,13 @@ func stop() -> void:
 		_socket.close()
 	_socket = null
 	_set_state(State.DISCONNECTED)
+
+
+## Send a message built with Protocol. Returns false if not connected.
+func send_text(text: String) -> bool:
+	if _socket == null or _socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
+		return false
+	return _socket.send_text(text) == OK
 
 
 static func status_text(for_state: State, detail: String = "") -> String:
@@ -83,7 +101,7 @@ func _process(delta: float) -> void:
 		if not _was_open:
 			_was_open = true
 			_socket.send_text(Protocol.hello())
-		while _socket.get_available_packet_count() > 0:
+		while _socket != null and _socket.get_available_packet_count() > 0:
 			_handle_raw(_socket.get_packet().get_string_from_utf8())
 	elif ready_state == WebSocketPeer.STATE_CLOSED:
 		_drop_and_retry()
@@ -92,6 +110,9 @@ func _process(delta: float) -> void:
 func _open() -> void:
 	_set_state(State.CONNECTING)
 	_socket = WebSocketPeer.new()
+	# Question packs can be large; allow big outgoing messages.
+	_socket.outbound_buffer_size = 4 * 1024 * 1024
+	_socket.inbound_buffer_size = 1024 * 1024
 	_was_open = false
 	var err: Error = _socket.connect_to_url(server_url)
 	if err != OK:
@@ -115,8 +136,30 @@ func _handle_raw(raw: String) -> void:
 		"welcome":
 			connection_id = str(message.get("connectionId", ""))
 			_set_state(State.CONNECTED)
+			# Keep the same room (and everyone's seats) across a network blip.
+			if room_code.is_empty():
+				send_text(Protocol.create_room())
+			else:
+				send_text(Protocol.resume_room(room_code, host_token))
+		"room_created":
+			room_code = str(message.get("code", ""))
+			host_token = str(message.get("hostToken", ""))
+			room_ready.emit(room_code)
+		"state":
+			game_state = message
+			game_state_received.emit(message)
 		"error":
-			_set_state(State.ERROR, str(message.get("message", "")))
+			var code: String = str(message.get("code", ""))
+			var text: String = str(message.get("message", ""))
+			if code == "room_not_found" and not room_code.is_empty():
+				# Our room expired while we were away: start a fresh one.
+				room_code = ""
+				host_token = ""
+				game_state = {}
+				send_text(Protocol.create_room())
+			elif code == "protocol_mismatch":
+				_set_state(State.ERROR, text)
+			server_error.emit(code, text)
 	message_received.emit(message)
 
 

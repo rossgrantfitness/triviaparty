@@ -1,0 +1,218 @@
+{
+  "pack": "sample_general",
+  "questions": [
+    {
+      "id": "gen-0001",
+      "type": "multiple_choice",
+      "category": "general",
+      "difficulty": 1,
+      "question": "How many sides does a hexagon have?",
+      "choices": [
+        "Five",
+        "Seven",
+        "Six",
+        "Eight"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Hexagon",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "math",
+        "shapes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "gen-0002",
+      "type": "multiple_choice",
+      "category": "general",
+      "difficulty": 1,
+      "question": "How many cards are in a standard deck, not counting jokers?",
+      "choices": [
+        "48",
+        "50",
+        "54",
+        "52"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Standard_52-card_deck",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "games"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "gen-0003",
+      "type": "multiple_choice",
+      "category": "general",
+      "difficulty": 1,
+      "question": "What is the main ingredient in guacamole?",
+      "choices": [
+        "Avocado",
+        "Pea",
+        "Lime",
+        "Cucumber"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Guacamole",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "food"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "gen-0004",
+      "type": "multiple_choice",
+      "category": "general",
+      "difficulty": 2,
+      "question": "How many minutes are in one day?",
+      "choices": [
+        "1,240",
+        "1,440",
+        "1,640",
+        "1,840"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Day",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "math",
+        "time"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "gen-0005",
+      "type": "multiple_choice",
+      "category": "general",
+      "difficulty": 1,
+      "question": "Which instrument has 88 keys in its standard modern form?",
+      "choices": [
+        "Organ",
+        "Harp",
+        "Piano",
+        "Accordion"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Piano",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "music"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "gen-0006",
+      "type": "multiple_choice",
+      "category": "general",
+      "difficulty": 1,
+      "question": "What color do you get by mixing blue and yellow paint?",
+      "choices": [
+        "Purple",
+        "Orange",
+        "Brown",
+        "Green"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Green",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "art",
+        "colors"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "gen-0007",
+      "type": "multiple_choice",
+      "category": "general",
+      "difficulty": 2,
+      "question": "Which language has the most native speakers in the world?",
+      "choices": [
+        "Mandarin Chinese",
+        "Spanish",
+        "English",
+        "Hindi"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/List_of_languages_by_number_of_native_speakers",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "language"
+      ],
+      "time_sensitive": true
+    },
+    {
+      "id": "gen-0008",
+      "type": "multiple_choice",
+      "category": "general",
+      "difficulty": 1,
+      "question": "In which sport would you perform a slam dunk?",
+      "choices": [
+        "Volleyball",
+        "Basketball",
+        "Tennis",
+        "Rugby"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Slam_dunk",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "sports"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "gen-0009",
+      "type": "multiple_choice",
+      "category": "general",
+      "difficulty": 2,
+      "question": "What is the Roman numeral for 50?",
+      "choices": [
+        "C",
+        "D",
+        "L",
+        "X"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Roman_numerals",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "math"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "gen-0010",
+      "type": "multiple_choice",
+      "category": "general",
+      "difficulty": 1,
+      "question": "Who painted the Mona Lisa?",
+      "choices": [
+        "Michelangelo",
+        "Raphael",
+        "Donatello",
+        "Leonardo da Vinci"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Mona_Lisa",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "art"
+      ],
+      "time_sensitive": false
+    }
+  ]
+}

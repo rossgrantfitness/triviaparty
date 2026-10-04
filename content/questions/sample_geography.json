@@ -1,0 +1,221 @@
+{
+  "pack": "sample_geography",
+  "questions": [
+    {
+      "id": "geo-0001",
+      "type": "multiple_choice",
+      "category": "geography",
+      "difficulty": 2,
+      "question": "What is the capital of Australia?",
+      "choices": [
+        "Sydney",
+        "Melbourne",
+        "Canberra",
+        "Perth"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Canberra",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "capitals",
+        "oceania"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "geo-0002",
+      "type": "multiple_choice",
+      "category": "geography",
+      "difficulty": 1,
+      "question": "What is the longest river in South America?",
+      "choices": [
+        "Orinoco",
+        "Paraná",
+        "Magdalena",
+        "Amazon"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Amazon_River",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "rivers"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "geo-0003",
+      "type": "multiple_choice",
+      "category": "geography",
+      "difficulty": 1,
+      "question": "Which country has the largest land area?",
+      "choices": [
+        "Russia",
+        "Canada",
+        "China",
+        "United States"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/List_of_countries_and_dependencies_by_area",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "countries"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "geo-0004",
+      "type": "multiple_choice",
+      "category": "geography",
+      "difficulty": 2,
+      "question": "Mount Kilimanjaro is in which country?",
+      "choices": [
+        "Kenya",
+        "Tanzania",
+        "Uganda",
+        "Ethiopia"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Mount_Kilimanjaro",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "mountains",
+        "africa"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "geo-0005",
+      "type": "multiple_choice",
+      "category": "geography",
+      "difficulty": 1,
+      "question": "What is the smallest country in the world by area?",
+      "choices": [
+        "Monaco",
+        "San Marino",
+        "Vatican City",
+        "Liechtenstein"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Vatican_City",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "countries",
+        "europe"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "geo-0006",
+      "type": "multiple_choice",
+      "category": "geography",
+      "difficulty": 1,
+      "question": "Which is the largest ocean on Earth?",
+      "choices": [
+        "Atlantic",
+        "Indian",
+        "Arctic",
+        "Pacific"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Pacific_Ocean",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "oceans"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "geo-0007",
+      "type": "multiple_choice",
+      "category": "geography",
+      "difficulty": 1,
+      "question": "What is the capital of Canada?",
+      "choices": [
+        "Ottawa",
+        "Toronto",
+        "Montreal",
+        "Vancouver"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Ottawa",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "capitals"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "geo-0008",
+      "type": "multiple_choice",
+      "category": "geography",
+      "difficulty": 2,
+      "question": "What is the largest hot desert in the world?",
+      "choices": [
+        "Gobi",
+        "Sahara",
+        "Kalahari",
+        "Arabian"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Sahara",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "deserts",
+        "africa"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "geo-0009",
+      "type": "multiple_choice",
+      "category": "geography",
+      "difficulty": 2,
+      "question": "In which country is the city of Marrakesh?",
+      "choices": [
+        "Egypt",
+        "Tunisia",
+        "Morocco",
+        "Algeria"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Marrakesh",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "cities",
+        "africa"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "geo-0010",
+      "type": "multiple_choice",
+      "category": "geography",
+      "difficulty": 2,
+      "question": "Which strait separates Spain from Morocco?",
+      "choices": [
+        "Bosphorus",
+        "Bering Strait",
+        "Strait of Hormuz",
+        "Strait of Gibraltar"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Strait_of_Gibraltar",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "europe",
+        "africa"
+      ],
+      "time_sensitive": false
+    }
+  ]
+}

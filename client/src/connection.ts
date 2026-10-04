@@ -3,6 +3,7 @@ import {
   PROTOCOL_VERSION,
   encodeMessage,
   parseServerMessage,
+  type ClientMessage,
   type ServerMessage,
 } from "@trivia/shared";
 
@@ -38,6 +39,8 @@ export function statusText(state: ConnectionState, detail?: string): string {
 
 export interface ConnectionCallbacks {
   onState(state: ConnectionState, detail?: string): void;
+  /** Called after every successful hello, including reconnects. */
+  onWelcome?(): void;
   onMessage?(message: ServerMessage): void;
 }
 
@@ -66,6 +69,25 @@ export class ServerConnection {
     this.socket = null;
   }
 
+  /** Send a message if connected. Returns false if it could not be sent. */
+  send(message: ClientMessage): boolean {
+    if (!this.socket || this.socket.readyState !== WebSocket.OPEN) return false;
+    this.socket.send(encodeMessage(message));
+    return true;
+  }
+
+  /** Drop the socket now and reconnect straight away (e.g. phone woke from sleep). */
+  reconnectNow(): void {
+    if (this.stopped) return;
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) return;
+    if (this.retryTimer) clearTimeout(this.retryTimer);
+    this.retryTimer = null;
+    const old = this.socket;
+    this.socket = null;
+    old?.close();
+    this.open();
+  }
+
   private open(): void {
     this.callbacks.onState("connecting");
     const socket = new WebSocket(this.url);
@@ -76,14 +98,20 @@ export class ServerConnection {
     });
 
     socket.addEventListener("message", (event) => {
+      if (this.socket !== socket) return;
       const result = parseServerMessage(String(event.data));
       if (!result.ok) {
         console.warn("Ignoring bad message from server:", result.error);
         return;
       }
       const message = result.message;
-      if (message.type === "welcome") this.callbacks.onState("connected");
-      if (message.type === "error") this.callbacks.onState("error", message.message);
+      if (message.type === "welcome") {
+        this.callbacks.onState("connected");
+        this.callbacks.onWelcome?.();
+      }
+      if (message.type === "error" && message.code === "protocol_mismatch") {
+        this.callbacks.onState("error", message.message);
+      }
       this.callbacks.onMessage?.(message);
     });
 
