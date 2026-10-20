@@ -1,65 +1,71 @@
 # Progress
 
-Last updated: 2026-10-04
+Last updated: 2026-10-20
 
-## Current phase: Phase 1 — Networking prototype (playable, waiting on real-phone testing)
+## Where we are: the full game is playable
 
-### Phase 0 — Setup: done
+Ross asked for "Drawful 2 and Papa's Quiz combined": fun, colorful trivia (never
+over-the-top quirky) plus drawing rounds, with any browser as a controller.
+That is now built end to end: TV (Godot), phones (any browser), server, content.
 
-Folder structure, CLAUDE.md, server + phone page + Godot host each run, `npm run dev`
-starts everything, Vitest + GUT set up. Ross confirmed "Connected to server" on his PC.
+### The game
 
-### Phase 1 — done in this session
+A session is a plan of rounds (host picks Short / Standard / Long, drawing on/off):
 
-- [x] Relay server rooms: 4-letter codes without I/O (and no rude words), player tracking, 16-player cap
-- [x] Server state machine: Lobby → Category Vote → Question → Reveal → Scoreboard → Game Over → back to Lobby
-- [x] Server-side timers, answer checking and speed-bonus scoring; the answer is only sent at the reveal
-- [x] Phone: join (code, name, animal), waiting screen, vote, answer buttons, "answer locked", reveal, standings, final result
-- [x] Godot host: lobby with code and join address, vote, question with countdown, reveal, standings, winner screen
-- [x] Reconnect: a phone that reloads or locks rejoins the same seat with the same score (token in localStorage); the TV resumes its room after a network blip and the game auto-pauses while it's gone
-- [x] Host controls: start (Enter), pause (Space), skip (N), remove player (Tab panel), play again
-- [x] Bot players: `npm run bots -- ABCD 15` (also `--fast`, `--churn`, and `--host` to run without the TV)
-- [x] 50 sample questions in 5 categories (`content/questions/sample_*.json`), not yet verified
-- [x] Palette: asagi-shu everywhere (TV and phone); M PLUS Rounded 1c font
-- [x] Placeholder chibi animals: dog (shiba), cat (calico), bunny, frog, built by `tools/art/make_chibi_animals.py`, animated in code (idle, thinking, locked-in hop, cheer, slump, winner dance, clapping)
-- [x] Tests: 73 TypeScript (Vitest), 28 Godot (GUT)
-- [x] Verified here: Godot host + 5 bots + a browser phone played full games; 12-player two-row layout; 16-player cap
+| Round | What happens |
+|---|---|
+| Quiz Time | Vote for a category, then answer fast. Speed bonus. |
+| Doodle Duel | Artists draw a secret prompt on their phones. For each drawing, everyone else writes a fake title, then picks the real one. Points for spotting the truth, for the artist, and for fooling people. |
+| High Roller | See the category, bet your points, then answer. |
+| Closest Guess | Type a number; nearest guesses score, shown on a number line. |
+| Sticky Fingers | Right answers steal points from a player they choose. |
+| Final Showdown | One hard question; everyone bets as much as they dare. |
 
-### Added after Ross couldn't get it running
+Standard game: Quiz Time, Doodle Duel, Closest Guess, Sticky Fingers, Doodle Duel,
+Final Showdown (about 18 minutes). Short is about 10, Long about 24.
 
-- [x] Double-click launchers `start_game.bat` (Windows) and `start_game.command` (Mac); on Windows a file picker asks for Godot once and remembers it
+### Done
+
+- [x] Phase 0 setup and Phase 1 networking (rooms, codes, reconnect, kick, pause, 16-player cap, bots)
+- [x] Round system: each round type is its own module (`server/src/rounds/`), new types plug in
+- [x] Six round types above, with all timers and points in `host/config/game_rules.json`
+- [x] Session flow: round intro cards, standings between rounds (with points gained this round), winner screen
+- [x] Host settings in the lobby: game length (L), drawing rounds on/off (D), time estimate
+- [x] Phones: screens for every step, touch drawing pad (10 pens from the palette, 4 sizes, undo, clear), wager slider, number guesses, steal picker
+- [x] TV: every step, drawings rendered from the phones' strokes, closest-guess number line, Doodle Duel reveal (fakes first, truth last), animals react (think, lock in, cheer, slump, get robbed, ★ for the artist)
+- [x] Fair turns: with lots of players only `drawings_per_round` people draw per Doodle Duel, rotating
+- [x] The TV remembers recently used questions and prefers fresh ones next game
+- [x] Content: 172 multiple-choice questions in all 12 categories (with fun facts), 36 closest-guess numbers, 148 drawing prompts, 50 house lies
+- [x] Double-click launchers (`start_game.bat`, `start_game.command`)
+- [x] Tests: 87 TypeScript + 36 Godot; full games played here with the real TV, bots and a browser phone (4 and 9 players)
 
 ### Waiting on the creative director
 
-- [ ] Play it on your PC with 2–4 real phones on home Wi-Fi (see "How to play a test game" in README.md)
-- [ ] Try one phone on mobile data — this needs the server on the internet (not set up yet; see Next up)
-- [ ] Report anything confusing on the phone screens or the TV
-- [ ] Verify the 50 sample questions (each has a Wikipedia source link) — they are drafts until you do
-- [ ] Look at the placeholder animals and tell me what to change (or swap in models you like; see docs/ART_SPECS.md)
-- [ ] Decide the working title and animals 5–8
+- [ ] Play a real game with friends (any phones, same Wi-Fi) and tell me what was fun, what dragged, what confused people
+- [ ] Verify the questions (each has a Wikipedia link; all are unverified drafts) and the drawing prompts
+- [ ] Tune pacing in `host/config/game_rules.json` (or tell me and I'll change it)
+- [ ] Working title, animals 5–8, swap the placeholder animal models when you have art
 
-Phase 1 is done when: 1 host + 15 bots + your phone complete 10 questions with correct
-scoring, and a phone that locks mid-game rejoins with its score intact.
-(Both pass in automated runs here; it needs your real-device check.)
+### Next up (suggested)
 
-### Next up
-
-1. Real-device fixes from your playtest
-2. Host the relay server online (needed for phones on mobile data; manifest section 12)
-3. Phase 2: round types as modules (Wager, Closest guess, Steal, Final showdown), host settings screen, F1 debug menu
+1. Fixes from your first real playtest
+2. Host the server online so phones on mobile data can join (manifest section 12)
+3. F1 debug menu on the TV; question validator script and review page (manifest Phase 3)
+4. Audio: music, sound effects, host voice lines (manifest Phase 5)
 
 ## Known issues
 
-- Back-row name plates are partly hidden behind front-row animals when there are 9+ players.
-- Emoji in player names are removed (the TV font has no emoji).
+- With 9+ players, back-row name plates are partly hidden behind front-row animals.
+- Emoji in names and fake titles are removed (the TV font has no emoji).
 - The TV shows the join address `http://<PC's Wi-Fi address>:5173`. If it picks the wrong network adapter, set `phone_url` in `host/config/network.json`.
-- Question packs load from `content/questions/` next to the Godot project. Exported builds will need them copied in (Phase 3/Steam build work).
+- Question packs load from `content/` next to the Godot project; exported builds will need them bundled (Steam build work).
 - Couldn't download models from OpenGameArt in the cloud session (blocked), so the animals are generated placeholders.
+- Fake titles are free text from players; there's no profanity filter yet (release checklist item).
 
 ## Notes and decisions
 
-- Godot 4.7 with the Compatibility renderer (runs on more PCs, suits the flat toon look). GUT 9.7.1.
-- Dev server port 8787, phone page port 5173. `npm run dev` exposes the phone page on your Wi-Fi.
-- Tunable numbers: `host/config/game_rules.json` (timers, points, questions per game, min/max players). `min_players` is 1 for testing; the manifest's v1 target is 3–16.
-- Each category vote picks a block of `questions_per_category` (5) questions; 10 questions = 2 votes.
-- Commit Godot's `.uid` and `.import` files next to scripts and assets; Godot uses them to keep references stable.
+- **Tone change (Ross, 2026-10-20):** questions and answers are fun, funny, colorful and interesting, but never as quirky as Jackbox. Drawing prompts are normal things with a humorous twist, always drawable. This updates the manifest's "tension over jokes" pillar: the stakes still come from mechanics (wagers, steals, speed, the final bet).
+- Godot 4.7 with the Compatibility renderer. GUT 9.7.1. Protocol version 3.
+- Dev server port 8787, phone page port 5173.
+- `min_players` is 1 for testing; the manifest's v1 target is 3–16. Doodle Duel works best with 3+.
+- Commit Godot's `.uid` and `.import` files next to scripts and assets.

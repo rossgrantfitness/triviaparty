@@ -1,13 +1,21 @@
 extends Node3D
 ## The host game: 3D stage behind, flat UI in front, both driven by server state.
 ## Keyboard: Enter start / play again · Space pause · N next · Tab players · F11 fullscreen.
+## In the lobby: L changes game length, D turns drawing rounds on or off.
 
 const NETWORK_CONFIG_PATH: String = "res://config/network.json"
+## Questions seen in recent games, so the next game prefers fresh ones.
+const RECENT_PATH: String = "user://recent_questions.json"
+const RECENT_LIMIT: int = 400
+## Only skip recent questions while at least this many fresh ones remain.
+const MIN_FRESH_QUESTIONS: int = 60
 
 var _stage: Stage = Stage.new()
 var _ui: HostUI = HostUI.new()
 var _questions: Array = []
 var _rules: Dictionary = {}
+var _drawing_pack: Dictionary = {}
+var _recent: Array = []
 ## Testing aid: start automatically once this many players joined (--autostart=N).
 var _autostart_players: int = 0
 
@@ -18,10 +26,15 @@ func _ready() -> void:
 	_ui.join_url = phone_url()
 	_rules = ContentLoader.load_rules()
 	_questions = ContentLoader.load_questions()
+	_drawing_pack = ContentLoader.load_drawing_pack()
+	_recent = _load_recent()
+	_ui.rules = _rules
 	for arg: String in OS.get_cmdline_user_args():
 		if arg.begins_with("--autostart="):
 			_autostart_players = int(arg.trim_prefix("--autostart="))
-	print("[host] loaded %d questions in %d categories from %s" % [_questions.size(), ContentLoader.categories(_questions).size(), ContentLoader.questions_dir()])
+		elif arg.begins_with("--length="):
+			_ui.settings["length"] = arg.trim_prefix("--length=")
+	print("[host] loaded %d questions in %d categories and %d drawing prompts from %s" % [_questions.size(), ContentLoader.categories(_questions).size(), (_drawing_pack.get("prompts", []) as Array).size(), ContentLoader.questions_dir()])
 
 	_ui.start_pressed.connect(_start_game)
 	_ui.pause_pressed.connect(_toggle_pause)
@@ -45,6 +58,7 @@ func _on_server_state_changed(state: ServerConnection.State, detail: String) -> 
 
 
 func _on_game_state(game: Dictionary) -> void:
+	_remember_question(game)
 	var players: Array = game.get("players", [])
 	_stage.sync_players(players, str(game.get("phase", "")))
 	_stage.apply_state(game)
@@ -58,7 +72,41 @@ func _start_game() -> void:
 	if _questions.is_empty():
 		_ui.show_toast("No questions found in content/questions.")
 		return
-	Server.send_text(Protocol.start_game(_rules, _questions))
+	Server.send_text(Protocol.start_game(_rules, _ui.settings, _fresh_questions(), _drawing_pack.get("prompts", []), _drawing_pack.get("decoys", [])))
+
+
+## Leave out questions from recent games, as long as plenty of fresh ones are left.
+func _fresh_questions() -> Array:
+	var recent: Dictionary = {}
+	for id: Variant in _recent:
+		recent[str(id)] = true
+	var fresh: Array = _questions.filter(func(q: Dictionary) -> bool: return not recent.has(str(q.get("id", ""))))
+	if fresh.size() < MIN_FRESH_QUESTIONS:
+		_recent.clear()
+		return _questions
+	return fresh
+
+
+func _remember_question(game: Dictionary) -> void:
+	var round: Variant = game.get("round")
+	if typeof(round) != TYPE_DICTIONARY or typeof(round.get("question")) != TYPE_DICTIONARY:
+		return
+	var id: String = str(round["question"].get("id", ""))
+	if id.is_empty() or _recent.has(id):
+		return
+	_recent.append(id)
+	while _recent.size() > RECENT_LIMIT:
+		_recent.pop_front()
+	var file: FileAccess = FileAccess.open(RECENT_PATH, FileAccess.WRITE)
+	if file != null:
+		file.store_string(JSON.stringify(_recent))
+
+
+func _load_recent() -> Array:
+	var json: JSON = JSON.new()
+	if json.parse(FileAccess.get_file_as_string(RECENT_PATH)) == OK and typeof(json.data) == TYPE_ARRAY:
+		return json.data
+	return []
 
 
 func _toggle_pause() -> void:
@@ -77,8 +125,14 @@ func _unhandled_input(event: InputEvent) -> void:
 			elif phase == "game_over":
 				Server.send_text(Protocol.back_to_lobby())
 		KEY_SPACE, KEY_P:
-			if phase in ["category_vote", "question", "reveal", "scoreboard"]:
+			if phase in ["intro", "round", "scoreboard"]:
 				_toggle_pause()
+		KEY_L:
+			if phase == "lobby":
+				_ui.cycle_length()
+		KEY_D:
+			if phase == "lobby":
+				_ui.toggle_drawing()
 		KEY_N, KEY_RIGHT:
 			Server.send_text(Protocol.skip())
 		KEY_TAB:

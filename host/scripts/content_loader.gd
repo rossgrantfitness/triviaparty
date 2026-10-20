@@ -48,6 +48,16 @@ static func load_questions(dir_path: String = "") -> Array:
 	return questions
 
 
+## The drawing pack: {prompts: [{id, prompt}], decoys: [String]}. Empty lists if missing.
+static func load_drawing_pack() -> Dictionary:
+	var path: String = questions_dir().path_join("../drawing/prompts.json").simplify_path()
+	var data: Variant = _read_json(path)
+	if typeof(data) != TYPE_DICTIONARY:
+		push_warning("No drawing prompts at %s; Doodle Duel rounds will be skipped." % path)
+		return {"prompts": [], "decoys": []}
+	return {"prompts": data.get("prompts", []), "decoys": data.get("decoys", [])}
+
+
 ## Category ids present in a list of questions, sorted.
 static func categories(questions: Array) -> PackedStringArray:
 	var seen: Dictionary = {}

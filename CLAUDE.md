@@ -5,11 +5,13 @@ the creative director where we are. The full plan is in `docs/MANIFEST.md`.
 
 ## Project in one paragraph
 
-A high-stakes party trivia game for Steam. Up to 16 players join from their
-phones with a room code, pick a cute 3D animal, vote on a category, and play
-about 15 minutes of serious trivia. Design pillars: tension over jokes, host
-control, content that grows (questions are data, never code), cute and readable
-from a couch. Working title: TBD ("Trivia Party" placeholder).
+A party trivia + drawing game for Steam, "Drawful 2 meets Papa's Quiz". Up to 16
+players join from any browser with a room code, pick a cute 3D animal, and play
+10–25 minutes of rounds: quiz, Doodle Duel (draw, fake titles, spot the real one),
+wagers, closest guess, steals and a final bet. Tone: fun, funny, colorful and
+interesting, never Jackbox-level quirky; stakes come from mechanics. Pillars: host
+control, content that grows (questions and prompts are data, never code), cute and
+readable from a couch. Working title: TBD ("Trivia Party" placeholder).
 
 ## Roles
 
@@ -53,6 +55,14 @@ Three programs talk through one relay server, which owns all game state
 - `server/` — Node.js + TypeScript relay using WebSockets (`ws`). Single source of truth: timers, answer checking, scoring.
 - `shared/` — message types and parsers used by both server and client.
 
+Round types live in `server/src/rounds/` (one module each: `quiz.ts` for Quiz Time /
+High Roller / Sticky Fingers / Final Showdown, `closest.ts`, `drawing.ts`), all
+implementing the `Round` interface in `rounds/types.ts`. `server/src/room.ts` runs the
+session plan (intro → round → scoreboard → … → game over). To add a round type:
+new module + `ROUND_KINDS`/`ROUND_INFO` in `shared/src/game.ts` + its view type in
+`shared/src/protocol.ts` + phone screens (`client/src/screens.ts`, `main.ts`) + TV
+screens (`host/scripts/host_ui.gd`) and animal moods (`stage.gd`).
+
 ## Conventions
 
 - GDScript with static types in `host/`; TypeScript (strict) in `client/`, `server/`, `shared/`.
@@ -78,12 +88,12 @@ Run from the repo root (needs Node.js 22+; Godot 4.7 for the host).
 | `npm run test:host` | Godot tests (GUT, headless) |
 | `npm run typecheck` | Type-check all TypeScript |
 | `npm run bots -- ABCD 15` | 15 fake players join room ABCD (`--fast`, `--churn` for drop/rejoin) |
-| `npm run bots -- --host 3 2` | Fake TV: create a room, 2 bots join, start when 3 players are in |
+| `npm run bots -- --host 3 2` | Fake TV: create a room, 2 bots join, start when 3 players are in (`--length short`, `--no-drawing`) |
 | `npm run sync-art` | Copy `art/export/<animal>/` models and portraits into the host and phone page |
 | `python tools/art/make_chibi_animals.py` | Rebuild the placeholder animals (needs `pip install bpy`) |
 
 Host command-line extras (after `--`): `--server=ws://…` to use another server,
-`--autostart=N` to start automatically once N players joined (testing).
+`--autostart=N` to start automatically once N players joined, `--length=short|standard|long` (testing).
 
 Godot is located by `tools/run_host.mjs`: `GODOT` env var, then a `.godot-path`
 file at the repo root (untracked), then PATH, then common install folders.
@@ -103,7 +113,8 @@ host/              Godot 4 project (config/, scenes/, scripts/, tests/, addons/g
 client/            phone web app
 server/            relay server
 shared/            message types shared by client and server
-content/questions/ verified question packs (JSON, one file per category)
+content/questions/ question packs (JSON, one file per category, plus closest_guess.json)
+content/drawing/   Doodle Duel prompts and house lies (prompts.json)
 content/schema/    JSON Schema every pack must pass
 art/source/        working files (.blend, .kra) — never delete without asking
 art/export/        finished exports the game imports (.glb, .png)

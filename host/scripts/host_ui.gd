@@ -59,20 +59,21 @@ func _ready() -> void:
 
 	var column: VBoxContainer = VBoxContainer.new()
 	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.clip_contents = true
 	column.add_theme_constant_override("separation", 18)
 	margin.add_child(column)
 
 	# Header: how to join (left), question counter (right), timer underneath.
-	_header.add_theme_constant_override("separation", 24)
+	_header.add_theme_constant_override("separation", 14)
 	column.add_child(_header)
-	_join_label = _label("", 30, Look.GOFUN)
+	_join_label = _label("", 26, Look.GOFUN)
 	_header.add_child(_pill(_join_label, Look.SUMI))
 	var spacer: Control = Control.new()
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_header.add_child(spacer)
-	_counter_label = _label("", 30, Look.GOFUN)
+	_counter_label = _label("", 26, Look.GOFUN)
 	_header.add_child(_pill(_counter_label, Look.ASAGI_DEEP))
-	_controls.add_theme_constant_override("separation", 12)
+	_controls.add_theme_constant_override("separation", 8)
 	_header.add_child(_controls)
 	_timer.custom_minimum_size = Vector2(0, 22)
 	column.add_child(_timer)
@@ -91,13 +92,13 @@ func _ready() -> void:
 	_status_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_status_label.size_flags_vertical = Control.SIZE_SHRINK_END
 	footer.add_child(_status_label)
-	_pause_button = _button("Pause  [Space]", Look.ASAGI_DEEP, 24)
+	_pause_button = _button("Pause  [Space]", Look.ASAGI_DEEP, 21)
 	_pause_button.pressed.connect(func() -> void: pause_pressed.emit())
 	_controls.add_child(_pause_button)
-	_skip_button = _button("Next  [N]", Look.ASAGI_DEEP, 24)
+	_skip_button = _button("Next  [N]", Look.ASAGI_DEEP, 21)
 	_skip_button.pressed.connect(func() -> void: skip_pressed.emit())
 	_controls.add_child(_skip_button)
-	var players_button: Button = _button("Players  [Tab]", Look.SUMI, 24)
+	var players_button: Button = _button("Players  [Tab]", Look.SUMI, 21)
 	players_button.pressed.connect(toggle_players_panel)
 	_controls.add_child(players_button)
 
@@ -144,13 +145,14 @@ func show_state(game: Dictionary) -> void:
 		_timer_duration_ms = maxf(1.0, float(timer.get("durationMs", 1.0)))
 		_timer_deadline_ms = Time.get_ticks_msec() + float(timer.get("remainingMs", 0.0))
 	var phase: String = str(game.get("phase", "lobby"))
-	_timer.visible = phase in ["category_vote", "question"] and typeof(timer) == TYPE_DICTIONARY
-	var code: String = str(game.get("code", ""))
-	_join_label.text = "Join at  %s   ·   Code  %s" % [join_url, code]
+	var round: Dictionary = _round(game)
+	var step: String = str(round.get("step", ""))
+	_timer.visible = typeof(timer) == TYPE_DICTIONARY and phase == "round" and step in TIMED_STEPS
+	_join_label.text = "Join at  %s   ·   Code  %s" % [join_url, str(game.get("code", ""))]
 	_header.get_child(0).visible = phase != "lobby"
-	_counter_label.get_parent().visible = phase in ["question", "reveal", "scoreboard"]
-	_counter_label.text = "Question %d of %d" % [int(game.get("questionNumber", 0)), int(game.get("questionCount", 0))]
-	var in_game: bool = phase in ["category_vote", "question", "reveal", "scoreboard"]
+	_counter_label.get_parent().visible = phase in ["intro", "round", "scoreboard"]
+	_counter_label.text = _counter_text(game, round)
+	var in_game: bool = phase in ["intro", "round", "scoreboard"]
 	_pause_button.visible = in_game
 	_skip_button.visible = in_game
 	_pause_button.text = "Resume  [Space]" if bool(game.get("paused", false)) else "Pause  [Space]"
@@ -166,151 +168,142 @@ func show_state(game: Dictionary) -> void:
 	match phase:
 		"lobby":
 			_render_lobby(game)
-		"category_vote":
-			_render_vote(game)
-		"question", "reveal":
-			_render_question(game, phase == "reveal")
+		"intro":
+			_render_intro(game)
 		"scoreboard":
 			_render_standings(game, false)
 		"game_over":
 			_render_standings(game, true)
+		"round":
+			match str(round.get("kind", "")):
+				"closest":
+					_render_closest(game, round)
+				"drawing":
+					_render_drawing(game, round)
+				_:
+					_render_quiz(game, round)
+
+
+const TIMED_STEPS: Array[String] = ["vote", "wager", "question", "steal", "drawing", "lying", "picking"]
+
+
+static func _round(game: Dictionary) -> Dictionary:
+	var round: Variant = game.get("round")
+	return round if typeof(round) == TYPE_DICTIONARY else {}
+
+
+static func _dict(value: Variant) -> Dictionary:
+	return value if typeof(value) == TYPE_DICTIONARY else {}
+
+
+func _counter_text(game: Dictionary, round: Dictionary) -> String:
+	var round_text: String = "Round %d of %d" % [int(game.get("roundIndex", 0)) + 1, int(game.get("roundCount", 0))]
+	if str(game.get("phase", "")) != "round":
+		return round_text
+	match str(round.get("kind", "")):
+		"drawing":
+			if int(round.get("drawingNumber", 0)) > 0:
+				return "%s · Drawing %d/%d" % [round_text, int(round.get("drawingNumber", 0)), int(round.get("drawingCount", 0))]
+		"final":
+			return round_text
+		_:
+			if int(round.get("questionNumber", 0)) > 0:
+				return "%s · Question %d/%d" % [round_text, int(round.get("questionNumber", 0)), int(round.get("questionCount", 0))]
+	return round_text
 
 
 func _screen_key(game: Dictionary) -> String:
-	var phase: String = str(game.get("phase", ""))
 	var players: Array = game.get("players", [])
 	var acted: int = 0
 	for p: Dictionary in players:
 		if bool(p.get("hasActed", false)):
 			acted += 1
-	var question: Variant = game.get("question")
-	var question_id: String = str(question.get("id", "")) if typeof(question) == TYPE_DICTIONARY else ""
-	return JSON.stringify([phase, question_id, game.get("vote"), players.size(), acted, game.get("code"), join_url, phase == "lobby" and players.size()])
+	var round: Dictionary = _round(game)
+	var reveal: Dictionary = _dict(round.get("reveal"))
+	var question: Dictionary = _dict(round.get("question"))
+	return JSON.stringify([
+		game.get("phase"), game.get("roundIndex"), game.get("code"), join_url, players.size(), acted,
+		round.get("kind"), round.get("step"), round.get("questionNumber"), round.get("drawingNumber"),
+		question.get("id"), round.get("vote"), reveal.get("shown"), settings,
+	])
 
 
-# ---- Screens ----
+# ---- Lobby and between rounds ----
 
 func _render_lobby(game: Dictionary) -> void:
 	var players: Array = game.get("players", [])
-	var title: Label = _label("Trivia Party", 104, Look.SHU)
+	var title: Label = _label("Trivia Party", 96, Look.SHU, true)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_color_override("font_outline_color", Look.PAPER)
-	title.add_theme_constant_override("outline_size", 24)
 	_content.add_child(title)
 
 	var row: HBoxContainer = HBoxContainer.new()
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
 	row.add_theme_constant_override("separation", 28)
 	_content.add_child(row)
-
 	var join_card: VBoxContainer = VBoxContainer.new()
-	join_card.add_child(_label("On your phone, open", 34, Look.MUTED))
-	var url: Label = _label(join_url, 54, Look.ASAGI_DEEP)
-	join_card.add_child(url)
-	join_card.add_child(_label("Same Wi-Fi as this TV", 26, Look.MUTED))
+	join_card.add_child(_label("On your phone, open", 32, Look.MUTED))
+	join_card.add_child(_label(join_url, 52, Look.ASAGI_DEEP))
+	join_card.add_child(_label("Any phone, tablet or laptop with a browser", 24, Look.MUTED))
 	row.add_child(_card(join_card, Look.PAPER))
-
 	var code_card: VBoxContainer = VBoxContainer.new()
 	code_card.alignment = BoxContainer.ALIGNMENT_CENTER
-	var caption: Label = _label("Room code", 34, Look.GOFUN)
+	var caption: Label = _label("Room code", 32, Look.GOFUN)
 	caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	code_card.add_child(caption)
-	var code: Label = _label(" ".join(str(game.get("code", "····")).split("")), 104, Look.GOFUN)
+	var code: Label = _label(" ".join(str(game.get("code", "····")).split("")), 100, Look.GOFUN)
 	code.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	code_card.add_child(code)
 	row.add_child(_card(code_card, Look.SHU))
+
+	# Game settings: length and drawing rounds.
+	var options: HBoxContainer = HBoxContainer.new()
+	options.alignment = BoxContainer.ALIGNMENT_CENTER
+	options.add_theme_constant_override("separation", 12)
+	_content.add_child(options)
+	options.add_child(_label("Game:", 30, Look.SUMI))
+	for length: String in LENGTHS:
+		var chosen: bool = str(settings.get("length", "standard")) == length
+		var button: Button = _button(length.capitalize(), Look.SUMI if chosen else Color(Look.SUMI, 0.35), 28)
+		button.pressed.connect(func() -> void: set_length(length))
+		options.add_child(button)
+	var drawing_on: bool = bool(settings.get("drawing", true))
+	var draw_button: Button = _button("Drawing rounds: %s" % ("On" if drawing_on else "Off"), Look.ASAGI_DEEP if drawing_on else Color(Look.SUMI, 0.35), 28)
+	draw_button.pressed.connect(toggle_drawing)
+	options.add_child(draw_button)
+	options.add_child(_label("[L] [D]   about %d min" % estimate_minutes(), 26, Look.SUMI))
 
 	var bottom: HBoxContainer = HBoxContainer.new()
 	bottom.alignment = BoxContainer.ALIGNMENT_CENTER
 	bottom.add_theme_constant_override("separation", 28)
 	_content.add_child(bottom)
 	var count_text: String = "Waiting for players to join…" if players.is_empty() else "%d player%s ready" % [players.size(), "" if players.size() == 1 else "s"]
-	bottom.add_child(_pill(_label(count_text, 36, Look.GOFUN), Look.SUMI))
+	bottom.add_child(_pill(_label(count_text, 34, Look.GOFUN), Look.SUMI))
 	if not players.is_empty():
-		var start: Button = _button("Start game  [Enter]", Look.SHU, 40)
+		var start: Button = _button("Start game  [Enter]", Look.SHU, 38)
 		start.pressed.connect(func() -> void: start_pressed.emit())
 		bottom.add_child(start)
 
 
-func _render_vote(game: Dictionary) -> void:
-	_content.add_child(_centered(_label("Vote for the next category!", 72, Look.SUMI, true)))
-	_content.add_child(_centered(_label("Tap a category on your phone", 34, Look.SUMI)))
-	var row: HBoxContainer = HBoxContainer.new()
-	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	row.add_theme_constant_override("separation", 28)
-	_content.add_child(row)
-	var vote: Dictionary = game.get("vote") if typeof(game.get("vote")) == TYPE_DICTIONARY else {}
-	var categories: Array = vote.get("categories", [])
-	for i: int in categories.size():
-		var category: Dictionary = categories[i]
-		var box: VBoxContainer = VBoxContainer.new()
-		box.custom_minimum_size = Vector2(420, 0)
-		var name: Label = _label(str(category.get("name", "")), 52, Look.GOFUN)
-		name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		box.add_child(name)
-		var votes: int = int(category.get("votes", 0))
-		var count: Label = _label("%d vote%s" % [votes, "" if votes == 1 else "s"], 40, Look.GOFUN)
-		count.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		count.modulate.a = 0.85
-		box.add_child(count)
-		row.add_child(_card(box, Look.ASAGI_DEEP if i % 2 == 0 else Look.SUMI))
-	_content.add_child(_centered(_label(_acted_text(game, "voted"), 32, Look.SUMI)))
-
-
-func _render_question(game: Dictionary, revealed: bool) -> void:
-	var question: Dictionary = game.get("question") if typeof(game.get("question")) == TYPE_DICTIONARY else {}
-	var reveal: Dictionary = game.get("reveal") if typeof(game.get("reveal")) == TYPE_DICTIONARY else {}
-	var correct: int = int(reveal.get("correctIndex", -1))
-	var picks: Dictionary = {}
-	for choice: Variant in reveal.get("answers", {}).values():
-		if choice != null:
-			picks[int(choice)] = int(picks.get(int(choice), 0)) + 1
-
-	var card: VBoxContainer = VBoxContainer.new()
-	card.add_theme_constant_override("separation", 6)
-	var category: Label = _label(str(question.get("categoryName", "")).to_upper(), 30, Look.ASAGI_DEEP)
-	category.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	card.add_child(category)
-	var text: Label = _label(str(question.get("text", "")), 62, Look.SUMI)
-	text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	card.add_child(text)
-	_content.add_child(_card(card, Look.PAPER))
-
-	var grid: GridContainer = GridContainer.new()
-	grid.columns = 2
-	grid.add_theme_constant_override("h_separation", 20)
-	grid.add_theme_constant_override("v_separation", 16)
-	_content.add_child(grid)
-	var choices: Array = question.get("choices", [])
-	for i: int in choices.size():
-		var tile_row: HBoxContainer = HBoxContainer.new()
-		tile_row.add_theme_constant_override("separation", 18)
-		var tag: Label = _label(Look.choice_tag(i), 40, Look.GOFUN)
-		tag.modulate.a = 0.85
-		tile_row.add_child(tag)
-		var answer: Label = _label(str(choices[i]), 46, Look.GOFUN)
-		answer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		answer.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		tile_row.add_child(answer)
-		if revealed:
-			var count: int = int(picks.get(i, 0))
-			if i == correct:
-				tile_row.add_child(_label("✓", 52, Look.GOFUN))
-			if count > 0:
-				tile_row.add_child(_label("×%d" % count, 36, Look.GOFUN))
-		var tile: PanelContainer = _card(tile_row, Look.choice_color(i), 22, 22)
-		tile.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		if revealed and i != correct:
-			tile.modulate.a = 0.28
-		grid.add_child(tile)
-		if revealed and i == correct:
-			tile.pivot_offset = Vector2(400, 40)
-			var pulse: Tween = tile.create_tween()
-			pulse.tween_property(tile, "scale", Vector2(1.04, 1.04), 0.18).set_trans(Tween.TRANS_BACK)
-			pulse.tween_property(tile, "scale", Vector2.ONE, 0.2)
-	if not revealed:
-		_content.add_child(_centered(_label(_acted_text(game, "locked in"), 32, Look.SUMI)))
+func _render_intro(game: Dictionary) -> void:
+	var box: VBoxContainer = VBoxContainer.new()
+	box.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.add_theme_constant_override("separation", 14)
+	var number: Label = _label("ROUND %d OF %d" % [int(game.get("roundIndex", 0)) + 1, int(game.get("roundCount", 0))], 36, Look.ASAGI_DEEP)
+	number.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(number)
+	var title: Label = _label(str(game.get("roundTitle", "")), 120, Look.SHU)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(title)
+	var blurb: Label = _label(str(game.get("roundBlurb", "")), 44, Look.SUMI)
+	blurb.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	blurb.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	blurb.custom_minimum_size = Vector2(1300, 0)
+	box.add_child(blurb)
+	var card: PanelContainer = _card(box, Look.PAPER, 40, 48)
+	_content.add_child(_centered(card))
+	card.pivot_offset = Vector2(700, 160)
+	card.scale = Vector2(0.6, 0.6)
+	card.create_tween().tween_property(card, "scale", Vector2.ONE, 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
 func _render_standings(game: Dictionary, final: bool) -> void:
@@ -321,8 +314,7 @@ func _render_standings(game: Dictionary, final: bool) -> void:
 		var names: PackedStringArray = PackedStringArray()
 		for w: Dictionary in winners:
 			names.append(str(w.get("name", "")))
-		var title: Label = _label("★  %s wins!  ★" % " & ".join(names) if winners.size() > 0 else "Game over", 92, Look.SHU, true)
-		_content.add_child(_centered(title))
+		_content.add_child(_centered(_label("★  %s wins!  ★" % " & ".join(names), 92, Look.SHU, true)))
 		# Top three in one row, so the winner on stage stays in view.
 		var podium: HBoxContainer = HBoxContainer.new()
 		podium.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -340,9 +332,7 @@ func _render_standings(game: Dictionary, final: bool) -> void:
 		again.pressed.connect(func() -> void: play_again_pressed.emit())
 		_content.add_child(_centered(again))
 		return
-	else:
-		_content.add_child(_centered(_label("Standings", 72, Look.SUMI, true)))
-
+	_content.add_child(_centered(_label("Standings after %s" % str(game.get("roundTitle", "this round")), 64, Look.SUMI, true)))
 	var grid: GridContainer = GridContainer.new()
 	grid.columns = 2 if players.size() > 4 else 1
 	grid.add_theme_constant_override("h_separation", 24)
@@ -354,28 +344,343 @@ func _render_standings(game: Dictionary, final: bool) -> void:
 		var row: HBoxContainer = HBoxContainer.new()
 		row.custom_minimum_size = Vector2(700, 0)
 		row.add_theme_constant_override("separation", 18)
-		var rank: Label = _label(Look.ordinal(int(p.get("rank", 0))), 38, Look.SHU if int(p.get("rank", 0)) == 1 else Look.ASAGI_DEEP)
+		var rank: Label = _label(Look.ordinal(int(p.get("rank", 0))), 36, Look.SHU if int(p.get("rank", 0)) == 1 else Look.ASAGI_DEEP)
 		rank.custom_minimum_size = Vector2(90, 0)
 		row.add_child(rank)
-		var name: Label = _label(str(p.get("name", "")), 38, Look.SUMI if bool(p.get("connected", true)) else Look.MUTED)
+		var name: Label = _label(str(p.get("name", "")), 36, Look.SUMI if bool(p.get("connected", true)) else Look.MUTED)
 		name.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		row.add_child(name)
-		if not final and int(p.get("lastPoints", 0)) > 0:
-			row.add_child(_label("+" + Look.format_points(int(p.get("lastPoints", 0))), 30, Look.GOOD))
-		row.add_child(_label(Look.format_points(int(p.get("score", 0))), 38, Look.SUMI))
-		grid.add_child(_card(row, Look.PAPER, 18, 14))
+		var gained: int = int(p.get("roundPoints", 0))
+		if gained != 0:
+			row.add_child(_label(Look.signed_points(gained), 28, Look.GOOD if gained > 0 else Look.SHU))
+		row.add_child(_label(Look.format_points(int(p.get("score", 0))), 36, Look.SUMI))
+		grid.add_child(_card(row, Look.PAPER, 18, 12))
 
 
-func _acted_text(game: Dictionary, verb: String) -> String:
-	var players: Array = game.get("players", [])
+# ---- Quiz rounds ----
+
+func _render_quiz(game: Dictionary, round: Dictionary) -> void:
+	match str(round.get("step", "")):
+		"vote":
+			_render_vote(game, round)
+		"wager":
+			_render_wager(game, round)
+		"question", "reveal", "steal":
+			_render_question(game, round)
+		"steal_reveal":
+			_render_steal_reveal(game, round)
+
+
+func _render_vote(game: Dictionary, round: Dictionary) -> void:
+	_content.add_child(_centered(_label("Vote for the next category!", 72, Look.SUMI, true)))
+	var row: HBoxContainer = HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 28)
+	_content.add_child(row)
+	var categories: Array = _dict(round.get("vote")).get("categories", [])
+	for i: int in categories.size():
+		var category: Dictionary = categories[i]
+		var box: VBoxContainer = VBoxContainer.new()
+		box.custom_minimum_size = Vector2(420, 0)
+		var name: Label = _label(str(category.get("name", "")), 52, Look.GOFUN)
+		name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		box.add_child(name)
+		var votes: int = int(category.get("votes", 0))
+		var count: Label = _label("%d vote%s" % [votes, "" if votes == 1 else "s"], 40, Look.GOFUN)
+		count.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		count.modulate.a = 0.85
+		box.add_child(count)
+		row.add_child(_card(box, Look.ASAGI_DEEP if i % 2 == 0 else Look.SUMI))
+	_content.add_child(_centered(_label(_acted_text(game, "voted"), 32, Look.SUMI)))
+
+
+func _render_wager(game: Dictionary, round: Dictionary) -> void:
+	var final: bool = str(round.get("kind", "")) == "final"
+	var box: VBoxContainer = VBoxContainer.new()
+	box.add_theme_constant_override("separation", 10)
+	var heading: Label = _label("THE FINAL QUESTION IS ABOUT" if final else "THE NEXT QUESTION IS ABOUT", 32, Look.ASAGI_DEEP)
+	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(heading)
+	var category: Label = _label(str(_dict(round.get("category")).get("name", "")), 110, Look.SHU)
+	category.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(category)
+	var ask: Label = _label("Place your bets on your phones!" if not final else "Bet as much as you dare. Last place can still win!", 44, Look.SUMI)
+	ask.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(ask)
+	_content.add_child(_centered(_card(box, Look.PAPER, 36, 40)))
+	_content.add_child(_centered(_label(_acted_text(game, "bets in"), 32, Look.SUMI)))
+
+
+func _render_question(game: Dictionary, round: Dictionary) -> void:
+	var step: String = str(round.get("step", ""))
+	var revealed: bool = step == "reveal" or step == "steal"
+	var question: Dictionary = _dict(round.get("question"))
+	var reveal: Dictionary = _dict(round.get("reveal"))
+	var correct: int = int(reveal.get("correctIndex", -1))
+	var picks: Dictionary = {}
+	for choice: Variant in _dict(reveal.get("answers")).values():
+		if choice != null:
+			picks[int(choice)] = int(picks.get(int(choice), 0)) + 1
+
+	var card: VBoxContainer = VBoxContainer.new()
+	card.add_theme_constant_override("separation", 6)
+	var category: Label = _label(str(question.get("categoryName", "")).to_upper(), 30, Look.ASAGI_DEEP)
+	category.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	card.add_child(category)
+	var text: Label = _label(str(question.get("text", "")), 58, Look.SUMI)
+	text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	card.add_child(text)
+	_content.add_child(_card(card, Look.PAPER))
+
+	var grid: GridContainer = GridContainer.new()
+	grid.columns = 2
+	grid.add_theme_constant_override("h_separation", 20)
+	grid.add_theme_constant_override("v_separation", 16)
+	_content.add_child(grid)
+	var choices: Array = question.get("choices", [])
+	for i: int in choices.size():
+		var tile_row: HBoxContainer = HBoxContainer.new()
+		tile_row.add_theme_constant_override("separation", 18)
+		var tag: Label = _label(Look.choice_tag(i), 40, Look.GOFUN)
+		tag.modulate.a = 0.85
+		tile_row.add_child(tag)
+		var answer: Label = _label(str(choices[i]), 44, Look.GOFUN)
+		answer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		answer.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		tile_row.add_child(answer)
+		if revealed:
+			if i == correct:
+				tile_row.add_child(_label("✓", 52, Look.GOFUN))
+			if int(picks.get(i, 0)) > 0:
+				tile_row.add_child(_label("×%d" % int(picks.get(i, 0)), 36, Look.GOFUN))
+		var tile: PanelContainer = _card(tile_row, Look.choice_color(i), 22, 22)
+		tile.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		if revealed and i != correct:
+			tile.modulate.a = 0.28
+		grid.add_child(tile)
+		if revealed and i == correct and step == "reveal":
+			tile.pivot_offset = Vector2(400, 40)
+			var pulse: Tween = tile.create_tween()
+			pulse.tween_property(tile, "scale", Vector2(1.04, 1.04), 0.18).set_trans(Tween.TRANS_BACK)
+			pulse.tween_property(tile, "scale", Vector2.ONE, 0.2)
+	if step == "question":
+		_content.add_child(_centered(_label(_acted_text(game, "locked in"), 32, Look.SUMI)))
+	elif step == "steal":
+		var thieves: PackedStringArray = PackedStringArray()
+		for p: Dictionary in game.get("players", []):
+			if _dict(reveal.get("answers")).get(str(p.get("id", ""))) == correct:
+				thieves.append(str(p.get("name", "")))
+		_content.add_child(_centered(_pill(_label("Sticky fingers!  %s: pick who to steal from on your phone" % ", ".join(thieves), 34, Look.GOFUN), Look.SHU)))
+	elif str(reveal.get("fact", "")) != "" and reveal.get("fact") != null:
+		_content.add_child(_centered(_pill(_label("Fun fact:  " + str(reveal.get("fact")), 30, Look.SUMI), Look.PAPER)))
+
+
+func _render_steal_reveal(game: Dictionary, round: Dictionary) -> void:
+	_content.add_child(_centered(_label("Sticky fingers!", 80, Look.SHU, true)))
+	var list: VBoxContainer = VBoxContainer.new()
+	list.add_theme_constant_override("separation", 12)
+	var steals: Array = round.get("steals", []) if typeof(round.get("steals")) == TYPE_ARRAY else []
+	if steals.is_empty():
+		list.add_child(_label("Nobody got robbed this time.", 40, Look.SUMI))
+	for s: Dictionary in steals:
+		var amount: int = int(s.get("amount", 0))
+		var text: String = "%s stole %s from %s!" % [_name(game, str(s.get("thief", ""))), Look.format_points(amount), _name(game, str(s.get("victim", "")))] if amount > 0 else "%s tried to rob %s, but their pockets were empty!" % [_name(game, str(s.get("thief", ""))), _name(game, str(s.get("victim", "")))]
+		list.add_child(_card(_label(text, 40, Look.SUMI), Look.PAPER, 20, 18))
+	_content.add_child(_centered(list))
+
+
+# ---- Closest guess ----
+
+func _render_closest(game: Dictionary, round: Dictionary) -> void:
+	var question: Dictionary = _dict(round.get("question"))
+	var unit: String = str(question.get("unit", "")) if question.get("unit") != null else ""
+	var card: VBoxContainer = VBoxContainer.new()
+	var category: Label = _label(str(question.get("categoryName", "")).to_upper() + "  ·  CLOSEST GUESS", 30, Look.ASAGI_DEEP)
+	category.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	card.add_child(category)
+	var text: Label = _label(str(question.get("text", "")), 58, Look.SUMI)
+	text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	card.add_child(text)
+	_content.add_child(_card(card, Look.PAPER))
+	if str(round.get("step", "")) != "reveal":
+		_content.add_child(_centered(_pill(_label("Type your best guess on your phone. Closest wins!", 38, Look.GOFUN), Look.ASAGI_DEEP)))
+		_content.add_child(_centered(_label(_acted_text(game, "guessed"), 32, Look.SUMI)))
+		return
+	var reveal: Dictionary = _dict(round.get("reveal"))
+	var answer: float = float(reveal.get("answer", 0))
+	var line: NumberLine = NumberLine.new()
+	line.answer = answer
+	line.unit = unit
+	var top: PackedStringArray = PackedStringArray()
+	for r: Dictionary in reveal.get("results", []):
+		if r.get("guess") == null:
+			continue
+		line.guesses.append({"name": _name(game, str(r.get("playerId", ""))), "value": float(r.get("guess")), "place": int(r.get("place", 0))})
+		if int(r.get("points", 0)) > 0:
+			top.append("%s %s %s" % [Look.ordinal(int(r.get("place", 0))), _name(game, str(r.get("playerId", ""))), Look.signed_points(int(r.get("points", 0)))])
+	var row: HBoxContainer = HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 20)
+	row.add_child(_pill(_label("Answer:  %s" % Look.format_number(answer, unit), 50, Look.GOFUN), Look.GOOD))
+	if not top.is_empty():
+		row.add_child(_pill(_label("   ".join(top.slice(0, 3)), 30, Look.SUMI), Look.PAPER))
+	_content.add_child(row)
+	if reveal.get("fact") != null and str(reveal.get("fact")) != "":
+		_content.add_child(_centered(_label("Fun fact:  " + str(reveal.get("fact")), 28, Look.SUMI)))
+	_content.add_child(line)
+
+
+# ---- Doodle Duel ----
+
+func _render_drawing(game: Dictionary, round: Dictionary) -> void:
+	var step: String = str(round.get("step", ""))
+	if step == "drawing":
+		_content.add_child(_centered(_label("Grab your phones and draw!", 80, Look.SHU, true)))
+		_content.add_child(_centered(_label("Each artist has a secret prompt. Draw it so others can guess it.", 38, Look.SUMI)))
+		var names: PackedStringArray = PackedStringArray()
+		for id: Variant in round.get("artistIds", []):
+			var done: bool = false
+			for p: Dictionary in game.get("players", []):
+				if str(p.get("id", "")) == str(id):
+					done = bool(p.get("hasActed", false))
+			names.append(("✓ " if done else "") + _name(game, str(id)))
+		_content.add_child(_centered(_pill(_label("Artists:  " + "   ".join(names), 34, Look.GOFUN), Look.ASAGI_DEEP)))
+		if (round.get("artistIds", []) as Array).size() < (game.get("players", []) as Array).size():
+			_content.add_child(_centered(_label("Everyone else: you're judging this round!", 30, Look.SUMI)))
+		return
+
+	var row: HBoxContainer = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 40)
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	_content.add_child(row)
+	var art_column: VBoxContainer = VBoxContainer.new()
+	art_column.add_theme_constant_override("separation", 8)
+	art_column.add_child(DrawingCanvas.new(round.get("strokes", []) if typeof(round.get("strokes")) == TYPE_ARRAY else [], 600.0))
+	var by: Label = _label("by %s" % _name(game, str(round.get("artistId", ""))), 30, Look.SUMI)
+	by.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	art_column.add_child(by)
+	row.add_child(art_column)
+
+	var side: VBoxContainer = VBoxContainer.new()
+	side.add_theme_constant_override("separation", 14)
+	side.custom_minimum_size = Vector2(900, 0)
+	row.add_child(side)
+	match step:
+		"lying":
+			side.add_child(_label("What is this?", 72, Look.SHU, true))
+			var ask: Label = _label("Write a fake title on your phone. Make it believable: you score when people fall for it!", 40, Look.SUMI)
+			ask.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			side.add_child(ask)
+			side.add_child(_label(_acted_text(game, "fakes written", str(round.get("artistId", ""))), 32, Look.SUMI))
+		"picking":
+			side.add_child(_label("Which one is real?", 64, Look.SHU, true))
+			var options: Array = round.get("options", [])
+			var many: bool = options.size() > 5
+			var grid: GridContainer = GridContainer.new()
+			grid.columns = 2 if many else 1
+			grid.add_theme_constant_override("h_separation", 12)
+			grid.add_theme_constant_override("v_separation", 10)
+			for option: Dictionary in options:
+				var text: Label = _label(str(option.get("text", "")), 30 if many else 38, Look.SUMI)
+				text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+				text.custom_minimum_size = Vector2(400 if many else 820, 0)
+				grid.add_child(_card(text, Look.PAPER, 18, 12 if many else 16))
+			side.add_child(grid)
+			side.add_child(_label(_acted_text(game, "picked", str(round.get("artistId", ""))), 30, Look.SUMI))
+		"reveal":
+			_render_drawing_reveal(game, round, side)
+
+
+func _render_drawing_reveal(game: Dictionary, round: Dictionary, side: VBoxContainer) -> void:
+	var reveal: Dictionary = _dict(round.get("reveal"))
+	var items: Array = reveal.get("items", [])
+	var shown: int = int(reveal.get("shown", 0))
+	var compact: bool = items.size() > 5
+	for i: int in mini(shown, items.size()):
+		var item: Dictionary = items[i]
+		var truth: bool = bool(item.get("truth", false))
+		var box: VBoxContainer = VBoxContainer.new()
+		box.add_theme_constant_override("separation", 4)
+		box.add_child(_label(("THE TRUTH:  " if truth else "") + "“%s”" % str(item.get("text", "")), 32 if compact else 40, Look.GOFUN if truth else Look.SUMI))
+		var pickers: PackedStringArray = PackedStringArray()
+		for id: Variant in item.get("pickers", []):
+			pickers.append(_name(game, str(id)))
+		var authors: PackedStringArray = PackedStringArray()
+		for id: Variant in item.get("authors", []):
+			authors.append(_name(game, str(id)))
+		var who: String
+		if truth:
+			who = ("Spotted by " + ", ".join(pickers)) if not pickers.is_empty() else "Nobody spotted it!"
+		else:
+			who = "%s fell for %s" % [", ".join(pickers), ("%s's fake" % " & ".join(authors)) if not authors.is_empty() else "a house lie"]
+		box.add_child(_label(who, 22 if compact else 28, Look.GOFUN if truth else Look.MUTED))
+		var card: PanelContainer = _card(box, Look.SHU if truth else Look.PAPER, 18, 10 if compact else 16)
+		side.add_child(card)
+		if i == shown - 1:
+			card.modulate.a = 0.0
+			card.create_tween().tween_property(card, "modulate:a", 1.0, 0.3)
+
+
+func _acted_text(game: Dictionary, verb: String, except_id: String = "") -> String:
 	var acted: int = 0
 	var here: int = 0
-	for p: Dictionary in players:
+	for p: Dictionary in game.get("players", []):
+		if str(p.get("id", "")) == except_id:
+			continue
 		if bool(p.get("connected", true)):
 			here += 1
 		if bool(p.get("hasActed", false)):
 			acted += 1
 	return "%d of %d %s" % [acted, here, verb]
+
+
+func _name(game: Dictionary, id: String) -> String:
+	for p: Dictionary in game.get("players", []):
+		if str(p.get("id", "")) == id:
+			return str(p.get("name", ""))
+	return "Someone"
+
+
+# ---- Settings ----
+
+const LENGTHS: Array[String] = ["short", "standard", "long"]
+## Rough minutes per round type, for the lobby's time estimate.
+const ROUND_MINUTES: Dictionary = {"classic": 3.0, "wager": 2.0, "closest": 2.0, "steal": 3.0, "drawing": 6.0, "final": 1.5}
+
+var settings: Dictionary = {"length": "standard", "drawing": true, "categories": []}
+var rules: Dictionary = {}
+
+signal settings_changed
+
+
+func set_length(length: String) -> void:
+	settings["length"] = length
+	settings_changed.emit()
+	show_state(_game)
+
+
+func cycle_length() -> void:
+	var i: int = LENGTHS.find(str(settings.get("length", "standard")))
+	set_length(LENGTHS[(i + 1) % LENGTHS.size()])
+
+
+func toggle_drawing() -> void:
+	settings["drawing"] = not bool(settings.get("drawing", true))
+	settings_changed.emit()
+	show_state(_game)
+
+
+func estimate_minutes() -> int:
+	var plans: Dictionary = _dict(rules.get("plans"))
+	var plan: Array = plans.get(str(settings.get("length", "standard")), [])
+	var total: float = 0.0
+	for kind: Variant in plan:
+		if str(kind) == "drawing" and not bool(settings.get("drawing", true)):
+			continue
+		total += float(ROUND_MINUTES.get(str(kind), 2.0))
+	return maxi(1, roundi(total))
 
 
 # ---- Overlay, toast, players panel ----

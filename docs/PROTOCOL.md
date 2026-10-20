@@ -1,12 +1,12 @@
 # Network protocol
 
 Every message is a JSON object sent as one WebSocket text frame, with a string
-`type` field. The source of truth is `shared/src/protocol.ts` (and
-`shared/src/game.ts` for questions and rules); the Godot host mirrors the parts
-it uses in `host/scripts/protocol.gd`. Change them together and bump
+`type` field. The source of truth is `shared/src/protocol.ts` (messages and views)
+and `shared/src/game.ts` (questions, prompts, strokes, rules); the Godot host
+mirrors what it sends in `host/scripts/protocol.gd`. Change them together and bump
 `PROTOCOL_VERSION` when an old client could no longer understand a message.
 
-- Protocol version: **2**
+- Protocol version: **3**
 - Dev server: `ws://<machine>:8787` (the same port serves `GET /health`)
 - The server owns all game state. Host and phones only send inputs and draw the
   `state` snapshots they receive.
@@ -19,15 +19,49 @@ it uses in `host/scripts/protocol.gd`. Change them together and bump
 3. After a network drop: `hello` again, then `resume_room {code, hostToken}`.
    Same room, same players. If the room expired (`error room_not_found`), the
    host creates a new one.
-4. `start_game {rules, questions}` sends this session's question set (manifest section 3).
+4. `start_game` sends this session's rules, settings, questions and drawing prompts.
 
-**Phone:**
+**Phone (any browser):**
 1. Open socket → `hello {role: "player"}` → `welcome`.
 2. `join {code, name, animal}` → `joined {playerId, token}` + `state`.
 3. The phone stores `token` (localStorage). After a reload or a locked screen it
    sends `join` with the token and gets the same seat and score back.
 
 Every change in a room sends a fresh `state` to the host and to each phone.
+
+## Session flow
+
+```
+lobby ─start_game→ intro (round 1) → round → scoreboard → intro (round 2) → … → game_over
+game_over ─back_to_lobby→ lobby
+```
+
+The rounds come from `plans[settings.length]` in the rules, minus rounds the
+content or settings can't support (no drawing prompts or drawing turned off →
+no Doodle Duel; no closest-guess questions → no Closest Guess).
+
+| Round kind | Title on screen | Steps (`round.step`) |
+|---|---|---|
+| `classic` | Quiz Time | `vote` → (`question` → `reveal`) × N |
+| `wager` | High Roller | `vote` → (`wager` → `question` → `reveal`) × N |
+| `steal` | Sticky Fingers | `vote` → (`question` → `reveal` → `steal` → `steal_reveal`) × N |
+| `final` | Final Showdown | `wager` → `question` → `reveal` (one of the hardest questions) |
+| `closest` | Closest Guess | (`question` → `reveal`) × N |
+| `drawing` | Doodle Duel | `drawing` → (`lying` → `picking` → `reveal`) per drawing |
+
+Steps end when their timer runs out, or early when every connected player has
+acted (`end_phase_when_everyone_acted`). The host's **Next** (`skip`) ends the
+current step now.
+
+### Scoring
+
+- **Quiz Time / Sticky Fingers:** right answer = `base_points + speed_bonus_max × time left ÷ question time`.
+- **Sticky Fingers:** each right answer then takes up to `steal_points` from a chosen player (or the leader if they don't choose).
+- **High Roller / Final Showdown:** bet up to your score (or `wager_floor` if you have less); right wins the bet, wrong loses it. Scores never go below 0.
+- **Closest Guess:** places by distance (ties share); `closest_points[place-1]`, plus `closest_exact_bonus` for an exact hit.
+- **Doodle Duel:** spotting the real title `draw_truth_points`; the artist gets `draw_artist_points` per player who spotted it; a fake title earns `draw_fool_points` per player it fooled.
+
+All numbers live in `host/config/game_rules.json`.
 
 ## Client → Server
 
@@ -36,14 +70,23 @@ Every change in a room sends a fresh `state` to the host and to each phone.
 | `hello` | both | `role` (`host`/`player`), `protocolVersion` | First message |
 | `create_room` | host | | Closes the host's previous room, if any |
 | `resume_room` | host | `code`, `hostToken` | |
-| `start_game` | host | `rules` (partial game rules), `questions` (array) | Lobby only. Rules are clamped server-side; max 16 players always |
+| `start_game` | host | `rules` (partial), `settings {length, drawing, categories}`, `questions[]`, `prompts[]`, `decoys[]` | Lobby only. Rules are clamped server-side; max 16 players always |
 | `kick` | host | `playerId` | Phone receives `kicked` |
 | `set_paused` | host | `paused` | Freezes the timer |
-| `skip` | host | | Ends the current timed phase now |
+| `skip` | host | | Ends the current step now |
 | `back_to_lobby` | host | | After game over: keeps players, resets scores |
-| `join` | phone | `code` (4 letters, no I/O), `name`, `animal` (`dog`/`cat`/`bunny`/`frog`), `token?` | Name trimmed to 12 chars; duplicates get " 2" |
-| `vote` | phone | `category` (id) | During `category_vote`; can change vote |
-| `answer` | phone | `choice` (index) | During `question`; first answer is final |
+| `join` | phone | `code` (4 letters, no I/O), `name`, `animal` (`dog`/`cat`/`bunny`/`frog`), `token?` | Name trimmed to 12 chars, emoji removed; duplicates get " 2" |
+| `vote` | phone | `category` | `vote` step; can change vote |
+| `wager` | phone | `amount` | `wager` step; capped at `me.maxWager`; once |
+| `answer` | phone | `choice` (index) | `question` step; first answer is final |
+| `steal` | phone | `target` (playerId) | `steal` step, right answers only, not yourself |
+| `guess` | phone | `value` (number) | Closest Guess `question` step; once |
+| `drawing` | phone | `strokes[]` | Doodle Duel `drawing` step, artists only; once |
+| `lie` | phone | `text` (≤ 45 chars) | `lying` step, not the artist. Rejected with `too_close` if it's the real title, `duplicate` if someone wrote it already |
+| `pick` | phone | `option` (option id) | `picking` step, not the artist, not your own lie |
+
+A stroke is `{c: pen color index, w: pen width index, p: [x, y, x, y, …]}` with
+coordinates 0–1000 on a square canvas (`PEN_COLORS`, `PEN_WIDTHS` in `shared/src/game.ts`).
 
 ## Server → Client
 
@@ -57,41 +100,36 @@ Every change in a room sends a fresh `state` to the host and to each phone.
 | `state` | see below |
 
 Error codes: `bad_message`, `protocol_mismatch`, `room_not_found`, `room_full`,
-`not_allowed`, `bad_name`, `not_enough_players`, `no_questions`.
+`not_allowed`, `bad_name`, `not_enough_players`, `no_questions`, `too_close`, `duplicate`.
 
 ### `state`
 
-| Field | Type | Notes |
-|---|---|---|
-| `code` | string | Room code |
-| `phase` | `lobby` · `category_vote` · `question` · `reveal` · `scoreboard` · `game_over` | |
-| `paused` | bool | |
-| `hostConnected` | bool | Phones show "TV reconnecting" when false (game auto-pauses) |
-| `players` | PlayerView[] | Sorted by seat |
-| `timer` | `{durationMs, remainingMs}` or null | Count down locally from `remainingMs` |
-| `questionNumber`, `questionCount` | number | |
-| `vote` | `{categories: [{id, name, votes}], winner}` or null | During `category_vote` |
-| `question` | `{id, category, categoryName, difficulty, text, choices}` or null | During `question` and `reveal`. **Never includes the answer** |
-| `reveal` | `{correctIndex, answers: {playerId: index or null}}` or null | Only during `reveal` |
-| `you` | `{playerId, answer, vote}` or null | Only in a phone's own copy |
+| Field | Notes |
+|---|---|
+| `code`, `phase`, `paused`, `hostConnected` | `phase`: `lobby` · `intro` · `round` · `scoreboard` · `game_over` |
+| `players[]` | `id, name, animal, seat, score, connected, hasActed, lastPoints, roundPoints, rank` |
+| `timer` | `{durationMs, remainingMs}` or null; count down locally |
+| `roundIndex`, `roundCount`, `roundKind`, `roundTitle`, `roundBlurb` | The current (or upcoming, during `intro`) round |
+| `round` | The round's view (below), only during `phase: "round"` |
+| `you` | `{playerId}` in a phone's own copy, else null |
 
-PlayerView: `id`, `name`, `animal`, `seat` (from 1), `score`, `connected`,
-`hasActed` (voted/answered this phase), `lastPoints` (from the last question),
-`rank` (1 = leader, ties share).
+**Quiz view** (`classic`, `wager`, `steal`, `final`): `step, questionNumber,
+questionCount, category, vote {categories[{id, name, votes}]}, question {id,
+category, categoryName, difficulty, text, choices}, reveal {correctIndex,
+answers{playerId: index|null}, fact}, wagers, steals[{thief, victim, amount}],
+me {answer, vote, wager, maxWager, canSteal, stealTarget}`.
+The question never includes the answer; `reveal` appears only from the reveal on.
 
-## Phases
+**Closest view:** `step, questionNumber, questionCount, question {id, category,
+categoryName, text, unit}, reveal {answer, fact, results[{playerId, guess,
+distance, place, points}]}, me {guess}`.
 
-```
-lobby ─start_game→ category_vote ─(timer or everyone voted)→ question
-question ─(timer or everyone answered)→ reveal ─timer→ scoreboard ─timer→
-    next question in the block │ new category_vote │ game_over
-game_over ─back_to_lobby→ lobby
-```
-
-Each vote picks a block of `questions_per_category` questions; ties are broken at
-random; no question repeats within a game. Scoring (classic round):
-`base_points + speed_bonus_max × (time left ÷ question time)` for a correct
-answer, 0 otherwise. All numbers come from `host/config/game_rules.json`.
+**Drawing view:** `step, drawingNumber, drawingCount, artistIds[], artistId,
+strokes, options[{id, text}], reveal {items[{optionId, text, truth, authors[],
+pickers[]}], shown}, me {prompt, isArtist, submitted, lie, pick}`.
+`me.prompt` is only sent to that artist during `drawing`; the TV never gets
+prompts. Options don't say which is real until `reveal`, which steps through
+the fakes (fewest pickers first) and ends with the truth (`shown` counts up).
 
 ## HTTP
 

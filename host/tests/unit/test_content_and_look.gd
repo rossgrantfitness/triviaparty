@@ -7,10 +7,27 @@ func test_loads_the_sample_question_packs() -> void:
 	assert_gte(ContentLoader.categories(questions).size(), 3)
 
 
-func test_every_question_has_choices_and_a_valid_answer() -> void:
+func test_every_multiple_choice_question_has_a_valid_answer() -> void:
 	for question: Dictionary in ContentLoader.load_questions():
+		if question.get("type") != "multiple_choice":
+			continue
 		var choices: Array = question.get("choices", [])
 		assert_between(int(question.get("answer", -1)), 0, choices.size() - 1, str(question.get("id")))
+
+
+func test_loads_the_drawing_pack() -> void:
+	var pack: Dictionary = ContentLoader.load_drawing_pack()
+	assert_gte((pack["prompts"] as Array).size(), 100)
+	assert_gte((pack["decoys"] as Array).size(), 30)
+
+
+func test_format_number_for_closest_guess() -> void:
+	assert_eq(Look.format_number(1969, "year"), "1969")
+	assert_eq(Look.format_number(384400, "km"), "384,400 km")
+	assert_eq(Look.format_number(42.195, "km"), "42.195 km")
+	assert_eq(Look.format_number(29.5, "days"), "29.5 days")
+	assert_eq(Look.signed_points(-300), "-300")
+	assert_eq(Look.signed_points(1200), "+1,200")
 
 
 func test_loads_rules() -> void:

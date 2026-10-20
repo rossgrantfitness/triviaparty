@@ -17,6 +17,13 @@ const CHOICE_COLORS: Array[Color] = [SHU, ASAGI_DEEP, SUMI, ASAGI, SHU, ASAGI_DE
 const CHOICE_LETTERS: Array[String] = ["A", "B", "C", "D", "E", "F"]
 const CHOICE_SHAPES: Array[String] = ["▲", "●", "■", "◆", "★", "▲"]
 
+## Pen colors and widths for drawings; same order as PEN_COLORS / PEN_WIDTHS in shared/src/game.ts.
+const PEN_COLORS: Array[Color] = [
+	Color("2b2b2b"), Color("d8453a"), Color("6b9bb0"), Color("3f6e82"), Color("f4eee0"),
+	Color("e8a33d"), Color("7db58c"), Color("f0948a"), Color("8c6a4f"), Color("9b7cc4"),
+]
+const PEN_WIDTHS: Array[float] = [6.0, 14.0, 28.0, 60.0]
+
 const FONT_PATH: String = "res://assets/fonts/mplus_rounded_800.woff2"
 ## The Latin font file has no ▲●■◆✓★, so those come from these extra slices of the same font.
 const SYMBOL_FONT_PATHS: Array[String] = [
@@ -60,6 +67,22 @@ static func format_points(value: int) -> String:
 		out = "," + digits.substr(digits.length() - 3) + out
 		digits = digits.substr(0, digits.length() - 3)
 	return ("-" if value < 0 else "") + digits + out
+
+
+static func signed_points(value: int) -> String:
+	return ("+" if value > 0 else "") + format_points(value)
+
+
+## Numbers for Closest Guess: years stay plain (1969), others get commas and a unit.
+static func format_number(value: float, unit: String = "") -> String:
+	var text: String
+	if unit == "year":
+		return str(int(value))
+	if is_equal_approx(value, roundf(value)):
+		text = format_points(int(value))
+	else:
+		text = format_points(int(value)) + ("%.3f" % absf(value - float(int(value)))).substr(1).rstrip("0")
+	return text + (" " + unit if not unit.is_empty() else "")
 
 
 static func ordinal(n: int) -> String:

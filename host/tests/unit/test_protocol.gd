@@ -20,10 +20,14 @@ func test_resume_room_carries_code_and_token() -> void:
 
 
 func test_start_game_drops_comment_keys_from_rules() -> void:
-	var data: Dictionary = _decode(Protocol.start_game({"_comment": "hi", "question_seconds": 15}, [{"id": "q1"}]))
+	var settings: Dictionary = {"length": "short", "drawing": false, "categories": []}
+	var data: Dictionary = _decode(Protocol.start_game({"_comment": "hi", "question_seconds": 15}, settings, [{"id": "q1"}], [{"id": "p1", "prompt": "A cat"}], ["A dog"]))
 	assert_false(data["rules"].has("_comment"))
 	assert_eq(int(data["rules"]["question_seconds"]), 15)
+	assert_eq(data["settings"]["length"], "short")
 	assert_eq(data["questions"].size(), 1)
+	assert_eq(data["prompts"].size(), 1)
+	assert_eq(data["decoys"], ["A dog"])
 
 
 func test_kick_names_the_player() -> void:

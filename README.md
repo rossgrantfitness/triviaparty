@@ -1,7 +1,10 @@
 # Trivia Party (working title)
 
-A high-stakes party trivia game for Steam. Players join from their phones; the
-Godot host runs on the TV. See `docs/MANIFEST.md` for the full plan and
+A party trivia and drawing game for Steam: think Drawful 2 meets Papa's Quiz.
+Players join from any phone, tablet or laptop browser with a room code; the Godot
+game runs on the TV. Rounds: Quiz Time, Doodle Duel (draw, write fake titles, spot
+the real one), High Roller (wagers), Closest Guess, Sticky Fingers (steals) and the
+Final Showdown. See `docs/MANIFEST.md` for the full plan and
 `docs/PROGRESS.md` for where things stand.
 
 ## Easiest way to play (no typing)
@@ -35,6 +38,7 @@ full path to the Godot program (e.g. `C:\Users\you\Godot\Godot_v4.7.2-stable_win
 4. Press **Enter** (or click **Start game**) on the TV.
 
 TV keys: **Enter** start / play again · **Space** pause · **N** skip ahead · **Tab** players (remove someone) · **F11** fullscreen.
+In the lobby: **L** changes game length (short / standard / long), **D** turns drawing rounds on or off.
 
 Tweak timers and points in `host/config/game_rules.json`, then restart.
 

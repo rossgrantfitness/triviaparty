@@ -47,54 +47,132 @@ func sync_players(players: Array, phase: String = "") -> void:
 ## Moods, badges and camera for the current phase.
 func apply_state(game: Dictionary) -> void:
 	var phase: String = str(game.get("phase", "lobby"))
-	var reveal: Dictionary = game.get("reveal") if typeof(game.get("reveal")) == TYPE_DICTIONARY else {}
-	var answers: Dictionary = reveal.get("answers", {})
-	var correct: int = int(reveal.get("correctIndex", -1))
-	var points_key: String = "%s:%s" % [phase, str(game.get("questionNumber", 0))]
-	var show_points: bool = phase == "reveal" and points_key != _last_points_key
-	_last_points_key = points_key
+	var round: Dictionary = game.get("round") if typeof(game.get("round")) == TYPE_DICTIONARY else {}
+	var kind: String = str(round.get("kind", ""))
+	var step: String = str(round.get("step", ""))
+	var reveal: Dictionary = round.get("reveal") if typeof(round.get("reveal")) == TYPE_DICTIONARY else {}
+
+	# Float everyone's points once per scoring moment (not again on every update).
+	var number: Variant = round.get("drawingNumber") if kind == "drawing" else round.get("questionNumber")
+	var points_key: String = "%s:%s:%s:%s" % [str(game.get("roundIndex", 0)), kind, step, str(number)]
+	var scoring: bool = phase == "round" and step in ["reveal", "steal_reveal"]
+	if kind == "drawing" and step == "reveal":
+		# Drawings score when the real title is finally shown.
+		scoring = int(reveal.get("shown", 0)) >= (reveal.get("items", []) as Array).size()
+	var show_points: bool = scoring and points_key != _last_points_key
+	if show_points:
+		_last_points_key = points_key
 
 	for player: Dictionary in game.get("players", []):
-		var seat: Seat = _seats.get(str(player.get("id", "")))
+		var id: String = str(player.get("id", ""))
+		var seat: Seat = _seats.get(id)
 		if seat == null:
 			continue
-		var acted: bool = bool(player.get("hasActed", false))
-		var character: ChibiCharacter = seat.character
 		seat.hide_badge()
-		match phase:
-			"category_vote", "question":
-				character.set_mood(ChibiCharacter.Mood.LOCKED if acted else ChibiCharacter.Mood.THINKING)
-				if acted:
-					seat.show_badge("✓", Look.ASAGI_DEEP)
-			"reveal":
-				var choice: Variant = answers.get(str(player.get("id", "")))
-				if choice == null:
-					character.set_mood(ChibiCharacter.Mood.WRONG)
-					seat.show_badge("…", Look.MUTED)
-				else:
-					var index: int = int(choice)
-					character.set_mood(ChibiCharacter.Mood.CORRECT if index == correct else ChibiCharacter.Mood.WRONG)
-					seat.show_badge(Look.CHOICE_SHAPES[index % 6], Look.choice_color(index))
-				if show_points and int(player.get("lastPoints", 0)) > 0:
-					seat.float_text("+" + Look.format_points(int(player.get("lastPoints", 0))), Look.GOOD)
-			"game_over":
-				if int(player.get("rank", 0)) == 1:
-					character.set_mood(ChibiCharacter.Mood.WINNER)
-					seat.show_badge("★", Look.SHU)
-				else:
-					character.set_mood(ChibiCharacter.Mood.CLAPPING)
-			_:
-				character.set_mood(ChibiCharacter.Mood.IDLE)
+		var character: ChibiCharacter = seat.character
+		if phase == "round":
+			_apply_round_mood(seat, player, kind, step, round, reveal)
+		elif phase == "game_over":
+			if int(player.get("rank", 0)) == 1:
+				character.set_mood(ChibiCharacter.Mood.WINNER)
+				seat.show_badge("★", Look.SHU)
+			else:
+				character.set_mood(ChibiCharacter.Mood.CLAPPING)
+		elif phase == "scoreboard" and int(player.get("rank", 0)) == 1:
+			character.set_mood(ChibiCharacter.Mood.CORRECT)
+		else:
+			character.set_mood(ChibiCharacter.Mood.IDLE)
+		var points: int = int(player.get("lastPoints", 0))
+		if show_points and points != 0:
+			seat.float_text(Look.signed_points(points), Look.GOOD if points > 0 else Look.SHU)
 		if not bool(player.get("connected", true)):
 			seat.show_badge("zZ", Look.MUTED)
 
-	match phase:
-		"lobby":
-			_move_camera(Vector3(0, 2.75, 12.5), Vector3(0, 2.35, 0))
-		"game_over":
-			_move_camera(Vector3(0, 2.6, 10.5), Vector3(0, 2.2, 1.4))
+	if phase == "lobby":
+		_move_camera(Vector3(0, 2.75, 12.5), Vector3(0, 2.35, 0))
+	elif phase == "game_over":
+		_move_camera(Vector3(0, 2.6, 10.5), Vector3(0, 2.2, 1.4))
+	elif phase == "round" and kind == "drawing" and step != "drawing":
+		# The drawing fills the screen: the audience sits small along the bottom.
+		_move_camera(Vector3(0, 2.0, 24.0), Vector3(0, 6.2, 0))
+	elif phase == "intro":
+		_move_camera(Vector3(0, 2.75, 12.5), Vector3(0, 2.35, 0))
+	else:
+		_move_camera(Vector3(0, 3.18, 12.5), Vector3(0, 2.78, 0))
+
+
+func _apply_round_mood(seat: Seat, player: Dictionary, kind: String, step: String, round: Dictionary, reveal: Dictionary) -> void:
+	var id: String = str(player.get("id", ""))
+	var acted: bool = bool(player.get("hasActed", false))
+	var character: ChibiCharacter = seat.character
+	var waiting_mood: ChibiCharacter.Mood = ChibiCharacter.Mood.LOCKED if acted else ChibiCharacter.Mood.THINKING
+	if kind == "drawing":
+		var artist: String = str(round.get("artistId", ""))
+		match step:
+			"drawing":
+				var drawing_now: bool = id in (round.get("artistIds", []) as Array)
+				character.set_mood(waiting_mood if drawing_now else ChibiCharacter.Mood.IDLE)
+				if drawing_now and acted:
+					seat.show_badge("✓", Look.ASAGI_DEEP)
+			"lying", "picking":
+				if id == artist:
+					character.set_mood(ChibiCharacter.Mood.IDLE)
+					seat.show_badge("★", Look.SHU)
+				else:
+					character.set_mood(waiting_mood)
+					if acted:
+						seat.show_badge("✓", Look.ASAGI_DEEP)
+			"reveal":
+				var items: Array = reveal.get("items", [])
+				var done: bool = int(reveal.get("shown", 0)) >= items.size()
+				if id == artist:
+					seat.show_badge("★", Look.SHU)
+				if done:
+					var gained: int = int(player.get("lastPoints", 0))
+					character.set_mood(ChibiCharacter.Mood.CORRECT if gained > 0 else ChibiCharacter.Mood.WRONG)
+				else:
+					character.set_mood(ChibiCharacter.Mood.THINKING)
+		return
+	if kind == "closest":
+		if step == "reveal":
+			var place: int = 0
+			for r: Dictionary in reveal.get("results", []):
+				if str(r.get("playerId", "")) == id and r.get("place") != null:
+					place = int(r.get("place"))
+			character.set_mood(ChibiCharacter.Mood.CORRECT if place == 1 else ChibiCharacter.Mood.IDLE if place > 0 and place <= 3 else ChibiCharacter.Mood.WRONG)
+			if place > 0:
+				seat.show_badge(str(place), Look.SHU if place == 1 else Look.ASAGI_DEEP)
+		else:
+			character.set_mood(waiting_mood)
+			if acted:
+				seat.show_badge("✓", Look.ASAGI_DEEP)
+		return
+	# Quiz rounds.
+	match step:
+		"vote", "wager", "question":
+			character.set_mood(waiting_mood)
+			if acted:
+				seat.show_badge("✓", Look.ASAGI_DEEP)
+		"reveal", "steal":
+			var choice: Variant = (reveal.get("answers", {}) as Dictionary).get(id)
+			var correct: int = int(reveal.get("correctIndex", -1))
+			if choice == null:
+				character.set_mood(ChibiCharacter.Mood.WRONG)
+				seat.show_badge("…", Look.MUTED)
+			else:
+				var index: int = int(choice)
+				character.set_mood(ChibiCharacter.Mood.CORRECT if index == correct else ChibiCharacter.Mood.WRONG)
+				seat.show_badge(Look.CHOICE_SHAPES[index % 6], Look.choice_color(index))
+		"steal_reveal":
+			var mood: ChibiCharacter.Mood = ChibiCharacter.Mood.IDLE
+			for steal: Dictionary in round.get("steals", []) if typeof(round.get("steals")) == TYPE_ARRAY else []:
+				if str(steal.get("thief", "")) == id:
+					mood = ChibiCharacter.Mood.CORRECT
+				elif str(steal.get("victim", "")) == id and int(steal.get("amount", 0)) > 0:
+					mood = ChibiCharacter.Mood.WRONG
+			character.set_mood(mood)
 		_:
-			_move_camera(Vector3(0, 3.18, 12.5), Vector3(0, 2.78, 0))
+			character.set_mood(ChibiCharacter.Mood.IDLE)
 
 
 func seat_count() -> int:
