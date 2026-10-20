@@ -1,0 +1,259 @@
+{
+  "pack": "food_drink",
+  "questions": [
+    {
+      "id": "food-0001",
+      "type": "multiple_choice",
+      "category": "food_drink",
+      "difficulty": 1,
+      "question": "Botanically speaking, a tomato is a…?",
+      "choices": [
+        "Fruit",
+        "Vegetable",
+        "Root",
+        "Herb"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Tomato",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "food-0002",
+      "type": "multiple_choice",
+      "category": "food_drink",
+      "difficulty": 1,
+      "question": "What is the main ingredient in guacamole?",
+      "choices": [
+        "Pea",
+        "Avocado",
+        "Lime",
+        "Cucumber"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Guacamole",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "food-0003",
+      "type": "multiple_choice",
+      "category": "food_drink",
+      "difficulty": 1,
+      "question": "Which country is most famous for sushi?",
+      "choices": [
+        "China",
+        "Korea",
+        "Japan",
+        "Thailand"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Sushi",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "food-0004",
+      "type": "multiple_choice",
+      "category": "food_drink",
+      "difficulty": 2,
+      "question": "Marzipan is made mostly from which nut?",
+      "choices": [
+        "Walnut",
+        "Peanut",
+        "Hazelnut",
+        "Almond"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Marzipan",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "food-0005",
+      "type": "multiple_choice",
+      "category": "food_drink",
+      "difficulty": 1,
+      "question": "Hummus is made mostly from which legume?",
+      "choices": [
+        "Chickpeas",
+        "Lentils",
+        "Black beans",
+        "Peas"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Hummus",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "food-0006",
+      "type": "multiple_choice",
+      "category": "food_drink",
+      "difficulty": 1,
+      "question": "Which fruit wears its seeds on the outside?",
+      "choices": [
+        "Raspberry",
+        "Strawberry",
+        "Kiwi",
+        "Fig"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Strawberry",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "food-0007",
+      "type": "multiple_choice",
+      "category": "food_drink",
+      "difficulty": 1,
+      "question": "What makes bread dough rise?",
+      "choices": [
+        "Salt",
+        "Sugar",
+        "Yeast",
+        "Butter"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Yeast",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "food-0008",
+      "type": "multiple_choice",
+      "category": "food_drink",
+      "difficulty": 1,
+      "question": "Which Italian dish is a tall stack of pasta sheets, sauce and cheese?",
+      "choices": [
+        "Risotto",
+        "Gnocchi",
+        "Ravioli",
+        "Lasagna"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Lasagna",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "food-0009",
+      "type": "multiple_choice",
+      "category": "food_drink",
+      "difficulty": 2,
+      "question": "Which spice is the most expensive by weight?",
+      "choices": [
+        "Saffron",
+        "Cinnamon",
+        "Vanilla",
+        "Black pepper"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Saffron",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false,
+      "fact": "Each flower gives just three tiny threads, picked by hand."
+    },
+    {
+      "id": "food-0010",
+      "type": "multiple_choice",
+      "category": "food_drink",
+      "difficulty": 1,
+      "question": "Which drink is made by fermenting apples?",
+      "choices": [
+        "Mead",
+        "Cider",
+        "Sake",
+        "Kombucha"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Cider",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "food-0011",
+      "type": "multiple_choice",
+      "category": "food_drink",
+      "difficulty": 2,
+      "question": "Peanuts aren't really nuts. What are they?",
+      "choices": [
+        "Tree seeds",
+        "Berries",
+        "Legumes",
+        "Grains"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Peanut",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "food-0012",
+      "type": "multiple_choice",
+      "category": "food_drink",
+      "difficulty": 3,
+      "question": "Traditional Japanese miso is made mainly from what?",
+      "choices": [
+        "Rice",
+        "Seaweed",
+        "Fish",
+        "Soybeans"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Miso",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "food-0013",
+      "type": "multiple_choice",
+      "category": "food_drink",
+      "difficulty": 3,
+      "question": "The first jack-o'-lanterns in Ireland were carved from which vegetable?",
+      "choices": [
+        "Turnips",
+        "Pumpkins",
+        "Potatoes",
+        "Squash"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Jack-o'-lantern",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false,
+      "fact": "Pumpkins took over once the tradition reached North America."
+    },
+    {
+      "id": "food-0014",
+      "type": "multiple_choice",
+      "category": "food_drink",
+      "difficulty": 4,
+      "question": "The croissant's crescent-shaped ancestor, the kipferl, came from which country?",
+      "choices": [
+        "France",
+        "Austria",
+        "Belgium",
+        "Switzerland"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Croissant",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    }
+  ]
+}

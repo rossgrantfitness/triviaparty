@@ -1,0 +1,299 @@
+{
+  "pack": "science",
+  "questions": [
+    {
+      "id": "sci-0001",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 2,
+      "question": "Which planet spins so fast that its day is under 10 hours long?",
+      "choices": [
+        "Jupiter",
+        "Earth",
+        "Mars",
+        "Saturn"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Jupiter",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false,
+      "fact": "A day on Jupiter lasts about 9 hours and 56 minutes."
+    },
+    {
+      "id": "sci-0002",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 1,
+      "question": "What is the chemical symbol for gold?",
+      "choices": [
+        "Ag",
+        "Au",
+        "Gd",
+        "Go"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Gold",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false,
+      "fact": "It comes from 'aurum', the Latin word for gold."
+    },
+    {
+      "id": "sci-0003",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 1,
+      "question": "Plants breathe it in, we breathe it out. Which gas is it?",
+      "choices": [
+        "Oxygen",
+        "Nitrogen",
+        "Carbon dioxide",
+        "Helium"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Photosynthesis",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "sci-0004",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 2,
+      "question": "Roughly how many bones are in an adult human body?",
+      "choices": [
+        "186",
+        "196",
+        "206",
+        "216"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Human_skeleton",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false,
+      "fact": "Babies start with around 300; many fuse together as they grow."
+    },
+    {
+      "id": "sci-0005",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 1,
+      "question": "What is the hardest natural mineral?",
+      "choices": [
+        "Quartz",
+        "Topaz",
+        "Granite",
+        "Diamond"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Mohs_scale",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "sci-0006",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 1,
+      "question": "Which part of an atom has no electric charge at all?",
+      "choices": [
+        "Neutron",
+        "Proton",
+        "Electron",
+        "Positron"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Neutron",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "sci-0007",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 1,
+      "question": "At sea level, water boils at what temperature?",
+      "choices": [
+        "90 °C",
+        "100 °C",
+        "110 °C",
+        "120 °C"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Boiling_point",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "sci-0008",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 1,
+      "question": "Which planet is closest to the Sun?",
+      "choices": [
+        "Venus",
+        "Mars",
+        "Mercury",
+        "Earth"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Mercury_(planet)",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "sci-0009",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 2,
+      "question": "What is the most common gas in the air you're breathing right now?",
+      "choices": [
+        "Oxygen",
+        "Carbon dioxide",
+        "Argon",
+        "Nitrogen"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Atmosphere_of_Earth",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false,
+      "fact": "About 78% of the air is nitrogen; only about 21% is oxygen."
+    },
+    {
+      "id": "sci-0010",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 2,
+      "question": "Which organ makes insulin?",
+      "choices": [
+        "Pancreas",
+        "Liver",
+        "Kidney",
+        "Spleen"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Insulin",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "sci-0011",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 2,
+      "question": "Sunlight takes about how long to travel to Earth?",
+      "choices": [
+        "8 seconds",
+        "8 minutes",
+        "8 hours",
+        "8 days"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Sunlight",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "sci-0012",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 2,
+      "question": "What is the largest organ of the human body?",
+      "choices": [
+        "Liver",
+        "Brain",
+        "Skin",
+        "Lungs"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Skin",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "sci-0013",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 2,
+      "question": "Which element has the symbol Fe?",
+      "choices": [
+        "Fluorine",
+        "Lead",
+        "Francium",
+        "Iron"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Iron",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false,
+      "fact": "Fe is short for 'ferrum', Latin for iron."
+    },
+    {
+      "id": "sci-0014",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 3,
+      "question": "Which metal is liquid at room temperature?",
+      "choices": [
+        "Mercury",
+        "Gallium",
+        "Lead",
+        "Sodium"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Mercury_(element)",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "sci-0015",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 4,
+      "question": "Roughly how fast does light travel?",
+      "choices": [
+        "300 km per second",
+        "300,000 km per second",
+        "3,000 km per second",
+        "3 million km per second"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Speed_of_light",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false,
+      "fact": "Fast enough to circle the Earth about 7 times in one second."
+    },
+    {
+      "id": "sci-0016",
+      "type": "multiple_choice",
+      "category": "science",
+      "difficulty": 2,
+      "question": "Who came up with the three laws of motion?",
+      "choices": [
+        "Galileo Galilei",
+        "Johannes Kepler",
+        "Isaac Newton",
+        "Albert Einstein"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Newton's_laws_of_motion",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    }
+  ]
+}

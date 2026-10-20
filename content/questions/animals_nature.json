@@ -1,0 +1,278 @@
+{
+  "pack": "animals_nature",
+  "questions": [
+    {
+      "id": "ani-0001",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 2,
+      "question": "How many hearts does an octopus have?",
+      "choices": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Octopus",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false,
+      "fact": "Two pump blood to the gills and one pumps it to the rest of the body."
+    },
+    {
+      "id": "ani-0002",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 1,
+      "question": "What is a baby kangaroo called?",
+      "choices": [
+        "Joey",
+        "Cub",
+        "Kit",
+        "Pup"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Kangaroo",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "ani-0003",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 1,
+      "question": "What is a group of lions called?",
+      "choices": [
+        "Pack",
+        "Pride",
+        "Herd",
+        "Flock"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Lion",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "ani-0004",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 2,
+      "question": "Which bird is the fastest animal on the planet when it dives?",
+      "choices": [
+        "Golden eagle",
+        "Ostrich",
+        "Peregrine falcon",
+        "Albatross"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Peregrine_falcon",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "ani-0005",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 1,
+      "question": "What do giant pandas spend most of their day eating?",
+      "choices": [
+        "Eucalyptus",
+        "Fish",
+        "Fruit",
+        "Bamboo"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Giant_panda",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "ani-0006",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 2,
+      "question": "Which of these mammals can truly fly, not just glide?",
+      "choices": [
+        "Bat",
+        "Flying squirrel",
+        "Sugar glider",
+        "Flying lemur"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Bat",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "ani-0007",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 1,
+      "question": "Frogs belong to which group of animals?",
+      "choices": [
+        "Reptiles",
+        "Amphibians",
+        "Fish",
+        "Insects"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Frog",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "ani-0008",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 3,
+      "question": "What color is a polar bear's skin under all that white fur?",
+      "choices": [
+        "White",
+        "Pink",
+        "Black",
+        "Grey"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Polar_bear",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "ani-0009",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 1,
+      "question": "How many legs does a spider have?",
+      "choices": [
+        "6",
+        "8",
+        "10",
+        "12"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Spider",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "ani-0010",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 2,
+      "question": "Which sea creature gets by with no brain, no heart and no bones?",
+      "choices": [
+        "Octopus",
+        "Shark",
+        "Dolphin",
+        "Jellyfish"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Jellyfish",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "ani-0011",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 1,
+      "question": "Acorns grow on which kind of tree?",
+      "choices": [
+        "Oak",
+        "Maple",
+        "Pine",
+        "Birch"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Acorn",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "ani-0012",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 2,
+      "question": "Where do flamingos get their pink color from?",
+      "choices": [
+        "Their genes",
+        "Their food",
+        "The sun",
+        "Their age"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Flamingo",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false,
+      "fact": "Pink comes from pigments in the shrimp and algae they eat."
+    },
+    {
+      "id": "ani-0013",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 3,
+      "question": "Which animal has the longest pregnancy?",
+      "choices": [
+        "Blue whale",
+        "Giraffe",
+        "African elephant",
+        "Rhinoceros"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/African_elephant",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false,
+      "fact": "Almost two years!"
+    },
+    {
+      "id": "ani-0014",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 2,
+      "question": "Which of these mammals lays eggs?",
+      "choices": [
+        "Beaver",
+        "Otter",
+        "Mole",
+        "Platypus"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Platypus",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "ani-0015",
+      "type": "multiple_choice",
+      "category": "animals_nature",
+      "difficulty": 3,
+      "question": "A cow's stomach has how many compartments?",
+      "choices": [
+        "1",
+        "2",
+        "4",
+        "6"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Ruminant",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    }
+  ]
+}

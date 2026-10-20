@@ -2,10 +2,20 @@
 // Keep docs/PROTOCOL.md and host/scripts/protocol.gd in sync with this file.
 
 import { z } from "zod";
-import { GameRulesInput, QuestionSchema } from "./game";
+import {
+  DrawingPromptSchema,
+  GameRulesInput,
+  GameSettingsSchema,
+  MAX_LIE_LENGTH,
+  MAX_STROKES,
+  QuestionSchema,
+  StrokeSchema,
+  type RoundKind,
+  type Stroke,
+} from "./game";
 
 /** Bump when a message shape changes in a way old clients can't handle. */
-export const PROTOCOL_VERSION = 2;
+export const PROTOCOL_VERSION = 3;
 
 /** Default port the relay server listens on during development. */
 export const DEFAULT_SERVER_PORT = 8787;
@@ -21,7 +31,8 @@ export const MAX_NAME_LENGTH = 12;
 export const ANIMALS = ["dog", "cat", "bunny", "frog"] as const;
 export type Animal = (typeof ANIMALS)[number];
 
-export const PHASES = ["lobby", "category_vote", "question", "reveal", "scoreboard", "game_over"] as const;
+/** Session-level phases. What happens inside a round is in `round.step`. */
+export const PHASES = ["lobby", "intro", "round", "scoreboard", "game_over"] as const;
 export type Phase = (typeof PHASES)[number];
 
 export type ClientRole = "host" | "player";
@@ -44,7 +55,10 @@ export const ClientMessageSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("start_game"),
     rules: GameRulesInput,
+    settings: GameSettingsSchema.default({ length: "standard", drawing: true, categories: [] }),
     questions: z.array(QuestionSchema).min(1),
+    prompts: z.array(DrawingPromptSchema).default([]),
+    decoys: z.array(z.string().min(1).max(60)).default([]),
   }),
   z.object({ type: z.literal("kick"), playerId: z.string().min(1) }),
   z.object({ type: z.literal("set_paused"), paused: z.boolean() }),
@@ -61,10 +75,22 @@ export const ClientMessageSchema = z.discriminatedUnion("type", [
   }),
   z.object({ type: z.literal("vote"), category: z.string() }),
   z.object({ type: z.literal("answer"), choice: z.number().int().min(0) }),
+  z.object({ type: z.literal("wager"), amount: z.number().int().min(0) }),
+  z.object({ type: z.literal("guess"), value: z.number().finite() }),
+  z.object({ type: z.literal("steal"), target: z.string().min(1) }),
+  z.object({ type: z.literal("drawing"), strokes: z.array(StrokeSchema).max(MAX_STROKES) }),
+  z.object({ type: z.literal("lie"), text: z.string().max(MAX_LIE_LENGTH * 2) }),
+  z.object({ type: z.literal("pick"), option: z.string().min(1) }),
 ]);
 
 export type ClientMessage = z.infer<typeof ClientMessageSchema>;
 export type HelloMessage = Extract<ClientMessage, { type: "hello" }>;
+export type StartGameMessage = Extract<ClientMessage, { type: "start_game" }>;
+/** Messages a phone sends during a round. */
+export type PlayerInput = Extract<
+  ClientMessage,
+  { type: "vote" | "answer" | "wager" | "guess" | "steal" | "drawing" | "lie" | "pick" }
+>;
 
 // ---- Server -> Client ----
 
@@ -76,7 +102,9 @@ export type ErrorCode =
   | "not_allowed"
   | "bad_name"
   | "not_enough_players"
-  | "no_questions";
+  | "no_questions"
+  | "too_close"
+  | "duplicate";
 
 export interface PlayerView {
   id: string;
@@ -86,10 +114,12 @@ export interface PlayerView {
   seat: number;
   score: number;
   connected: boolean;
-  /** True once this player has answered (or voted) in the current phase. */
+  /** True once this player has done what the current step asks (answered, voted, drawn…). */
   hasActed: boolean;
-  /** Points from the most recent question (shown on reveal and scoreboard). */
+  /** Points from the most recent scoring moment (a reveal). Can be negative (wagers, steals). */
   lastPoints: number;
+  /** Points earned in the current round so far. */
+  roundPoints: number;
   /** 1 = leader. Tied players share a rank. */
   rank: number;
 }
@@ -102,8 +132,6 @@ export interface TimerView {
 
 export interface VoteView {
   categories: { id: string; name: string; votes: number }[];
-  /** Set once the vote is decided. */
-  winner: string | null;
 }
 
 /** A question as phones and the TV see it: never contains the answer. */
@@ -116,11 +144,88 @@ export interface QuestionView {
   choices: string[];
 }
 
-export interface RevealView {
-  correctIndex: number;
-  /** playerId -> chosen index, or null if they didn't answer. */
-  answers: Record<string, number | null>;
+export type QuizKind = "classic" | "wager" | "steal" | "final";
+export type QuizStep = "vote" | "wager" | "question" | "reveal" | "steal" | "steal_reveal";
+
+export interface QuizView {
+  kind: QuizKind;
+  step: QuizStep;
+  questionNumber: number;
+  questionCount: number;
+  /** Category of the current question block (shown before wagering). */
+  category: { id: string; name: string } | null;
+  vote: VoteView | null;
+  question: QuestionView | null;
+  reveal: {
+    correctIndex: number;
+    /** playerId -> chosen index, or null if they didn't answer. */
+    answers: Record<string, number | null>;
+    fact: string | null;
+  } | null;
+  /** Everyone's bets, shown from the reveal on. */
+  wagers: Record<string, number> | null;
+  steals: { thief: string; victim: string; amount: number }[] | null;
+  me: {
+    answer: number | null;
+    vote: string | null;
+    wager: number | null;
+    maxWager: number;
+    canSteal: boolean;
+    stealTarget: string | null;
+  } | null;
 }
+
+export interface ClosestView {
+  kind: "closest";
+  step: "question" | "reveal";
+  questionNumber: number;
+  questionCount: number;
+  question: { id: string; category: string; categoryName: string; text: string; unit: string | null };
+  reveal: {
+    answer: number;
+    fact: string | null;
+    /** Sorted closest first. */
+    results: { playerId: string; guess: number | null; distance: number | null; place: number | null; points: number }[];
+  } | null;
+  me: { guess: number | null } | null;
+}
+
+export interface DrawingRevealItem {
+  optionId: string;
+  text: string;
+  truth: boolean;
+  /** Who wrote this lie. Empty for the real title and for house lies. */
+  authors: string[];
+  pickers: string[];
+}
+
+export interface DrawingView {
+  kind: "drawing";
+  step: "drawing" | "lying" | "picking" | "reveal";
+  /** 1-based, counts judged drawings. 0 while everyone is drawing. */
+  drawingNumber: number;
+  drawingCount: number;
+  /** Who draws this round (during "drawing"), or whose drawing is up. */
+  artistIds: string[];
+  artistId: string | null;
+  strokes: Stroke[] | null;
+  options: { id: string; text: string }[] | null;
+  reveal: {
+    items: DrawingRevealItem[];
+    /** How many items the TV should have revealed by now. */
+    shown: number;
+  } | null;
+  me: {
+    /** Your secret prompt, only while you're drawing it. */
+    prompt: string | null;
+    isArtist: boolean;
+    submitted: boolean;
+    lie: string | null;
+    pick: string | null;
+  } | null;
+}
+
+export type RoundView = QuizView | ClosestView | DrawingView;
 
 export interface StateMessage {
   type: "state";
@@ -130,13 +235,15 @@ export interface StateMessage {
   hostConnected: boolean;
   players: PlayerView[];
   timer: TimerView | null;
-  questionNumber: number;
-  questionCount: number;
-  vote: VoteView | null;
-  question: QuestionView | null;
-  reveal: RevealView | null;
-  /** Only in messages to a player: what this phone has done. */
-  you: { playerId: string; answer: number | null; vote: string | null } | null;
+  /** 0-based index of the current (or upcoming) round. */
+  roundIndex: number;
+  roundCount: number;
+  roundKind: RoundKind | null;
+  roundTitle: string | null;
+  roundBlurb: string | null;
+  round: RoundView | null;
+  /** Only in messages to a player. */
+  you: { playerId: string } | null;
 }
 
 export type ServerMessage =

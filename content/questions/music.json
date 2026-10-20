@@ -1,0 +1,240 @@
+{
+  "pack": "music",
+  "questions": [
+    {
+      "id": "mus-0001",
+      "type": "multiple_choice",
+      "category": "music",
+      "difficulty": 1,
+      "question": "How many strings does a standard guitar have?",
+      "choices": [
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Guitar",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "mus-0002",
+      "type": "multiple_choice",
+      "category": "music",
+      "difficulty": 1,
+      "question": "Which band recorded 'Here Comes the Sun'?",
+      "choices": [
+        "The Beatles",
+        "The Rolling Stones",
+        "Queen",
+        "ABBA"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Here_Comes_the_Sun",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "mus-0003",
+      "type": "multiple_choice",
+      "category": "music",
+      "difficulty": 1,
+      "question": "Which instrument has 88 keys in its standard modern form?",
+      "choices": [
+        "Organ",
+        "Piano",
+        "Harp",
+        "Accordion"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Piano",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "mus-0004",
+      "type": "multiple_choice",
+      "category": "music",
+      "difficulty": 1,
+      "question": "Which Swedish band sang 'Dancing Queen'?",
+      "choices": [
+        "Roxette",
+        "Ace of Base",
+        "ABBA",
+        "Europe"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Dancing_Queen",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "mus-0005",
+      "type": "multiple_choice",
+      "category": "music",
+      "difficulty": 1,
+      "question": "Who is known as the 'King of Pop'?",
+      "choices": [
+        "Elvis Presley",
+        "Prince",
+        "Stevie Wonder",
+        "Michael Jackson"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Michael_Jackson",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "mus-0006",
+      "type": "multiple_choice",
+      "category": "music",
+      "difficulty": 1,
+      "question": "How many musicians are in a quartet?",
+      "choices": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Quartet",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "mus-0007",
+      "type": "multiple_choice",
+      "category": "music",
+      "difficulty": 2,
+      "question": "Which composer kept writing music after he lost his hearing?",
+      "choices": [
+        "Ludwig van Beethoven",
+        "Wolfgang Amadeus Mozart",
+        "Johann Sebastian Bach",
+        "Antonio Vivaldi"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Ludwig_van_Beethoven",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "mus-0008",
+      "type": "multiple_choice",
+      "category": "music",
+      "difficulty": 1,
+      "question": "Freddie Mercury was the lead singer of which band?",
+      "choices": [
+        "Genesis",
+        "Queen",
+        "Kiss",
+        "Toto"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Freddie_Mercury",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "mus-0009",
+      "type": "multiple_choice",
+      "category": "music",
+      "difficulty": 3,
+      "question": "Which of these is a woodwind instrument, even though it's made of metal?",
+      "choices": [
+        "Trumpet",
+        "Trombone",
+        "Saxophone",
+        "Tuba"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Saxophone",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false,
+      "fact": "It counts as woodwind because it makes its sound with a reed."
+    },
+    {
+      "id": "mus-0010",
+      "type": "multiple_choice",
+      "category": "music",
+      "difficulty": 2,
+      "question": "In sheet music, what does 'forte' tell you to do?",
+      "choices": [
+        "Play softly",
+        "Play faster",
+        "Stop playing",
+        "Play loudly"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Dynamics_(music)",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "mus-0011",
+      "type": "multiple_choice",
+      "category": "music",
+      "difficulty": 2,
+      "question": "How many lines are on a standard musical staff?",
+      "choices": [
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Staff_(music)",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "mus-0012",
+      "type": "multiple_choice",
+      "category": "music",
+      "difficulty": 3,
+      "question": "Which is the highest standard female singing voice?",
+      "choices": [
+        "Soprano",
+        "Alto",
+        "Mezzo-soprano",
+        "Contralto"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Soprano",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "mus-0013",
+      "type": "multiple_choice",
+      "category": "music",
+      "difficulty": 4,
+      "question": "About how old was Mozart when he wrote his first symphony?",
+      "choices": [
+        "8",
+        "14",
+        "21",
+        "30"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Symphony_No._1_(Mozart)",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    }
+  ]
+}

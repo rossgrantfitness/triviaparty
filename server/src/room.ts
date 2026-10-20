@@ -2,73 +2,40 @@ import { randomUUID } from "node:crypto";
 import {
   MAX_NAME_LENGTH,
   MAX_PLAYERS,
-  categoryName,
+  ROUND_INFO,
   resolveRules,
   type Animal,
-  type ErrorCode,
   type GameRules,
   type Phase,
+  type PlayerInput,
   type PlayerView,
-  type Question,
+  type RoundKind,
+  type StartGameMessage,
   type StateMessage,
 } from "@trivia/shared";
+import { ContentPool } from "./content";
+import { ClosestRound } from "./rounds/closest";
+import { DrawingRound } from "./rounds/drawing";
+import { QuizRound } from "./rounds/quiz";
+import type { Player, Round, RoundContext } from "./rounds/types";
+import { cleanName, fail, ok, type Result } from "./util";
 
-export interface Player {
-  id: string;
-  /** Secret the phone keeps so it can rejoin the same seat. */
-  token: string;
-  name: string;
-  animal: Animal;
-  seat: number;
-  score: number;
-  connected: boolean;
-  lastPoints: number;
-}
+export type { Player } from "./rounds/types";
+export { cleanName, pickVoteWinner, scoreAnswer, type Result } from "./util";
 
-export type Result<T> = { ok: true; value: T } | { ok: false; code: ErrorCode; message: string };
-
-const ok = <T>(value: T): Result<T> => ({ ok: true, value });
-const fail = <T>(code: ErrorCode, message: string): Result<T> => ({ ok: false, code, message });
-
-/** Points for one answer: base points plus a speed bonus that shrinks linearly to 0. */
-export function scoreAnswer(correct: boolean, remainingMs: number, durationMs: number, rules: GameRules): number {
-  if (!correct) return 0;
-  const fraction = durationMs > 0 ? Math.min(1, Math.max(0, remainingMs / durationMs)) : 0;
-  return rules.base_points + Math.round(rules.speed_bonus_max * fraction);
-}
-
-/** Make a name safe to show: no control characters, trimmed, length-limited. */
-export function cleanName(raw: string): string {
-  return raw
-    .replace(/[\u0000-\u001f\u007f]/g, "")
-    // The TV font has no emoji, so they would show as boxes.
-    .replace(/[\p{Extended_Pictographic}\u{1F3FB}-\u{1F3FF}\u200d\ufe0f]/gu, "")
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, MAX_NAME_LENGTH)
-    .trim();
-}
-
-/** Pick the vote winner: most votes, ties broken at random. No votes at all = random option. */
-export function pickVoteWinner(counts: Map<string, number>, rng: () => number): string {
-  const options = [...counts.keys()];
-  const best = Math.max(...counts.values());
-  const tied = options.filter((id) => counts.get(id) === best);
-  return tied[Math.floor(rng() * tied.length)] ?? options[0]!;
-}
-
-function shuffle<T>(items: T[], rng: () => number): T[] {
-  const copy = [...items];
-  for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [copy[i], copy[j]] = [copy[j]!, copy[i]!];
-  }
-  return copy;
+/** Which rounds this session plays, given the plan for the chosen length and what content exists. */
+export function buildPlan(plan: RoundKind[], options: { drawing: boolean; content: ContentPool }): RoundKind[] {
+  const { content } = options;
+  return plan.filter((kind) => {
+    if (kind === "drawing") return options.drawing && content.promptCount > 0;
+    if (kind === "closest") return content.closestCount > 0;
+    return content.multipleChoiceCount > 0;
+  });
 }
 
 /**
- * One game room: its players, its phase, its timer. Owns all game state.
- * Calls onChange whenever anything visible changes so the server can broadcast.
+ * One game room: its players, the session plan, the current round and the one timer.
+ * Owns all game state. Calls onChange whenever anything visible changes so the server can broadcast.
  */
 export class Room {
   readonly hostToken = randomUUID();
@@ -78,20 +45,15 @@ export class Room {
 
   private players = new Map<string, Player>();
   private rules: GameRules = resolveRules({}, MAX_PLAYERS);
-  private pool: Question[] = [];
-  private used = new Set<string>();
-  private queue: Question[] = [];
-  private current: Question | null = null;
-  private questionNumber = 0;
-
-  private voteOptions: string[] = [];
-  private votes = new Map<string, string>();
-  private voteWinner: string | null = null;
-  private answers = new Map<string, { choice: number; remainingMs: number }>();
+  private content: ContentPool = new ContentPool([], [], [], Math.random);
+  private plan: RoundKind[] = [];
+  private roundIndex = 0;
+  private round: Round | null = null;
 
   private timer: ReturnType<typeof setTimeout> | null = null;
   private timerDurationMs = 0;
   private timerEndsAt = 0;
+  private timerCallback: (() => void) | null = null;
   private pausedRemainingMs = 0;
   private autoPaused = false;
 
@@ -108,13 +70,13 @@ export class Room {
       const existing = [...this.players.values()].find((p) => p.token === token);
       if (existing) {
         existing.connected = true;
-        existing.animal = this.phase === "lobby" ? animal : existing.animal;
+        if (this.phase === "lobby") existing.animal = animal;
         this.onChange();
         return ok(existing);
       }
     }
     const name = cleanName(rawName);
-    if (!name) return fail("bad_name", "Please enter a name.");
+    if (!name) return fail("bad_name", "Please enter a name (letters, not just emoji).");
     if (this.players.size >= this.rules.max_players) return fail("room_full", "This room is full.");
 
     const taken = new Set([...this.players.values()].map((p) => p.name.toLowerCase()));
@@ -123,7 +85,6 @@ export class Room {
       const suffix = ` ${n}`;
       unique = name.slice(0, MAX_NAME_LENGTH - suffix.length).trim() + suffix;
     }
-
     const seats = new Set([...this.players.values()].map((p) => p.seat));
     let seat = 1;
     while (seats.has(seat)) seat++;
@@ -137,9 +98,12 @@ export class Room {
       score: 0,
       connected: true,
       lastPoints: 0,
+      roundPoints: 0,
+      drawings: 0,
     };
     this.players.set(player.id, player);
     this.onChange();
+    this.round?.playersChanged();
     return ok(player);
   }
 
@@ -148,15 +112,13 @@ export class Room {
     if (!player || player.connected === connected) return;
     player.connected = connected;
     this.onChange();
-    if (!connected) this.endPhaseIfEveryoneActed();
+    if (!connected && !this.paused) this.round?.playersChanged();
   }
 
   kick(playerId: string): boolean {
     if (!this.players.delete(playerId)) return false;
-    this.votes.delete(playerId);
-    this.answers.delete(playerId);
     this.onChange();
-    this.endPhaseIfEveryoneActed();
+    if (!this.paused) this.round?.playersChanged();
     return true;
   }
 
@@ -172,7 +134,7 @@ export class Room {
 
   setHostConnected(connected: boolean): void {
     this.hostConnected = connected;
-    if (!connected && this.isTimedPhase() && !this.paused) {
+    if (!connected && this.isTimed() && !this.paused) {
       this.autoPaused = true;
       this.setPaused(true);
       return;
@@ -185,25 +147,29 @@ export class Room {
     this.onChange();
   }
 
-  start(rules: Partial<GameRules>, questions: Question[]): Result<null> {
+  start(message: Pick<StartGameMessage, "rules" | "settings" | "questions" | "prompts" | "decoys">): Result<null> {
     if (this.phase !== "lobby") return fail("not_allowed", "A game is already running.");
-    this.rules = resolveRules(rules, MAX_PLAYERS);
+    this.rules = resolveRules(message.rules, MAX_PLAYERS);
     if (this.players.size < this.rules.min_players) {
       return fail("not_enough_players", `Need at least ${this.rules.min_players} player(s) to start.`);
     }
-    const unique = new Map(questions.map((q) => [q.id, q]));
-    if (unique.size === 0) return fail("no_questions", "No questions were sent.");
+    const settings = message.settings;
+    this.content = new ContentPool(message.questions, message.prompts, message.decoys, this.rng, settings.categories);
+    if (this.content.multipleChoiceCount === 0 && this.content.closestCount === 0) {
+      return fail("no_questions", "No questions were sent.");
+    }
+    this.plan = buildPlan(this.rules.plans[settings.length], { drawing: settings.drawing, content: this.content });
+    if (this.plan.length === 0) return fail("no_questions", "Nothing to play with these settings.");
 
-    this.pool = [...unique.values()];
-    this.used.clear();
-    this.queue = [];
-    this.questionNumber = 0;
     for (const p of this.players.values()) {
       p.score = 0;
       p.lastPoints = 0;
+      p.roundPoints = 0;
+      p.drawings = 0;
     }
     this.paused = false;
-    this.beginCategoryVote();
+    this.roundIndex = 0;
+    this.beginIntro();
     return ok(null);
   }
 
@@ -219,31 +185,35 @@ export class Room {
       }
     } else {
       this.paused = false;
-      if (this.isTimedPhase()) this.schedule(this.pausedRemainingMs, false);
+      if (this.timerCallback) this.startTimer(this.pausedRemainingMs);
     }
     this.onChange();
   }
 
-  /** End the current timed phase right now (host "next" button / debug). */
+  /** End the current step right now (host "Next" button). */
   skip(): void {
-    if (!this.isTimedPhase()) return;
-    this.paused = false;
-    this.autoPaused = false;
-    this.advance();
+    if (this.paused) {
+      this.paused = false;
+      this.autoPaused = false;
+    }
+    if (this.phase === "round" && this.round) return this.round.skip();
+    if (this.timerCallback) {
+      const callback = this.timerCallback;
+      this.clearTimer();
+      callback();
+    }
   }
 
   backToLobby(): void {
     this.clearTimer();
     this.phase = "lobby";
     this.paused = false;
-    this.current = null;
-    this.voteOptions = [];
-    this.votes.clear();
-    this.answers.clear();
-    this.questionNumber = 0;
+    this.round = null;
+    this.roundIndex = 0;
     for (const p of this.players.values()) {
       p.score = 0;
       p.lastPoints = 0;
+      p.roundPoints = 0;
     }
     this.onChange();
   }
@@ -254,174 +224,122 @@ export class Room {
 
   // ---- Player inputs ----
 
-  vote(playerId: string, category: string): Result<null> {
-    if (this.phase !== "category_vote" || this.paused) return fail("not_allowed", "Voting is closed.");
-    if (!this.players.has(playerId)) return fail("not_allowed", "Not in this room.");
-    if (!this.voteOptions.includes(category)) return fail("bad_message", "That category isn't on the ballot.");
-    this.votes.set(playerId, category);
-    this.onChange();
-    this.endPhaseIfEveryoneActed();
-    return ok(null);
+  input(playerId: string, message: PlayerInput): Result<null> {
+    const player = this.players.get(playerId);
+    if (!player) return fail("not_allowed", "Not in this room.");
+    if (this.paused) return fail("not_allowed", "The game is paused.");
+    if (this.phase !== "round" || !this.round) return fail("not_allowed", "Nothing to answer right now.");
+    return this.round.input(player, message);
   }
 
-  answer(playerId: string, choice: number): Result<null> {
-    if (this.phase !== "question" || this.paused || !this.current) return fail("not_allowed", "Answers are closed.");
-    if (!this.players.has(playerId)) return fail("not_allowed", "Not in this room.");
-    if (this.answers.has(playerId)) return fail("not_allowed", "Your answer is already locked in.");
-    if (choice >= this.current.choices.length) return fail("bad_message", "No such choice.");
-    this.answers.set(playerId, { choice, remainingMs: Math.max(0, this.timerEndsAt - Date.now()) });
-    this.onChange();
-    this.endPhaseIfEveryoneActed();
-    return ok(null);
-  }
+  // ---- Session flow ----
 
-  // ---- Phases ----
-
-  private beginCategoryVote(): void {
-    const remaining = this.pool.filter((q) => !this.used.has(q.id));
-    const categories = [...new Set(remaining.map((q) => q.category))];
-    if (categories.length === 0) {
-      this.finish();
-      return;
+  private beginIntro(): void {
+    this.round = null;
+    for (const p of this.players.values()) {
+      p.roundPoints = 0;
+      p.lastPoints = 0;
     }
-    this.phase = "category_vote";
-    this.voteOptions = shuffle(categories, this.rng).slice(0, this.rules.category_choices);
-    this.votes.clear();
-    this.voteWinner = null;
-    this.current = null;
-    this.schedule(this.rules.vote_seconds * 1000);
-    this.onChange();
-    // A single option needs no vote.
-    if (this.voteOptions.length === 1) this.advance();
-  }
-
-  private beginQuestion(): void {
-    const next = this.queue.shift();
-    if (!next) {
-      this.beginCategoryVote();
-      return;
-    }
-    this.used.add(next.id);
-    this.current = next;
-    this.questionNumber++;
-    this.answers.clear();
-    for (const p of this.players.values()) p.lastPoints = 0;
-    this.phase = "question";
-    this.schedule(this.rules.question_seconds * 1000);
+    this.phase = "intro";
+    this.schedule(this.rules.round_intro_seconds * 1000, () => this.beginRound());
     this.onChange();
   }
 
-  private beginReveal(): void {
-    const question = this.current!;
-    const durationMs = this.rules.question_seconds * 1000;
-    for (const player of this.players.values()) {
-      const answer = this.answers.get(player.id);
-      const points = answer
-        ? scoreAnswer(answer.choice === question.answer, answer.remainingMs, durationMs, this.rules)
-        : 0;
-      player.lastPoints = points;
-      player.score += points;
-    }
-    this.phase = "reveal";
-    this.schedule(this.rules.reveal_seconds * 1000);
-    this.onChange();
+  private beginRound(): void {
+    const kind = this.plan[this.roundIndex]!;
+    const ctx = this.context();
+    this.round = kind === "closest" ? new ClosestRound(ctx) : kind === "drawing" ? new DrawingRound(ctx) : new QuizRound(kind, ctx);
+    this.phase = "round";
+    this.round.start();
   }
 
-  private beginScoreboard(): void {
-    if (this.rules.scoreboard_seconds <= 0) {
-      this.afterScoreboard();
+  private finishRound(): void {
+    this.clearTimer();
+    this.round = null;
+    const last = this.roundIndex >= this.plan.length - 1;
+    if (last) {
+      this.phase = "game_over";
+      this.onChange();
       return;
     }
     this.phase = "scoreboard";
-    this.schedule(this.rules.scoreboard_seconds * 1000);
+    this.schedule(this.rules.scoreboard_seconds * 1000, () => {
+      this.roundIndex++;
+      this.beginIntro();
+    });
     this.onChange();
   }
 
-  private afterScoreboard(): void {
-    if (this.questionNumber >= this.rules.questions_per_game) {
-      this.finish();
-    } else if (this.queue.length > 0) {
-      this.beginQuestion();
-    } else {
-      this.beginCategoryVote();
-    }
+  private context(): RoundContext {
+    // Guard against a finished round calling back into the room after a newer round started.
+    const owner = { active: true };
+    const room = this;
+    return {
+      rules: this.rules,
+      rng: this.rng,
+      content: this.content,
+      players: () => [...room.players.values()].sort((a, b) => a.seat - b.seat),
+      player: (id) => room.players.get(id),
+      award(playerId, points) {
+        const p = room.players.get(playerId);
+        if (!p) return 0;
+        const applied = Math.max(points, -p.score);
+        p.score += applied;
+        p.lastPoints += applied;
+        p.roundPoints += applied;
+        return applied;
+      },
+      newScoringMoment() {
+        for (const p of room.players.values()) p.lastPoints = 0;
+      },
+      schedule(ms, then) {
+        if (owner.active) room.schedule(ms, then);
+      },
+      timeLeftMs: () => (room.paused ? room.pausedRemainingMs : Math.max(0, room.timerEndsAt - Date.now())),
+      changed() {
+        if (owner.active) room.onChange();
+      },
+      finish() {
+        if (!owner.active) return;
+        owner.active = false;
+        room.finishRound();
+      },
+    };
   }
 
-  private fillQueueFromVote(): void {
-    const counts = new Map(this.voteOptions.map((id) => [id, 0]));
-    for (const choice of this.votes.values()) counts.set(choice, (counts.get(choice) ?? 0) + 1);
-    this.voteWinner = pickVoteWinner(counts, this.rng);
+  // ---- Timer ----
 
-    const needed = Math.min(
-      this.rules.questions_per_category,
-      this.rules.questions_per_game - this.questionNumber,
-    );
-    const unused = this.pool.filter((q) => !this.used.has(q.id));
-    const inCategory = shuffle(unused.filter((q) => q.category === this.voteWinner), this.rng);
-    const others = shuffle(unused.filter((q) => q.category !== this.voteWinner), this.rng);
-    this.queue = [...inCategory, ...others].slice(0, needed);
+  private isTimed(): boolean {
+    return this.phase === "intro" || this.phase === "round" || this.phase === "scoreboard";
   }
 
-  private finish(): void {
+  private schedule(ms: number, then: () => void): void {
     this.clearTimer();
-    this.phase = "game_over";
-    this.current = null;
-    this.onChange();
-  }
-
-  /** Called when a phase's timer runs out (or the host skips). */
-  private advance(): void {
-    this.clearTimer();
-    switch (this.phase) {
-      case "category_vote":
-        this.fillQueueFromVote();
-        if (this.queue.length === 0) this.finish();
-        else this.beginQuestion();
-        break;
-      case "question":
-        this.beginReveal();
-        break;
-      case "reveal":
-        this.beginScoreboard();
-        break;
-      case "scoreboard":
-        this.afterScoreboard();
-        break;
-      default:
-        break;
-    }
-  }
-
-  private endPhaseIfEveryoneActed(): void {
-    if (!this.rules.end_phase_when_everyone_acted || this.paused) return;
-    if (this.phase !== "category_vote" && this.phase !== "question") return;
-    const active = [...this.players.values()].filter((p) => p.connected);
-    if (active.length === 0) return;
-    const acted = this.phase === "question" ? this.answers : this.votes;
-    if (active.every((p) => acted.has(p.id))) this.advance();
-  }
-
-  private isTimedPhase(): boolean {
-    return this.phase === "category_vote" || this.phase === "question" || this.phase === "reveal" || this.phase === "scoreboard";
-  }
-
-  private schedule(ms: number, resetDuration = true): void {
-    this.clearTimer();
-    if (resetDuration) this.timerDurationMs = ms;
-    this.timerEndsAt = Date.now() + ms;
+    this.timerDurationMs = ms;
+    this.timerCallback = then;
     if (this.paused) {
       this.pausedRemainingMs = ms;
+      this.timerEndsAt = Date.now() + ms;
       return;
     }
+    this.startTimer(ms);
+  }
+
+  private startTimer(ms: number): void {
+    this.timerEndsAt = Date.now() + ms;
+    const callback = this.timerCallback;
     this.timer = setTimeout(() => {
       this.timer = null;
-      this.advance();
+      if (this.timerCallback !== callback) return;
+      this.timerCallback = null;
+      callback?.();
     }, ms);
   }
 
   private clearTimer(): void {
     if (this.timer) clearTimeout(this.timer);
     this.timer = null;
+    this.timerCallback = null;
   }
 
   // ---- Views ----
@@ -439,30 +357,25 @@ export class Room {
   /** The state a given viewer is allowed to see. Pass null for the host. */
   snapshotFor(playerId: string | null): StateMessage {
     const ranks = this.ranks();
-    const acted = this.phase === "category_vote" ? this.votes : this.answers;
+    const round = this.phase === "round" ? this.round : null;
     const players: PlayerView[] = [...this.players.values()]
       .sort((a, b) => a.seat - b.seat)
       .map((p) => ({
         id: p.id,
         name: p.name,
-        animal: p.animal,
+        animal: p.animal as Animal,
         seat: p.seat,
         score: p.score,
         connected: p.connected,
-        hasActed: (this.phase === "category_vote" || this.phase === "question" || this.phase === "reveal") && acted.has(p.id),
+        hasActed: round?.hasActed(p.id) ?? false,
         lastPoints: p.lastPoints,
+        roundPoints: p.roundPoints,
         rank: ranks.get(p.id) ?? 0,
       }));
-
-    const timed = this.isTimedPhase();
+    const kind = this.phase === "lobby" ? null : (this.plan[this.roundIndex] ?? null);
+    const hasTimer = this.isTimed() && (this.timerCallback !== null || this.paused);
     const remainingMs = this.paused ? this.pausedRemainingMs : Math.max(0, this.timerEndsAt - Date.now());
-
-    const showQuestion = this.current && (this.phase === "question" || this.phase === "reveal");
-    const counts = new Map(this.voteOptions.map((id) => [id, 0]));
-    for (const choice of this.votes.values()) counts.set(choice, (counts.get(choice) ?? 0) + 1);
-
-    const you = playerId ? this.players.get(playerId) : undefined;
-
+    const you = playerId && this.players.has(playerId) ? { playerId } : null;
     return {
       type: "state",
       code: this.code,
@@ -470,43 +383,14 @@ export class Room {
       paused: this.paused,
       hostConnected: this.hostConnected,
       players,
-      timer: timed ? { durationMs: this.timerDurationMs, remainingMs } : null,
-      questionNumber: this.questionNumber,
-      questionCount: this.rules.questions_per_game,
-      vote:
-        this.phase === "category_vote"
-          ? {
-              categories: this.voteOptions.map((id) => ({ id, name: categoryName(id), votes: counts.get(id) ?? 0 })),
-              winner: this.voteWinner,
-            }
-          : null,
-      question: showQuestion
-        ? {
-            id: this.current!.id,
-            category: this.current!.category,
-            categoryName: categoryName(this.current!.category),
-            difficulty: this.current!.difficulty,
-            text: this.current!.question,
-            choices: this.current!.choices,
-          }
-        : null,
-      // The correct answer only ever leaves the server during the reveal.
-      reveal:
-        this.phase === "reveal" && this.current
-          ? {
-              correctIndex: this.current.answer,
-              answers: Object.fromEntries(
-                [...this.players.keys()].map((id) => [id, this.answers.get(id)?.choice ?? null]),
-              ),
-            }
-          : null,
-      you: you
-        ? {
-            playerId: you.id,
-            answer: this.answers.get(you.id)?.choice ?? null,
-            vote: this.votes.get(you.id) ?? null,
-          }
-        : null,
+      timer: hasTimer ? { durationMs: this.timerDurationMs, remainingMs } : null,
+      roundIndex: this.roundIndex,
+      roundCount: this.plan.length,
+      roundKind: kind,
+      roundTitle: kind ? ROUND_INFO[kind].title : null,
+      roundBlurb: kind ? ROUND_INFO[kind].blurb : null,
+      round: round ? round.view(you ? playerId : null) : null,
+      you,
     };
   }
 }

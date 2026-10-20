@@ -140,7 +140,7 @@ export async function startServer(options: ServerOptions): Promise<RunningServer
     }
     switch (message.type) {
       case "start_game": {
-        const result = room.start(message.rules, message.questions);
+        const result = room.start(message);
         if (!result.ok) sendError(socket, result.code, result.message);
         else log(`[room] ${room.code} game started with ${room.playerCount} players`);
         break;
@@ -205,19 +205,23 @@ export async function startServer(options: ServerOptions): Promise<RunningServer
       sendError(socket, "not_allowed", "Join a room first.");
       return;
     }
-    let result;
     switch (message.type) {
       case "vote":
-        result = room.vote(conn.playerId, message.category);
-        break;
       case "answer":
-        result = room.answer(conn.playerId, message.choice);
-        break;
+      case "wager":
+      case "guess":
+      case "steal":
+      case "drawing":
+      case "lie":
+      case "pick": {
+        const result = room.input(conn.playerId, message);
+        if (!result.ok) sendError(socket, result.code, result.message);
+        return;
+      }
       default:
         sendError(socket, "not_allowed", `Players can't send '${message.type}'.`);
         return;
     }
-    if (!result.ok) sendError(socket, result.code, result.message);
   }
 
   const http: Server = createServer((req, res) => {

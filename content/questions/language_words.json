@@ -1,0 +1,240 @@
+{
+  "pack": "language_words",
+  "questions": [
+    {
+      "id": "lang-0001",
+      "type": "multiple_choice",
+      "category": "language_words",
+      "difficulty": 3,
+      "question": "Which letter doesn't appear in the name of any US state?",
+      "choices": [
+        "Q",
+        "J",
+        "X",
+        "Z"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/U.S._state",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "lang-0002",
+      "type": "multiple_choice",
+      "category": "language_words",
+      "difficulty": 1,
+      "question": "What's the plural of 'mouse' (the animal)?",
+      "choices": [
+        "Mouses",
+        "Mice",
+        "Meese",
+        "Mousen"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/English_plurals",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "lang-0003",
+      "type": "multiple_choice",
+      "category": "language_words",
+      "difficulty": 1,
+      "question": "Which of these words is a palindrome (it reads the same backwards)?",
+      "choices": [
+        "Rocket",
+        "Banana",
+        "Racecar",
+        "Rabbit"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Palindrome",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "lang-0004",
+      "type": "multiple_choice",
+      "category": "language_words",
+      "difficulty": 1,
+      "question": "How many letters are in the English alphabet?",
+      "choices": [
+        "24",
+        "25",
+        "26",
+        "27"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/English_alphabet",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "lang-0005",
+      "type": "multiple_choice",
+      "category": "language_words",
+      "difficulty": 1,
+      "question": "'Konnichiwa' is a greeting in which language?",
+      "choices": [
+        "Chinese",
+        "Korean",
+        "Thai",
+        "Japanese"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Japanese_language",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "lang-0006",
+      "type": "multiple_choice",
+      "category": "language_words",
+      "difficulty": 2,
+      "question": "What do you call a word that means the opposite of another word?",
+      "choices": [
+        "Antonym",
+        "Synonym",
+        "Homonym",
+        "Acronym"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Opposite_(semantics)",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "lang-0007",
+      "type": "multiple_choice",
+      "category": "language_words",
+      "difficulty": 1,
+      "question": "'Bonjour' means hello in which language?",
+      "choices": [
+        "Spanish",
+        "French",
+        "Italian",
+        "Portuguese"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/French_language",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "lang-0008",
+      "type": "multiple_choice",
+      "category": "language_words",
+      "difficulty": 2,
+      "question": "Which letter shows up most often in English writing?",
+      "choices": [
+        "A",
+        "T",
+        "E",
+        "S"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Letter_frequency",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "lang-0009",
+      "type": "multiple_choice",
+      "category": "language_words",
+      "difficulty": 3,
+      "question": "The word 'emoji' comes from which language?",
+      "choices": [
+        "English",
+        "Korean",
+        "Latin",
+        "Japanese"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Emoji",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false,
+      "fact": "It's 'e' (picture) + 'moji' (character). Nothing to do with 'emotion'!"
+    },
+    {
+      "id": "lang-0010",
+      "type": "multiple_choice",
+      "category": "language_words",
+      "difficulty": 4,
+      "question": "'Tsunami' comes from Japanese words meaning what?",
+      "choices": [
+        "Harbor wave",
+        "Big wave",
+        "Angry sea",
+        "Moon water"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Tsunami",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "lang-0011",
+      "type": "multiple_choice",
+      "category": "language_words",
+      "difficulty": 4,
+      "question": "Which of these words has all five vowels in alphabetical order (a, e, i, o, u)?",
+      "choices": [
+        "Education",
+        "Facetious",
+        "Sequoia",
+        "Dialogue"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Supervocalic",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "lang-0012",
+      "type": "multiple_choice",
+      "category": "language_words",
+      "difficulty": 2,
+      "question": "What does 'sayonara' mean in Japanese?",
+      "choices": [
+        "Thank you",
+        "Cheers",
+        "Goodbye",
+        "Good luck"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Japanese_language",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "lang-0013",
+      "type": "multiple_choice",
+      "category": "language_words",
+      "difficulty": 1,
+      "question": "What is a haiku?",
+      "choices": [
+        "A sword style",
+        "A tea ceremony",
+        "A folk dance",
+        "A three-line poem"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Haiku",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    }
+  ]
+}

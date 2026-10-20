@@ -1,0 +1,278 @@
+{
+  "pack": "history",
+  "questions": [
+    {
+      "id": "his-0001",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 1,
+      "question": "In what year did people first walk on the Moon?",
+      "choices": [
+        "1965",
+        "1967",
+        "1969",
+        "1971"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Apollo_11",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "his-0002",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 1,
+      "question": "Who was the first President of the United States?",
+      "choices": [
+        "George Washington",
+        "John Adams",
+        "Thomas Jefferson",
+        "Benjamin Franklin"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/George_Washington",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "his-0003",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 2,
+      "question": "The Berlin Wall came down in which year?",
+      "choices": [
+        "1985",
+        "1987",
+        "1989",
+        "1991"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Fall_of_the_Berlin_Wall",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "his-0004",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 2,
+      "question": "Which civilization built the mountaintop city of Machu Picchu?",
+      "choices": [
+        "Aztec",
+        "Inca",
+        "Maya",
+        "Olmec"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Machu_Picchu",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "his-0005",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 1,
+      "question": "The Titanic sank on its very first voyage. In what year?",
+      "choices": [
+        "1905",
+        "1912",
+        "1918",
+        "1921"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Titanic",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "his-0006",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 2,
+      "question": "Who was the first woman to win a Nobel Prize?",
+      "choices": [
+        "Florence Nightingale",
+        "Ada Lovelace",
+        "Marie Curie",
+        "Rosalind Franklin"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Marie_Curie",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false,
+      "fact": "She later won a second Nobel Prize, in a different science."
+    },
+    {
+      "id": "his-0007",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 1,
+      "question": "Genghis Khan founded which empire?",
+      "choices": [
+        "Ottoman Empire",
+        "Persian Empire",
+        "Roman Empire",
+        "Mongol Empire"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Genghis_Khan",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "his-0008",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 3,
+      "question": "In which year was the Magna Carta first sealed?",
+      "choices": [
+        "1066",
+        "1215",
+        "1314",
+        "1415"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Magna_Carta",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "his-0009",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 1,
+      "question": "Which country gave the Statue of Liberty to the United States?",
+      "choices": [
+        "France",
+        "Spain",
+        "United Kingdom",
+        "Italy"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Statue_of_Liberty",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "his-0010",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 2,
+      "question": "Which of the Seven Wonders of the Ancient World is still standing?",
+      "choices": [
+        "Hanging Gardens of Babylon",
+        "Great Pyramid of Giza",
+        "Colossus of Rhodes",
+        "Lighthouse of Alexandria"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Seven_Wonders_of_the_Ancient_World",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "his-0011",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 2,
+      "question": "Which ship carried the Pilgrims across the Atlantic in 1620?",
+      "choices": [
+        "Santa María",
+        "Endeavour",
+        "Mayflower",
+        "Beagle"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Mayflower",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "his-0012",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 3,
+      "question": "The Great Fire of London broke out in which year?",
+      "choices": [
+        "1566",
+        "1666",
+        "1766",
+        "1866"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Great_Fire_of_London",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "his-0013",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 3,
+      "question": "Which city was the capital of the Byzantine Empire?",
+      "choices": [
+        "Rome",
+        "Athens",
+        "Alexandria",
+        "Constantinople"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Constantinople",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false,
+      "fact": "Today it's called Istanbul."
+    },
+    {
+      "id": "his-0014",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 4,
+      "question": "Archduke Franz Ferdinand was assassinated in 1914 in which city, sparking World War I?",
+      "choices": [
+        "Sarajevo",
+        "Vienna",
+        "Belgrade",
+        "Budapest"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Assassination_of_Archduke_Franz_Ferdinand",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "his-0015",
+      "type": "multiple_choice",
+      "category": "history",
+      "difficulty": 4,
+      "question": "Before Elizabeth II, which British monarch reigned the longest?",
+      "choices": [
+        "Queen Anne",
+        "Queen Victoria",
+        "Mary I",
+        "Elizabeth I"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Queen_Victoria",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false,
+      "fact": "Victoria reigned for 63 years."
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { WebSocket } from "ws";
-import { PROTOCOL_VERSION, type Question, type ServerMessage, type StateMessage } from "@trivia/shared";
+import { PROTOCOL_VERSION, type Question, type QuizView, type ServerMessage, type StateMessage } from "@trivia/shared";
 import { generateRoomCode, startServer, type RunningServer } from "../../server/src/server";
 
 let server: RunningServer;
@@ -126,27 +126,27 @@ describe("relay server", () => {
     expect(joined).toMatchObject({ type: "error", code: "room_not_found" });
   });
 
-  it("plays a whole game: vote, answer, reveal with scores, game over", async () => {
+  it("plays a whole game: intro, vote, answer, reveal with scores, game over", async () => {
     const { host, code } = await createRoom();
     const { phone } = await joinRoom(code, "Ana");
     host.send({
       type: "start_game",
-      rules: { questions_per_game: 2, questions_per_category: 2, reveal_seconds: 0.05, scoreboard_seconds: 0.05 },
+      rules: { classic_questions: 2, reveal_seconds: 0.05, round_intro_seconds: 0.05, plans: { short: ["classic"] } },
+      settings: { length: "short", drawing: false, categories: [] },
       questions: QUESTIONS,
     });
-    await phone.waitForState((s) => s.phase === "category_vote");
-    phone.send({ type: "vote", category: "science" });
-
-    const question = await phone.waitForState((s) => s.phase === "question");
-    expect(question.reveal).toBeNull();
-    expect(JSON.stringify(question)).not.toContain('"answer":2');
+    await phone.waitForState((s) => s.phase === "intro" && s.roundTitle === "Quiz Time");
+    // One category: no vote needed.
+    const question = await phone.waitForState((s) => (s.round as QuizView | null)?.step === "question");
+    expect((question.round as QuizView).reveal).toBeNull();
+    expect(JSON.stringify(question)).not.toContain('"correctIndex"');
     phone.send({ type: "answer", choice: 2 });
 
-    const reveal = await phone.waitForState((s) => s.phase === "reveal");
-    expect(reveal.reveal!.correctIndex).toBe(2);
+    const reveal = await phone.waitForState((s) => (s.round as QuizView | null)?.step === "reveal");
+    expect((reveal.round as QuizView).reveal!.correctIndex).toBe(2);
     expect(reveal.players[0]!.score).toBeGreaterThan(1000);
 
-    await phone.waitForState((s) => s.phase === "question" && s.questionNumber === 2);
+    await phone.waitForState((s) => (s.round as QuizView | null)?.step === "question" && (s.round as QuizView).questionNumber === 2);
     phone.send({ type: "answer", choice: 0 });
     const over = await host.waitForState((s) => s.phase === "game_over");
     expect(over.players[0]!.score).toBeGreaterThan(1000);

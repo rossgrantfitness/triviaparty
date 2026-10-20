@@ -1,0 +1,258 @@
+{
+  "pack": "video_games",
+  "questions": [
+    {
+      "id": "vg-0001",
+      "type": "multiple_choice",
+      "category": "video_games",
+      "difficulty": 1,
+      "question": "What's the name of Mario's taller brother who wears green?",
+      "choices": [
+        "Luigi",
+        "Wario",
+        "Toad",
+        "Yoshi"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Luigi",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "vg-0002",
+      "type": "multiple_choice",
+      "category": "video_games",
+      "difficulty": 1,
+      "question": "In Pokémon, what type is Pikachu?",
+      "choices": [
+        "Fire",
+        "Electric",
+        "Water",
+        "Grass"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Pikachu",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "vg-0003",
+      "type": "multiple_choice",
+      "category": "video_games",
+      "difficulty": 2,
+      "question": "How many squares make up each falling piece in Tetris?",
+      "choices": [
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Tetromino",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "vg-0004",
+      "type": "multiple_choice",
+      "category": "video_games",
+      "difficulty": 1,
+      "question": "What color is Sonic the Hedgehog?",
+      "choices": [
+        "Red",
+        "Green",
+        "Blue",
+        "Yellow"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Sonic_the_Hedgehog_(character)",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "vg-0005",
+      "type": "multiple_choice",
+      "category": "video_games",
+      "difficulty": 1,
+      "question": "In Minecraft, which green mob sneaks up and explodes with a hiss?",
+      "choices": [
+        "Zombie",
+        "Skeleton",
+        "Enderman",
+        "Creeper"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Creeper_(Minecraft)",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "vg-0006",
+      "type": "multiple_choice",
+      "category": "video_games",
+      "difficulty": 1,
+      "question": "Which princess does Mario usually rescue?",
+      "choices": [
+        "Princess Peach",
+        "Princess Daisy",
+        "Princess Zelda",
+        "Rosalina"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Princess_Peach",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "vg-0007",
+      "type": "multiple_choice",
+      "category": "video_games",
+      "difficulty": 2,
+      "question": "What's the name of the hero in 'The Legend of Zelda' games?",
+      "choices": [
+        "Zelda",
+        "Link",
+        "Ganon",
+        "Epona"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Link_(The_Legend_of_Zelda)",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false,
+      "fact": "Lots of people think the hero is called Zelda. She's the princess."
+    },
+    {
+      "id": "vg-0008",
+      "type": "multiple_choice",
+      "category": "video_games",
+      "difficulty": 1,
+      "question": "What chases Pac-Man around the maze?",
+      "choices": [
+        "Robots",
+        "Aliens",
+        "Ghosts",
+        "Bats"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Pac-Man",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "vg-0009",
+      "type": "multiple_choice",
+      "category": "video_games",
+      "difficulty": 2,
+      "question": "In 'Animal Crossing', who sells you your house and then hands you the loan?",
+      "choices": [
+        "Isabelle",
+        "K.K. Slider",
+        "Blathers",
+        "Tom Nook"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Tom_Nook",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "vg-0010",
+      "type": "multiple_choice",
+      "category": "video_games",
+      "difficulty": 1,
+      "question": "Which Nintendo console from 2017 works both on the TV and in your hands?",
+      "choices": [
+        "Nintendo Switch",
+        "Wii U",
+        "Nintendo 3DS",
+        "GameCube"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Nintendo_Switch",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "vg-0011",
+      "type": "multiple_choice",
+      "category": "video_games",
+      "difficulty": 1,
+      "question": "In Super Mario games, what does a Super Mushroom do?",
+      "choices": [
+        "Lets him fly",
+        "Makes Mario bigger",
+        "Lets him throw fire",
+        "Makes him invisible"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Super_Mushroom",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "vg-0012",
+      "type": "multiple_choice",
+      "category": "video_games",
+      "difficulty": 3,
+      "question": "Which simple table-tennis game from 1972 was Atari's first big hit?",
+      "choices": [
+        "Breakout",
+        "Asteroids",
+        "Pong",
+        "Space Invaders"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Pong",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "vg-0013",
+      "type": "multiple_choice",
+      "category": "video_games",
+      "difficulty": 4,
+      "question": "In the original 1981 'Donkey Kong', who is the woman Mario rescues?",
+      "choices": [
+        "Peach",
+        "Daisy",
+        "Rosalina",
+        "Pauline"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Pauline_(Mario)",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "vg-0014",
+      "type": "multiple_choice",
+      "category": "video_games",
+      "difficulty": 3,
+      "question": "Which Pokémon is number 1 in the National Pokédex?",
+      "choices": [
+        "Bulbasaur",
+        "Pikachu",
+        "Charmander",
+        "Squirtle"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Bulbasaur",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    }
+  ]
+}

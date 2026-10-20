@@ -1,0 +1,257 @@
+{
+  "pack": "sports",
+  "questions": [
+    {
+      "id": "spo-0001",
+      "type": "multiple_choice",
+      "category": "sports",
+      "difficulty": 1,
+      "question": "How many players does a soccer team have on the field?",
+      "choices": [
+        "9",
+        "10",
+        "11",
+        "12"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Association_football",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "spo-0002",
+      "type": "multiple_choice",
+      "category": "sports",
+      "difficulty": 1,
+      "question": "In which sport would you do a slam dunk?",
+      "choices": [
+        "Basketball",
+        "Volleyball",
+        "Tennis",
+        "Rugby"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Slam_dunk",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "spo-0003",
+      "type": "multiple_choice",
+      "category": "sports",
+      "difficulty": 1,
+      "question": "How many rings are on the Olympic flag?",
+      "choices": [
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Olympic_symbols",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "spo-0004",
+      "type": "multiple_choice",
+      "category": "sports",
+      "difficulty": 2,
+      "question": "In tennis, what is a score of zero called?",
+      "choices": [
+        "Nil",
+        "Love",
+        "Duck",
+        "Zip"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Tennis_scoring_system",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "spo-0005",
+      "type": "multiple_choice",
+      "category": "sports",
+      "difficulty": 2,
+      "question": "In golf, what do you call one stroke under par on a hole?",
+      "choices": [
+        "Eagle",
+        "Bogey",
+        "Birdie",
+        "Albatross"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Par_(score)",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "spo-0006",
+      "type": "multiple_choice",
+      "category": "sports",
+      "difficulty": 2,
+      "question": "About how long is a marathon?",
+      "choices": [
+        "13.1 miles",
+        "30 miles",
+        "50 miles",
+        "26.2 miles"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Marathon",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "spo-0007",
+      "type": "multiple_choice",
+      "category": "sports",
+      "difficulty": 1,
+      "question": "Which country gave the world judo?",
+      "choices": [
+        "Japan",
+        "China",
+        "Korea",
+        "Thailand"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Judo",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "spo-0008",
+      "type": "multiple_choice",
+      "category": "sports",
+      "difficulty": 1,
+      "question": "In bowling, what's it called when you knock down all ten pins with your first ball?",
+      "choices": [
+        "Spare",
+        "Strike",
+        "Split",
+        "Gutter"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Strike_(bowling)",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "spo-0009",
+      "type": "multiple_choice",
+      "category": "sports",
+      "difficulty": 2,
+      "question": "In American football, how many points is a touchdown worth before the extra point?",
+      "choices": [
+        "2",
+        "3",
+        "6",
+        "7"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Touchdown",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "spo-0010",
+      "type": "multiple_choice",
+      "category": "sports",
+      "difficulty": 1,
+      "question": "Which sport uses a shuttlecock?",
+      "choices": [
+        "Squash",
+        "Table tennis",
+        "Badminton",
+        "Lacrosse"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Badminton",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "spo-0011",
+      "type": "multiple_choice",
+      "category": "sports",
+      "difficulty": 1,
+      "question": "Sumo wrestling is the national sport of which country?",
+      "choices": [
+        "Mongolia",
+        "China",
+        "Korea",
+        "Japan"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Sumo",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "spo-0012",
+      "type": "multiple_choice",
+      "category": "sports",
+      "difficulty": 1,
+      "question": "How many holes does a standard round of golf have?",
+      "choices": [
+        "9",
+        "12",
+        "18",
+        "21"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Golf",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "spo-0013",
+      "type": "multiple_choice",
+      "category": "sports",
+      "difficulty": 3,
+      "question": "The first modern Olympic Games, in 1896, were held in which city?",
+      "choices": [
+        "Athens",
+        "Paris",
+        "London",
+        "Rome"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/1896_Summer_Olympics",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "spo-0014",
+      "type": "multiple_choice",
+      "category": "sports",
+      "difficulty": 4,
+      "question": "What's the maximum break (highest score in one visit) in snooker?",
+      "choices": [
+        "100",
+        "147",
+        "155",
+        "180"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Maximum_break",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    }
+  ]
+}

@@ -1,0 +1,277 @@
+{
+  "pack": "movies_tv",
+  "questions": [
+    {
+      "id": "tv-0001",
+      "type": "multiple_choice",
+      "category": "movies_tv",
+      "difficulty": 1,
+      "question": "In 'Finding Nemo', what kind of fish is Nemo?",
+      "choices": [
+        "Clownfish",
+        "Goldfish",
+        "Pufferfish",
+        "Angelfish"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Finding_Nemo",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "tv-0002",
+      "type": "multiple_choice",
+      "category": "movies_tv",
+      "difficulty": 1,
+      "question": "Which school of magic does Harry Potter attend?",
+      "choices": [
+        "Durmstrang",
+        "Hogwarts",
+        "Beauxbatons",
+        "Ilvermorny"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Hogwarts",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "tv-0003",
+      "type": "multiple_choice",
+      "category": "movies_tv",
+      "difficulty": 2,
+      "question": "In the 1939 film 'The Wizard of Oz', what color are Dorothy's famous slippers?",
+      "choices": [
+        "Silver",
+        "Gold",
+        "Ruby red",
+        "Emerald green"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Ruby_slippers",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false,
+      "fact": "In the original book they were silver."
+    },
+    {
+      "id": "tv-0004",
+      "type": "multiple_choice",
+      "category": "movies_tv",
+      "difficulty": 1,
+      "question": "What is the name of the snowman in 'Frozen'?",
+      "choices": [
+        "Sven",
+        "Kristoff",
+        "Hans",
+        "Olaf"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Frozen_(2013_film)",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "tv-0005",
+      "type": "multiple_choice",
+      "category": "movies_tv",
+      "difficulty": 1,
+      "question": "Which animated film stars a rat who dreams of being a chef?",
+      "choices": [
+        "Ratatouille",
+        "Flushed Away",
+        "Stuart Little",
+        "Bolt"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Ratatouille_(film)",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "tv-0006",
+      "type": "multiple_choice",
+      "category": "movies_tv",
+      "difficulty": 1,
+      "question": "In 'Toy Story', what's the name of the space ranger?",
+      "choices": [
+        "Woody",
+        "Buzz Lightyear",
+        "Zurg",
+        "Rex"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Buzz_Lightyear",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "tv-0007",
+      "type": "multiple_choice",
+      "category": "movies_tv",
+      "difficulty": 2,
+      "question": "Which TV family lives at 742 Evergreen Terrace?",
+      "choices": [
+        "The Griffins",
+        "The Belchers",
+        "The Simpsons",
+        "The Flintstones"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/The_Simpsons",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "tv-0008",
+      "type": "multiple_choice",
+      "category": "movies_tv",
+      "difficulty": 2,
+      "question": "In 'Jurassic Park', the dinosaur DNA comes from blood found in what?",
+      "choices": [
+        "Fossil bones",
+        "Frozen eggs",
+        "Glacier ice",
+        "Mosquitoes in amber"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Jurassic_Park_(film)",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "tv-0009",
+      "type": "multiple_choice",
+      "category": "movies_tv",
+      "difficulty": 1,
+      "question": "Which superhero is secretly Peter Parker?",
+      "choices": [
+        "Spider-Man",
+        "Batman",
+        "Superman",
+        "Iron Man"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Spider-Man",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "tv-0010",
+      "type": "multiple_choice",
+      "category": "movies_tv",
+      "difficulty": 1,
+      "question": "How many dwarfs does Snow White meet?",
+      "choices": [
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Seven_Dwarfs",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "tv-0011",
+      "type": "multiple_choice",
+      "category": "movies_tv",
+      "difficulty": 2,
+      "question": "In 'Shrek', what kind of creature does Donkey fall in love with?",
+      "choices": [
+        "A horse",
+        "A dragon",
+        "A unicorn",
+        "A cat"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Shrek",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "tv-0012",
+      "type": "multiple_choice",
+      "category": "movies_tv",
+      "difficulty": 2,
+      "question": "What's the name of the coffee shop in 'Friends'?",
+      "choices": [
+        "Monk's Café",
+        "The Max",
+        "Central Perk",
+        "Luke's Diner"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Central_Perk",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "tv-0013",
+      "type": "multiple_choice",
+      "category": "movies_tv",
+      "difficulty": 2,
+      "question": "What's the name of Han Solo's ship in 'Star Wars'?",
+      "choices": [
+        "X-wing",
+        "Star Destroyer",
+        "Slave I",
+        "Millennium Falcon"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Millennium_Falcon",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "tv-0014",
+      "type": "multiple_choice",
+      "category": "movies_tv",
+      "difficulty": 1,
+      "question": "In 'The Lion King', what does 'Hakuna Matata' mean?",
+      "choices": [
+        "No worries",
+        "Be brave",
+        "Good morning",
+        "Let's eat"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Hakuna_matata",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false,
+      "fact": "It's a Swahili phrase."
+    },
+    {
+      "id": "tv-0015",
+      "type": "multiple_choice",
+      "category": "movies_tv",
+      "difficulty": 5,
+      "question": "Which film won the very first Academy Award for Best Picture?",
+      "choices": [
+        "Metropolis",
+        "Wings",
+        "The Jazz Singer",
+        "Sunrise"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Wings_(1927_film)",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    }
+  ]
+}

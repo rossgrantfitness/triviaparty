@@ -1,15 +1,47 @@
 {
-  "_comment": "Gameplay numbers. Edit these and restart the host to try different pacing. Times are in seconds.",
-  "questions_per_game": 10,
-  "questions_per_category": 5,
-  "category_choices": 3,
-  "vote_seconds": 12,
-  "question_seconds": 20,
-  "reveal_seconds": 6,
-  "scoreboard_seconds": 5,
-  "base_points": 1000,
-  "speed_bonus_max": 500,
+  "_comment": "Gameplay numbers. Edit and restart the game to try different pacing. Times are in seconds. 'plans' lists the rounds for each game length (classic, wager, closest, steal, drawing, final).",
+  "plans": {
+    "short": ["classic", "drawing", "final"],
+    "standard": ["classic", "drawing", "closest", "steal", "drawing", "final"],
+    "long": ["classic", "drawing", "wager", "closest", "drawing", "steal", "final"]
+  },
   "min_players": 1,
   "max_players": 16,
-  "end_phase_when_everyone_acted": true
+  "round_intro_seconds": 6,
+  "scoreboard_seconds": 8,
+  "end_phase_when_everyone_acted": true,
+
+  "vote_seconds": 12,
+  "category_choices": 3,
+  "question_seconds": 20,
+  "reveal_seconds": 6,
+  "base_points": 1000,
+  "speed_bonus_max": 500,
+  "classic_questions": 5,
+
+  "wager_questions": 3,
+  "wager_seconds": 15,
+  "wager_floor": 500,
+
+  "steal_questions": 4,
+  "steal_points": 500,
+  "steal_seconds": 12,
+
+  "final_wager_seconds": 20,
+  "final_question_seconds": 30,
+
+  "closest_questions": 3,
+  "closest_seconds": 25,
+  "closest_points": [1000, 600, 300],
+  "closest_exact_bonus": 500,
+
+  "drawing_seconds": 80,
+  "lie_seconds": 40,
+  "pick_seconds": 25,
+  "drawing_reveal_step_seconds": 3.5,
+  "drawings_per_round": 6,
+  "drawing_min_options": 4,
+  "draw_truth_points": 1000,
+  "draw_artist_points": 500,
+  "draw_fool_points": 500
 }

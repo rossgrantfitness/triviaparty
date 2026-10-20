@@ -1,0 +1,224 @@
+{
+  "pack": "general",
+  "questions": [
+    {
+      "id": "gen-0001",
+      "type": "multiple_choice",
+      "category": "general",
+      "difficulty": 1,
+      "question": "How many sides does a stop sign have?",
+      "choices": [
+        "6",
+        "8",
+        "10",
+        "12"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Stop_sign",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "gen-0002",
+      "type": "multiple_choice",
+      "category": "general",
+      "difficulty": 1,
+      "question": "A standard deck of cards has how many cards, jokers not included?",
+      "choices": [
+        "48",
+        "50",
+        "52",
+        "54"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Standard_52-card_deck",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "gen-0003",
+      "type": "multiple_choice",
+      "category": "general",
+      "difficulty": 1,
+      "question": "Mix blue paint with yellow paint and you get…?",
+      "choices": [
+        "Green",
+        "Purple",
+        "Orange",
+        "Brown"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Green",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "gen-0004",
+      "type": "multiple_choice",
+      "category": "general",
+      "difficulty": 1,
+      "question": "In chess, which piece can only ever move diagonally?",
+      "choices": [
+        "Rook",
+        "Bishop",
+        "Knight",
+        "King"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Bishop_(chess)",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "gen-0005",
+      "type": "multiple_choice",
+      "category": "general",
+      "difficulty": 2,
+      "question": "What is the Roman numeral for 50?",
+      "choices": [
+        "C",
+        "D",
+        "L",
+        "X"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Roman_numerals",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "gen-0006",
+      "type": "multiple_choice",
+      "category": "general",
+      "difficulty": 2,
+      "question": "Add up every dot on a standard six-sided die. What do you get?",
+      "choices": [
+        "18",
+        "21",
+        "24",
+        "27"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Dice",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false,
+      "fact": "Opposite faces always add up to 7."
+    },
+    {
+      "id": "gen-0007",
+      "type": "multiple_choice",
+      "category": "general",
+      "difficulty": 2,
+      "question": "Which day of the week is named after Thor, the Norse god of thunder?",
+      "choices": [
+        "Tuesday",
+        "Wednesday",
+        "Friday",
+        "Thursday"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Thursday",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false,
+      "fact": "Wednesday is named after Odin (Woden), Thor's dad."
+    },
+    {
+      "id": "gen-0008",
+      "type": "multiple_choice",
+      "category": "general",
+      "difficulty": 1,
+      "question": "How many squares are on a tic-tac-toe board?",
+      "choices": [
+        "6",
+        "8",
+        "9",
+        "12"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Tic-tac-toe",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "gen-0009",
+      "type": "multiple_choice",
+      "category": "general",
+      "difficulty": 4,
+      "question": "Chaturanga, the ancient ancestor of chess, was first played in which country?",
+      "choices": [
+        "India",
+        "Persia",
+        "China",
+        "Egypt"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Chaturanga",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "gen-0010",
+      "type": "multiple_choice",
+      "category": "general",
+      "difficulty": 5,
+      "question": "Counting squares of every size, how many squares are on a chessboard?",
+      "choices": [
+        "64",
+        "128",
+        "204",
+        "256"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Chessboard",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false,
+      "fact": "8×8 + 7×7 + 6×6 … + 1×1 = 204."
+    },
+    {
+      "id": "gen-0011",
+      "type": "multiple_choice",
+      "category": "general",
+      "difficulty": 2,
+      "question": "How many minutes are in one full day?",
+      "choices": [
+        "1,240",
+        "1,440",
+        "1,640",
+        "1,840"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Day",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    },
+    {
+      "id": "gen-0012",
+      "type": "multiple_choice",
+      "category": "general",
+      "difficulty": 2,
+      "question": "Which of these is NOT one of the colors your screen mixes to make every other color?",
+      "choices": [
+        "Red",
+        "Yellow",
+        "Green",
+        "Blue"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/RGB_color_model",
+      "verified_by": null,
+      "verified_on": null,
+      "time_sensitive": false
+    }
+  ]
+}
