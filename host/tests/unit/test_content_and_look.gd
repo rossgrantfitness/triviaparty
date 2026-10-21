@@ -55,3 +55,17 @@ func test_ordinals() -> void:
 
 func test_phone_url_uses_the_dev_port() -> void:
 	assert_string_ends_with(load("res://scripts/main.gd").phone_url(), ":5173")
+
+
+func test_every_mode_has_a_plan_for_every_length() -> void:
+	var rules: Dictionary = ContentLoader.load_rules()
+	var modes: Dictionary = rules.get("modes", {})
+	for mode: String in ["party", "doodle", "memes"]:
+		for length: String in ["short", "standard", "long"]:
+			var plan: Array = modes.get(mode, {}).get(length, [])
+			assert_gt(plan.size(), 0, "%s %s" % [mode, length])
+
+
+func test_the_sound_set_is_there() -> void:
+	for sound: String in ["logo", "intro", "correct", "wrong", "lock", "steal", "winner", "tick"]:
+		assert_true(FileAccess.file_exists("res://assets/sfx/sfx_%s.wav" % sound), sound)

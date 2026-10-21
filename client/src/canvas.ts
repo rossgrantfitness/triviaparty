@@ -33,7 +33,7 @@ export function drawingImage(strokes: Stroke[], cssSize: number): HTMLCanvasElem
   canvas.style.width = canvas.style.height = `${cssSize}px`;
   canvas.className = "drawing-view";
   const ctx = canvas.getContext("2d")!;
-  ctx.fillStyle = "#fffaf0";
+  ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   renderStrokes(ctx, strokes, canvas.width);
   return canvas;
@@ -51,6 +51,7 @@ export class DrawingPad {
   constructor(
     readonly canvas: HTMLCanvasElement,
     private readonly onChange: () => void = () => {},
+    private readonly maxStrokes: number = MAX_STROKES,
   ) {
     this.ctx = canvas.getContext("2d")!;
     this.resize();
@@ -86,7 +87,7 @@ export class DrawingPad {
   }
 
   get isFull(): boolean {
-    return this.strokes.length >= MAX_STROKES;
+    return this.strokes.length >= this.maxStrokes;
   }
 
   private toUnits(e: PointerEvent): [number, number] {
@@ -130,7 +131,7 @@ export class DrawingPad {
   }
 
   private redraw(): void {
-    this.ctx.fillStyle = "#fffaf0";
+    this.ctx.fillStyle = "#ffffff";
     this.ctx.fillRect(0, 0, this.pixels, this.pixels);
     renderStrokes(this.ctx, this.strokes, this.pixels);
   }

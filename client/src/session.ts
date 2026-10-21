@@ -1,4 +1,4 @@
-import type { Animal } from "@trivia/shared";
+import type { Accessory, Animal } from "@trivia/shared";
 
 /** What the phone remembers so it can rejoin after a reload or a locked screen. */
 export interface SavedSession {
@@ -6,6 +6,7 @@ export interface SavedSession {
   token: string | null;
   name: string;
   animal: Animal;
+  accessory?: Accessory;
 }
 
 const KEY = "trivia_party_session";

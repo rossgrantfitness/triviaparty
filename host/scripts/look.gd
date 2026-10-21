@@ -1,26 +1,33 @@
 class_name Look
 extends RefCounted
 ## Colors, fonts and answer symbols shared by every host screen.
-## Palette: asagi-shu (colorcombinations.org/palettes/asagi-shu).
+## Palette: orange, steel, grey, black, white, yellow and a warm red (see docs/ART_SPECS.md).
 
-const ASAGI: Color = Color("6b9bb0")
-const ASAGI_DEEP: Color = Color("3f6e82")
-const SHU: Color = Color("d8453a")
-const GOFUN: Color = Color("f4eee0")
-const SUMI: Color = Color("2b2b2b")
-const PAPER: Color = Color("fffaf0")
-const MUTED: Color = Color("6f6a60")
-const GOOD: Color = Color("3f8f5f")
+const ORANGE: Color = Color("f47a1f")
+const ORANGE_DEEP: Color = Color("c85a12")
+const YELLOW: Color = Color("ffc53d")
+const RED: Color = Color("de4a3b")
+const STEEL: Color = Color("5b7486")
+const STEEL_DARK: Color = Color("34495a")
+const GREY: Color = Color("a3a8ad")
+const GREY_LIGHT: Color = Color("e9eaec")
+const BLACK: Color = Color("1e1f22")
+const WHITE: Color = Color("ffffff")
+## Cards and paper behind drawings.
+const PAPER: Color = Color("ffffff")
+const MUTED: Color = Color("6b7076")
+## Positive things (points, right answers): deep amber reads on white and on steel.
+const GOOD: Color = Color("d98a00")
 
 ## Answer slots: same colors, letters and shapes as the phones.
-const CHOICE_COLORS: Array[Color] = [SHU, ASAGI_DEEP, SUMI, ASAGI, SHU, ASAGI_DEEP]
+const CHOICE_COLORS: Array[Color] = [RED, STEEL_DARK, BLACK, ORANGE_DEEP, RED, STEEL_DARK]
 const CHOICE_LETTERS: Array[String] = ["A", "B", "C", "D", "E", "F"]
 const CHOICE_SHAPES: Array[String] = ["▲", "●", "■", "◆", "★", "▲"]
 
 ## Pen colors and widths for drawings; same order as PEN_COLORS / PEN_WIDTHS in shared/src/game.ts.
 const PEN_COLORS: Array[Color] = [
-	Color("2b2b2b"), Color("d8453a"), Color("6b9bb0"), Color("3f6e82"), Color("f4eee0"),
-	Color("e8a33d"), Color("7db58c"), Color("f0948a"), Color("8c6a4f"), Color("9b7cc4"),
+	Color("1e1f22"), Color("de4a3b"), Color("f47a1f"), Color("ffc53d"), Color("5b7486"),
+	Color("34495a"), Color("ffffff"), Color("a3a8ad"), Color("5fa85b"), Color("e88fb0"),
 ]
 const PEN_WIDTHS: Array[float] = [6.0, 14.0, 28.0, 60.0]
 
@@ -33,6 +40,12 @@ const SYMBOL_FONT_PATHS: Array[String] = [
 	"res://assets/fonts/mplus_rounded_symbols_102.woff2",
 	"res://assets/fonts/mplus_rounded_symbols_105.woff2",
 	"res://assets/fonts/mplus_rounded_symbols_108.woff2",
+	# ♥, ♪, full-width ！？「」, and hiragana/katakana for the onomatopoeia pops.
+	"res://assets/fonts/mplus_rounded_symbols_86.woff2",
+	"res://assets/fonts/mplus_rounded_symbols_109.woff2",
+	"res://assets/fonts/mplus_rounded_symbols_116.woff2",
+	"res://assets/fonts/mplus_rounded_symbols_117.woff2",
+	"res://assets/fonts/mplus_rounded_kana.woff2",
 ]
 
 static var _font: Font = null

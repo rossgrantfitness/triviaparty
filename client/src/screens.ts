@@ -1,6 +1,6 @@
 // Decides which screen a phone shows. Pure functions, so they're easy to test.
 
-import type { ClosestView, DrawingView, QuizView, StateMessage } from "@trivia/shared";
+import type { ClosestView, DrawOffView, DrawingView, QuizView, StateMessage } from "@trivia/shared";
 import type { ConnectionState } from "./connection";
 
 export type Screen =
@@ -8,6 +8,7 @@ export type Screen =
   | { kind: "join" }
   | { kind: "kicked" }
   | { kind: "lobby" }
+  | { kind: "avatar" }
   | { kind: "intro" }
   | { kind: "standings"; final: boolean }
   // Quiz rounds
@@ -34,13 +35,21 @@ export type Screen =
   | { kind: "artist_wait" }
   | { kind: "pick" }
   | { kind: "picked" }
-  | { kind: "drawing_reveal" };
+  | { kind: "drawing_reveal" }
+  // Draw-Off
+  | { kind: "drawoff_draw"; prompt: string }
+  | { kind: "drawoff_drawn" }
+  | { kind: "drawoff_vote" }
+  | { kind: "drawoff_voted" }
+  | { kind: "drawoff_reveal" };
 
 export interface AppState {
   connection: ConnectionState;
   joined: boolean;
   kicked: boolean;
   game: StateMessage | null;
+  /** True while the player is drawing (or redrawing) their self-portrait in the lobby. */
+  drawingAvatar?: boolean;
 }
 
 export function screenFor(app: AppState): Screen {
@@ -49,7 +58,7 @@ export function screenFor(app: AppState): Screen {
   const game = app.game;
   switch (game.phase) {
     case "lobby":
-      return { kind: "lobby" };
+      return app.drawingAvatar ? { kind: "avatar" } : { kind: "lobby" };
     case "intro":
       return { kind: "intro" };
     case "scoreboard":
@@ -63,6 +72,7 @@ export function screenFor(app: AppState): Screen {
   if (!round) return { kind: "intro" };
   if (round.kind === "closest") return closestScreen(round);
   if (round.kind === "drawing") return drawingScreen(round);
+  if (round.kind === "drawoff") return drawOffScreen(round);
   return quizScreen(round);
 }
 
@@ -108,6 +118,33 @@ function drawingScreen(round: DrawingView): Screen {
     case "reveal":
       return { kind: "drawing_reveal" };
   }
+}
+
+function drawOffScreen(round: DrawOffView): Screen {
+  const me = round.me;
+  switch (round.step) {
+    case "drawing":
+      return me?.submitted ? { kind: "drawoff_drawn" } : { kind: "drawoff_draw", prompt: round.prompt };
+    case "voting":
+      return me?.vote ? { kind: "drawoff_voted" } : { kind: "drawoff_vote" };
+    case "reveal":
+      return { kind: "drawoff_reveal" };
+  }
+}
+
+/** Funny lines for steals. Picked by a stable index so every phone shows the same one. */
+export const STEAL_LINES = [
+  "{thief} pickpocketed {victim}!",
+  "Yoink! {thief} swiped points from {victim}.",
+  "{thief} raided {victim}'s piggy bank.",
+  "{victim} got mugged by {thief}!",
+  "{thief} snatched {victim}'s snacks money.",
+  "Sneaky {thief} robbed {victim} blind.",
+];
+
+export function stealLine(thief: string, victim: string, seed: number): string {
+  const line = STEAL_LINES[Math.abs(seed) % STEAL_LINES.length]!;
+  return line.replace("{thief}", thief).replace("{victim}", victim);
 }
 
 export function ordinal(n: number): string {

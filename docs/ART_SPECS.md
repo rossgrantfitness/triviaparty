@@ -34,22 +34,47 @@ Lowercase with underscores: `fox.glb`, `fox_idle.glb`, `icon_science.png`, `host
 ## Audio
 
 - Masters: WAV 48 kHz in `art/source/audio/`
-- Game files: OGG in `art/export/audio/`, normalized to consistent loudness
+- Game files: `art/export/audio/sfx_<name>.wav` (short sounds stay WAV: instant
+  start, tiny files). Music and voice lines will be OGG. `npm run sync-art`
+  copies them to `host/assets/sfx/` and `client/public/sfx/`.
+- Current sound effects are synthesized by `tools/audio/make_sfx.py`
+  (needs Python with numpy; run it, then `npm run sync-art`).
+
+### Sound identity
+
+One iconic, memorable sound that makes the game a pleasure to use (the way great
+Japanese products have a sound you'd know anywhere):
+
+- **The signature:** a bright four-note rising jingle, G5 C6 E6 A6 (`sfx_logo`).
+  It plays when the game opens and returns at the intro and the winner screen.
+- **One family:** every other sound is a fragment of the jingle in the same bell
+  tone and key: taps and lock-ins are single notes from it, "right" is its last
+  two notes, "wrong" is a soft low bonk (never harsh), the winner fanfare is the
+  full jingle bigger.
+- **Pleasure over noise:** short (most under 0.3 s), soft attack, no harsh
+  buzzers, lock-ins rise in pitch as more players answer.
+- Names: `sfx_<what>.wav` (`sfx_correct.wav`, `sfx_steal.wav`).
 - Voice lines named by ID: `host.final_question.01` → `host_final_question_01.ogg`
 - Every third-party sound or music file is listed with its license in `licenses.md`
 
 ## Palette
 
-Asagi-shu (colorcombinations.org/palettes/asagi-shu), from the Edo period:
+Orange, grey, black, white, steel, yellow and a warm red (Ross, 2026-10-21; it
+replaced the first asagi-shu palette). Same values on the TV (`host/scripts/look.gd`)
+and the phones (`client/src/style.css`):
 
 | Name | Hex | Used for |
 |---|---|---|
-| Asagi (pale blue-green) | `#6B9BB0` | TV backdrop, answer D |
-| Shu (shrine vermilion) | `#D8453A` | Titles, primary buttons, answer A, collars |
-| Gofun (chalk white) | `#F4EEE0` | Phone background, text on dark tiles |
-| Sumi (ink black) | `#2B2B2B` | Text, outlines, answer C |
-
-Helpers derived from it: deep asagi `#3F6E82` (answer B, timer), paper `#FFFAF0` (cards).
+| Orange | `#F47A1F` | Titles, primary buttons, highlights, stamps |
+| Deep orange | `#C85A12` | Answer D, pressed buttons |
+| Yellow | `#FFC53D` | Accents, stars, confetti, timer warning |
+| Red | `#DE4A3B` | Answer A, wrong answers, steals |
+| Steel | `#5B7486` | TV backdrop, panels |
+| Dark steel | `#34495A` | Answer B, timer |
+| Grey | `#A3A8AD` | Disconnected players, dividers |
+| Black | `#1E1F22` | Text, outlines, answer C |
+| White | `#FFFFFF` | Cards, drawing paper, text on dark tiles |
+| Amber | `#D98A00` | Points and right answers (reads on white and steel) |
 Answers always pair a color with a shape and letter: ▲ A, ● B, ■ C, ◆ D.
 
 ## Current placeholder animals

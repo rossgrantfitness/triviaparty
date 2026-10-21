@@ -15,7 +15,7 @@ import {
 } from "./game";
 
 /** Bump when a message shape changes in a way old clients can't handle. */
-export const PROTOCOL_VERSION = 3;
+export const PROTOCOL_VERSION = 4;
 
 /** Default port the relay server listens on during development. */
 export const DEFAULT_SERVER_PORT = 8787;
@@ -30,6 +30,31 @@ export const MAX_NAME_LENGTH = 12;
 
 export const ANIMALS = ["dog", "cat", "bunny", "frog"] as const;
 export type Animal = (typeof ANIMALS)[number];
+
+/** Hats and things players can put on their animal. */
+export const ACCESSORIES = ["none", "party_hat", "headband", "bow", "crown", "top_hat", "flower", "glasses"] as const;
+export type Accessory = (typeof ACCESSORIES)[number];
+
+/**
+ * Reactions players can send from their phone at any time. The TV shows a speech
+ * bubble with the onomatopoeia and the animal acts it out.
+ */
+export const EMOTES = ["laugh", "wow", "love", "boo", "clap", "think", "taunt", "cry"] as const;
+export type Emote = (typeof EMOTES)[number];
+
+export const EMOTE_INFO: Record<Emote, { label: string; emoji: string; sound: string }> = {
+  laugh: { label: "Haha", emoji: "😂", sound: "ワハハ" },
+  wow: { label: "Wow", emoji: "😮", sound: "ワオ!" },
+  love: { label: "Love it", emoji: "😍", sound: "♥♥♥" },
+  boo: { label: "Boo", emoji: "👎", sound: "ブー!" },
+  clap: { label: "Clap", emoji: "👏", sound: "パチパチ" },
+  think: { label: "Hmm", emoji: "🤔", sound: "ムムム…" },
+  taunt: { label: "Taunt", emoji: "😜", sound: "ベー!" },
+  cry: { label: "Sob", emoji: "😭", sound: "シクシク" },
+};
+
+/** Self-portraits use the drawing pen too, with a lower stroke limit. */
+export const MAX_AVATAR_STROKES = 150;
 
 /** Session-level phases. What happens inside a round is in `round.step`. */
 export const PHASES = ["lobby", "intro", "round", "scoreboard", "game_over"] as const;
@@ -55,8 +80,8 @@ export const ClientMessageSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("start_game"),
     rules: GameRulesInput,
-    settings: GameSettingsSchema.default({ length: "standard", drawing: true, categories: [] }),
-    questions: z.array(QuestionSchema).min(1),
+    settings: GameSettingsSchema.default({ mode: "party", length: "standard", drawing: true, categories: [] }),
+    questions: z.array(QuestionSchema).default([]),
     prompts: z.array(DrawingPromptSchema).default([]),
     decoys: z.array(z.string().min(1).max(60)).default([]),
   }),
@@ -71,8 +96,12 @@ export const ClientMessageSchema = z.discriminatedUnion("type", [
     code: RoomCode,
     name: z.string(),
     animal: z.enum(ANIMALS),
+    accessory: z.enum(ACCESSORIES).default("none"),
     token: z.string().optional(),
   }),
+  z.object({ type: z.literal("avatar"), strokes: z.array(StrokeSchema).max(MAX_AVATAR_STROKES) }),
+  z.object({ type: z.literal("emote"), emote: z.enum(EMOTES) }),
+  z.object({ type: z.literal("vote_drawing"), drawing: z.string().min(1) }),
   z.object({ type: z.literal("vote"), category: z.string() }),
   z.object({ type: z.literal("answer"), choice: z.number().int().min(0) }),
   z.object({ type: z.literal("wager"), amount: z.number().int().min(0) }),
@@ -89,7 +118,7 @@ export type StartGameMessage = Extract<ClientMessage, { type: "start_game" }>;
 /** Messages a phone sends during a round. */
 export type PlayerInput = Extract<
   ClientMessage,
-  { type: "vote" | "answer" | "wager" | "guess" | "steal" | "drawing" | "lie" | "pick" }
+  { type: "vote" | "answer" | "wager" | "guess" | "steal" | "drawing" | "lie" | "pick" | "vote_drawing" }
 >;
 
 // ---- Server -> Client ----
@@ -110,6 +139,9 @@ export interface PlayerView {
   id: string;
   name: string;
   animal: Animal;
+  accessory: Accessory;
+  /** True once the player has drawn a self-portrait (the TV gets it as an `avatar` message). */
+  hasAvatar: boolean;
   /** Seat number from 1, stable for the whole session. */
   seat: number;
   score: number;
@@ -225,7 +257,20 @@ export interface DrawingView {
   } | null;
 }
 
-export type RoundView = QuizView | ClosestView | DrawingView;
+export interface DrawOffView {
+  kind: "drawoff";
+  step: "drawing" | "voting" | "reveal";
+  /** Everyone draws this same prompt, so everyone (TV included) can see it. */
+  prompt: string;
+  /**
+   * The finished drawings, numbered for voting. Strokes only go to the TV (phones vote
+   * by number, looking at the big screen). Artists stay secret until the reveal.
+   */
+  gallery: { id: string; number: number; strokes: Stroke[] | null; artistId: string | null; votes: number | null }[];
+  me: { submitted: boolean; vote: string | null; ownDrawing: string | null } | null;
+}
+
+export type RoundView = QuizView | ClosestView | DrawingView | DrawOffView;
 
 export interface StateMessage {
   type: "state";
@@ -252,6 +297,10 @@ export type ServerMessage =
   | { type: "room_created"; code: string; hostToken: string }
   | { type: "joined"; code: string; playerId: string; token: string }
   | { type: "kicked" }
+  /** To the TV: a player's self-portrait (sent when drawn, and for everyone when the TV connects). */
+  | { type: "avatar"; playerId: string; strokes: Stroke[] }
+  /** To the TV: a player reacted. */
+  | { type: "emote"; playerId: string; emote: Emote }
   | StateMessage;
 
 // ---- Helpers ----
@@ -275,7 +324,7 @@ export function parseClientMessage(raw: string): ParseResult<ClientMessage> {
   return { ok: true, message: result.data };
 }
 
-const SERVER_TYPES = new Set(["welcome", "error", "room_created", "joined", "kicked", "state"]);
+const SERVER_TYPES = new Set(["welcome", "error", "room_created", "joined", "kicked", "avatar", "emote", "state"]);
 
 /**
  * Light check for messages a phone receives. The server is trusted, so this only

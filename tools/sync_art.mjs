@@ -5,6 +5,7 @@
 //
 //   art/export/<animal>/<animal>.glb           -> host/assets/characters/<animal>.glb
 //   art/export/<animal>/<animal>_portrait.png  -> client/public/animals/<animal>.png
+//   art/export/audio/sfx_*.wav                  -> host/assets/sfx/, client/public/sfx/
 //
 // Never deletes anything in art/.
 
@@ -35,5 +36,19 @@ for (const entry of readdirSync(exportDir, { withFileTypes: true })) {
     console.log(`portrait ${name}_portrait.png -> client/public/animals/${name}.png`);
     copied++;
   }
+}
+// Sound effects: art/export/audio/sfx_*.wav -> host/assets/sfx/ and client/public/sfx/
+const audioDir = join(exportDir, "audio");
+if (existsSync(audioDir)) {
+  const hostSfx = join(root, "host", "assets", "sfx");
+  const phoneSfx = join(root, "client", "public", "sfx");
+  mkdirSync(hostSfx, { recursive: true });
+  mkdirSync(phoneSfx, { recursive: true });
+  for (const file of readdirSync(audioDir).filter((f) => f.startsWith("sfx_") && f.endsWith(".wav"))) {
+    copyFileSync(join(audioDir, file), join(hostSfx, file));
+    copyFileSync(join(audioDir, file), join(phoneSfx, file));
+    copied++;
+  }
+  console.log(`sounds   art/export/audio/sfx_*.wav -> host/assets/sfx/ and client/public/sfx/`);
 }
 console.log(copied ? `Copied ${copied} file(s).` : "Nothing to copy: art/export has no <name>/<name>.glb files yet.");

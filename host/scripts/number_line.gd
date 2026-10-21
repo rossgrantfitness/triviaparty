@@ -36,7 +36,7 @@ func _draw() -> void:
 	var left: float = 60.0
 	var right: float = size.x - 60.0
 	var x_of: Callable = func(v: float) -> float: return left + (v - lo) / (hi - lo) * (right - left)
-	draw_line(Vector2(left, y), Vector2(right, y), Look.SUMI, 8.0, true)
+	draw_line(Vector2(left, y), Vector2(right, y), Look.BLACK, 8.0, true)
 	var font: Font = Look.font()
 	# Guesses: little flags above the line, alternating heights so names don't collide.
 	# Way-off guesses share one flag at each end of the line.
@@ -56,7 +56,7 @@ func _draw() -> void:
 		var g: Dictionary = sorted[i]
 		var x: float = x_of.call(float(g["value"]))
 		var top: float = y - 50.0 - (i % 3) * 46.0
-		var color: Color = Look.SHU if int(g.get("place", 0)) == 1 else Look.ASAGI_DEEP
+		var color: Color = Look.ORANGE if int(g.get("place", 0)) == 1 else Look.STEEL_DARK
 		draw_line(Vector2(x, y), Vector2(x, top), color, 4.0, true)
 		draw_circle(Vector2(x, y), 12.0, color)
 		var text: String = str(g["name"])

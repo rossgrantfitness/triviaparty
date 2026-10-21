@@ -14,6 +14,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 Server="*res://scripts/server_connection.gd"
+Sfx="*res://scripts/sfx.gd"
 
 [display]
 

@@ -114,3 +114,36 @@ func test_drawing_canvas_takes_strokes() -> void:
 	add_child_autofree(canvas)
 	assert_eq(canvas.strokes.size(), 1)
 	assert_eq(canvas.custom_minimum_size, Vector2(300, 300))
+
+
+func test_every_drawoff_step_renders() -> void:
+	var strokes: Array = [{"c": 3, "w": 2, "p": [100, 100, 900, 900]}]
+	var round: Dictionary = {
+		"kind": "drawoff", "step": "drawing", "prompt": "A cat running a bakery", "gallery": [], "me": null,
+	}
+	_ui.show_state(_game("round", round))
+	assert_gt(_content_count(), 0, "drawing")
+	round.merge({"step": "voting", "gallery": [
+		{"id": "d1", "number": 1, "strokes": strokes, "artistId": null, "votes": null},
+		{"id": "d2", "number": 2, "strokes": strokes, "artistId": null, "votes": null},
+	]}, true)
+	_ui.show_state(_game("round", round))
+	assert_gt(_content_count(), 0, "voting")
+	round.merge({"step": "reveal", "gallery": [
+		{"id": "d2", "number": 2, "strokes": strokes, "artistId": "b", "votes": 1},
+		{"id": "d1", "number": 1, "strokes": strokes, "artistId": "a", "votes": 0},
+	]}, true)
+	_ui.show_state(_game("round", round))
+	assert_gt(_content_count(), 0, "reveal")
+
+
+func test_mode_cycles_through_every_mode() -> void:
+	_ui.rules = ContentLoader.load_rules()
+	_ui.show_state(_game("lobby"))
+	var seen: Array = []
+	for i: int in HostUI.MODES.size():
+		_ui.cycle_mode()
+		seen.append(_ui.settings["mode"])
+		assert_gt(_ui.estimate_minutes(), 0, str(_ui.settings["mode"]))
+	assert_eq(seen.size(), HostUI.MODES.size())
+	assert_true(seen.has("doodle") and seen.has("memes") and seen.has("party"))

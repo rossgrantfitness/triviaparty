@@ -6,6 +6,10 @@ extends Node3D
 
 enum Mood { IDLE, THINKING, LOCKED, CORRECT, WRONG, WINNER, CLAPPING }
 
+## Hats sit this high above the neck, and glasses this far forward, per animal.
+const HAT_HEIGHT: Dictionary = {"dog": 0.6, "cat": 0.58, "bunny": 0.58, "frog": 0.6}
+const EYES: Dictionary = {"dog": Vector3(0, 0.26, 0.33), "cat": Vector3(0, 0.26, 0.33), "bunny": Vector3(0, 0.26, 0.33), "frog": Vector3(0, 0.48, 0.2)}
+
 const MODEL_DIR: String = "res://assets/characters/"
 const ANIMALS: Array[String] = ["dog", "cat", "bunny", "frog"]
 ## Outline thickness in model units. Animation speeds live here too so they're easy to tune.
@@ -17,7 +21,12 @@ static var _outline_material: StandardMaterial3D = null
 static var _model_cache: Dictionary = {}
 
 var animal: String = ""
+var accessory: String = "none"
 var mood: Mood = Mood.IDLE
+## A short emote act-out that plays over the current mood.
+var _act: String = ""
+var _act_time: float = 0.0
+var _accessory_node: Node3D = null
 
 var _model: Node3D = null
 var _body: Node3D = null
@@ -52,6 +61,32 @@ func set_animal(new_animal: String) -> void:
 		if part != null:
 			_rest[part] = part.transform
 	_apply_toon_look(_model)
+	var wanted: String = accessory
+	accessory = ""
+	set_accessory(wanted)
+
+
+## Put a hat (or glasses, a bow…) on the animal's head.
+func set_accessory(new_accessory: String) -> void:
+	if new_accessory == accessory and (_accessory_node != null or new_accessory == "none"):
+		return
+	accessory = new_accessory
+	if _accessory_node != null:
+		_accessory_node.queue_free()
+		_accessory_node = null
+	if _head == null or accessory == "none":
+		return
+	_accessory_node = Accessories.build(accessory, float(HAT_HEIGHT.get(animal, 0.6)), EYES.get(animal, Vector3(0, 0.26, 0.33)))
+	if _accessory_node != null:
+		_head.add_child(_accessory_node)
+		_apply_toon_look(_accessory_node)
+
+
+## Act out an emote for a moment: "laugh", "wow", "love", "boo", "clap", "think", "taunt", "cry".
+func act(emote: String) -> void:
+	_act = emote
+	_act_time = 0.0
+	_hop = 1.0 if emote in ["laugh", "wow", "love", "clap"] else _hop
 
 
 func set_mood(new_mood: Mood) -> void:
@@ -83,7 +118,34 @@ func _process(delta: float) -> void:
 	var arm_raise: float = 0.0
 	var spin: float = 0.0
 
-	match mood:
+	if not _act.is_empty():
+		_act_time += delta
+		if _act_time > 1.6:
+			_act = ""
+	match _act:
+		"laugh":
+			squash = 0.08 * sin(_act_time * 22.0)
+			head_tilt = 0.25 * sin(_act_time * 14.0)
+		"wow":
+			arm_raise = 2.2
+			lift += 0.15 * absf(sin(_act_time * 6.0))
+		"love":
+			head_tilt = 0.3 * sin(_act_time * 4.0)
+			arm_raise = 1.2
+		"boo", "cry":
+			head_nod = 0.35
+			squash = -0.06
+			arm_raise = -0.3 if _act == "boo" else 1.4 + 0.2 * sin(_act_time * 20.0)
+		"clap":
+			arm_raise = 1.0 + 0.45 * sin(_act_time * 18.0)
+		"think":
+			head_tilt = 0.3
+			arm_raise = 0.6
+		"taunt":
+			spin = sin(_act_time * 10.0) * 0.5
+			head_tilt = -0.25 * sin(_act_time * 9.0)
+	# While acting out an emote, the mood's own pose waits.
+	match (mood if _act.is_empty() else -1):
 		Mood.THINKING:
 			head_tilt = 0.2 + 0.04 * sin(t * 0.7)
 			arm_raise = 0.3
@@ -161,17 +223,19 @@ static func _apply_toon_look(root: Node) -> void:
 		_outline_material.cull_mode = BaseMaterial3D.CULL_FRONT
 		_outline_material.grow = true
 		_outline_material.grow_amount = OUTLINE_WIDTH
-		_outline_material.albedo_color = Look.SUMI
+		_outline_material.albedo_color = Look.BLACK
 	for node: Node in root.find_children("*", "MeshInstance3D", true, false):
 		var mesh_instance: MeshInstance3D = node
 		if mesh_instance.mesh == null:
 			continue
 		var size: Vector3 = mesh_instance.mesh.get_aabb().size * mesh_instance.global_basis.get_scale() if mesh_instance.is_inside_tree() else mesh_instance.mesh.get_aabb().size
 		var outlined: bool = maxf(size.x, maxf(size.y, size.z)) > 0.14
+		# Hats and other add-ons set material_override; imported models use surface materials.
+		var override: BaseMaterial3D = mesh_instance.material_override as BaseMaterial3D
 		for i: int in mesh_instance.mesh.get_surface_count():
-			var source: BaseMaterial3D = mesh_instance.mesh.surface_get_material(i) as BaseMaterial3D
+			var source: BaseMaterial3D = override if override != null else mesh_instance.mesh.surface_get_material(i) as BaseMaterial3D
 			var toon: StandardMaterial3D = StandardMaterial3D.new()
-			toon.albedo_color = source.albedo_color if source != null else Look.GOFUN
+			toon.albedo_color = source.albedo_color if source != null else Look.WHITE
 			toon.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
 			toon.specular_mode = BaseMaterial3D.SPECULAR_TOON
 			toon.roughness = source.roughness if source != null else 0.6
@@ -180,4 +244,7 @@ static func _apply_toon_look(root: Node) -> void:
 			toon.rim_tint = 0.6
 			if outlined:
 				toon.next_pass = _outline_material
-			mesh_instance.set_surface_override_material(i, toon)
+			if override != null:
+				mesh_instance.material_override = toon
+			else:
+				mesh_instance.set_surface_override_material(i, toon)

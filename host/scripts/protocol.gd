@@ -3,7 +3,7 @@ extends RefCounted
 ## Network messages the host sends and receives.
 ## Mirrors shared/src/protocol.ts; keep both and docs/PROTOCOL.md in sync.
 
-const PROTOCOL_VERSION: int = 3
+const PROTOCOL_VERSION: int = 4
 
 
 ## First message the host sends after the socket opens.

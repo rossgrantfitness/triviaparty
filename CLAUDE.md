@@ -56,12 +56,15 @@ Three programs talk through one relay server, which owns all game state
 - `shared/` — message types and parsers used by both server and client.
 
 Round types live in `server/src/rounds/` (one module each: `quiz.ts` for Quiz Time /
-High Roller / Sticky Fingers / Final Showdown, `closest.ts`, `drawing.ts`), all
+High Roller / Sticky Fingers / Final Showdown, `closest.ts`, `drawing.ts` for Doodle Duel, `drawoff.ts`), all
 implementing the `Round` interface in `rounds/types.ts`. `server/src/room.ts` runs the
 session plan (intro → round → scoreboard → … → game over). To add a round type:
 new module + `ROUND_KINDS`/`ROUND_INFO` in `shared/src/game.ts` + its view type in
 `shared/src/protocol.ts` + phone screens (`client/src/screens.ts`, `main.ts`) + TV
-screens (`host/scripts/host_ui.gd`) and animal moods (`stage.gd`).
+screens (`host/scripts/host_ui.gd`) and animal moods (`stage.gd`) + sound/juice cues
+(`host/scripts/cues.gd`). Game modes (Trivia Party, Doodle Party, Meme Mode) are just
+round plans per mode in `game_rules.json` (`modes.<mode>.<length>`); Meme Mode uses
+only the `meme_*` question packs.
 
 ## Conventions
 
@@ -69,7 +72,7 @@ screens (`host/scripts/host_ui.gd`) and animal moods (`stage.gd`).
 - The server is the single source of truth for game state; host and phones only display it and send inputs. Phones never receive a correct answer before the reveal.
 - Every network message is defined once in `shared/src/protocol.ts`, documented in `docs/PROTOCOL.md`, and mirrored for Godot in `host/scripts/protocol.gd`. Change all three together.
 - Gameplay numbers live in `host/config/game_rules.json`, never hard-coded. The host sends them with `start_game`; the server clamps them.
-- Colors and fonts for the TV live in `host/scripts/look.gd`; the phone's are CSS variables in `client/src/style.css`. Both use the asagi-shu palette (see `docs/ART_SPECS.md`).
+- Colors and fonts for the TV live in `host/scripts/look.gd`; the phone's are CSS variables in `client/src/style.css`. Both use the orange / steel / yellow / red / black / white palette (see `docs/ART_SPECS.md`).
 - Godot uses the Compatibility renderer (runs on more PCs). The host UI is built in code (`host_ui.gd`), the stage in `stage.gd`, characters are animated in code (`chibi_character.gd`).
 - File names: lowercase with underscores (`fox_idle.glb`, `science_general.json`). Exception: npm/tooling files that require a fixed name.
 - Each task ends with tests passing, `docs/PROGRESS.md` updated, and a git commit.
@@ -89,11 +92,16 @@ Run from the repo root (needs Node.js 22+; Godot 4.7 for the host).
 | `npm run typecheck` | Type-check all TypeScript |
 | `npm run bots -- ABCD 15` | 15 fake players join room ABCD (`--fast`, `--churn` for drop/rejoin) |
 | `npm run bots -- --host 3 2` | Fake TV: create a room, 2 bots join, start when 3 players are in (`--length short`, `--no-drawing`) |
-| `npm run sync-art` | Copy `art/export/<animal>/` models and portraits into the host and phone page |
+| `npm run sync-art` | Copy `art/export/<animal>/` models and portraits, and `art/export/audio/` sounds, into the host and phone page |
+| `python tools/audio/make_sfx.py` | Rebuild the sound effects (needs numpy), then `npm run sync-art` |
 | `python tools/art/make_chibi_animals.py` | Rebuild the placeholder animals (needs `pip install bpy`) |
 
 Host command-line extras (after `--`): `--server=ws://…` to use another server,
-`--autostart=N` to start automatically once N players joined, `--length=short|standard|long` (testing).
+`--autostart=N` to start automatically once N players joined, `--length=short|standard|long`,
+`--mode=party|doodle|memes` (testing). Bots also take `--mode` and `--emotes`.
+
+TV keys: Enter start, G mode, L length, D drawing on/off, Space pause, N skip,
+Tab players, M mute, F11 fullscreen. TV sound settings: `host/config/audio.json`.
 
 Godot is located by `tools/run_host.mjs`: `GODOT` env var, then a `.godot-path`
 file at the repo root (untracked), then PATH, then common install folders.

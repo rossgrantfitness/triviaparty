@@ -1,0 +1,5 @@
+{
+  "_comment": "Sound settings for the TV. volume: 0.0 to 1.0. Press M in the game to mute or unmute.",
+  "volume": 0.8,
+  "muted": false
+}

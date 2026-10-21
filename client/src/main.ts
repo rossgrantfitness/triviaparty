@@ -1,15 +1,22 @@
 import "@fontsource/m-plus-rounded-1c/latin-700.css";
 import "@fontsource/m-plus-rounded-1c/latin-800.css";
 import {
+  ACCESSORIES,
   ANIMALS,
+  EMOTES,
+  EMOTE_INFO,
+  MAX_AVATAR_STROKES,
   MAX_LIE_LENGTH,
   MAX_NAME_LENGTH,
   PEN_COLORS,
   PEN_WIDTHS,
   ROOM_CODE_ALPHABET,
   ROOM_CODE_LENGTH,
+  type Accessory,
   type Animal,
   type ClientMessage,
+  type DrawOffView,
+  type Stroke,
   type ClosestView,
   type DrawingView,
   type PlayerView,
@@ -18,6 +25,8 @@ import {
   type StateMessage,
 } from "@trivia/shared";
 import { DrawingPad, drawingImage } from "./canvas";
+import { confetti, countUp, shake, stamp } from "./juice";
+import { isMuted, play, setMuted, unlockAudio, type SoundName } from "./sfx";
 import { ServerConnection, resolveServerUrl, statusText } from "./connection";
 import {
   CHOICE_LABELS,
@@ -26,6 +35,7 @@ import {
   ordinal,
   screenFor,
   signedPoints,
+  stealLine,
   type AppState,
   type Screen,
 } from "./screens";
@@ -44,6 +54,26 @@ const timerFill = $<HTMLElement>("#timer-fill");
 const overlayEl = $<HTMLElement>("#overlay");
 const toastEl = $<HTMLElement>("#toast");
 const statusEl = $<HTMLParagraphElement>("#status");
+const emotesEl = $<HTMLElement>("#emotes");
+
+/** Labels for hats on the join screen. */
+const ACCESSORY_LABELS: Record<Accessory, string> = {
+  none: "No hat",
+  party_hat: "Party hat",
+  headband: "Headband",
+  bow: "Bow",
+  crown: "Crown",
+  top_hat: "Top hat",
+  flower: "Flower",
+  glasses: "Glasses",
+};
+const ACCESSORY_ICONS: Record<Accessory, string> = {
+  none: "✖", party_hat: "🥳", headband: "🎌", bow: "🎀", crown: "👑", top_hat: "🎩", flower: "🌸", glasses: "🕶️",
+};
+const EMOTE_COOLDOWN_MS = 1300;
+let lastEmoteAt = 0;
+let lastTickSecond = -1;
+let firstJoin = false;
 
 const app: AppState = { connection: "connecting", joined: false, kicked: false, game: null };
 let session: SavedSession | null = loadSession();
@@ -100,7 +130,7 @@ const connection = new ServerConnection(resolveServerUrl(window.location, import
   onWelcome() {
     // Rejoin our seat automatically after a reload, a locked phone or a network blip.
     if (session?.token && !app.kicked) {
-      connection.send({ type: "join", code: session.code, name: session.name, animal: session.animal, token: session.token });
+      connection.send({ type: "join", code: session.code, name: session.name, animal: session.animal, accessory: session.accessory ?? "none", token: session.token });
     }
   },
   onMessage: handleMessage,
@@ -109,8 +139,14 @@ const connection = new ServerConnection(resolveServerUrl(window.location, import
 function handleMessage(message: ServerMessage): void {
   switch (message.type) {
     case "joined":
+      if (!app.joined) play("join");
       app.joined = true;
       app.kicked = false;
+      // First time in this room: offer the self-portrait.
+      if (firstJoin) {
+        app.drawingAvatar = true;
+        firstJoin = false;
+      }
       if (session) {
         session = { ...session, code: message.code, token: message.token };
         saveSession(session);
@@ -152,11 +188,15 @@ document.addEventListener("visibilitychange", () => {
 // ---- Rendering ----
 
 /** Screens with inputs (drawing, typing) must not be rebuilt by every update, or work is lost. */
-const STEADY_SCREENS = new Set<Screen["kind"]>(["join", "connecting", "kicked", "draw", "lie", "guess", "wager"]);
+const STEADY_SCREENS = new Set<Screen["kind"]>(["join", "connecting", "kicked", "draw", "lie", "guess", "wager", "avatar", "drawoff_draw"]);
+/** Screens where the countdown ticks get urgent because you still have to act. */
+const ACT_SCREENS = new Set<Screen["kind"]>(["vote", "wager", "question", "steal", "guess", "draw", "lie", "pick", "drawoff_draw", "drawoff_vote"]);
+/** No emote bar while drawing or typing: it would get in the way. */
+const NO_EMOTE_SCREENS = new Set<Screen["kind"]>(["join", "connecting", "kicked", "draw", "avatar", "drawoff_draw", "lie", "guess"]);
 
 function screenKey(screen: Screen, game: StateMessage | null): string {
   const round = game?.round;
-  const roundId = round ? [round.kind, "step" in round ? round.step : "", "questionNumber" in round ? round.questionNumber : round.drawingNumber] : null;
+  const roundId = round ? [round.kind, round.step, "questionNumber" in round ? round.questionNumber : "drawingNumber" in round ? round.drawingNumber : 0] : null;
   if (STEADY_SCREENS.has(screen.kind)) return JSON.stringify([screen.kind, game?.roundIndex, roundId]);
   return JSON.stringify([
     screen,
@@ -165,11 +205,13 @@ function screenKey(screen: Screen, game: StateMessage | null): string {
     roundId,
     round && "vote" in round ? round.vote : null,
     round?.kind === "drawing" ? round.reveal?.shown : null,
+    round?.kind === "drawoff" ? round.gallery.length : null,
     game?.players.map((p) => [p.name, p.connected, p.score, p.hasActed]),
   ]);
 }
 
 const TIMED_SCREENS = new Set<Screen["kind"]>([
+  "drawoff_draw", "drawoff_drawn", "drawoff_vote", "drawoff_voted",
   "vote", "voted", "wager", "wagered", "question", "locked", "steal", "guess", "guessed", "draw", "drawn", "lie", "lied", "pick", "picked", "artist_wait", "judge_wait",
 ]);
 
@@ -180,11 +222,20 @@ function render(): void {
   renderOverlay(game);
   timerEl.hidden = !(game?.timer && TIMED_SCREENS.has(screen.kind));
 
+  emotesEl.hidden = !app.joined || NO_EMOTE_SCREENS.has(screen.kind);
+
   const key = screenKey(screen, game);
   if (key === renderedKey) return;
+  const newScreen = appEl.dataset.screen !== screen.kind;
   renderedKey = key;
-  if (screen.kind !== "draw") pad = null;
+  if (screen.kind !== "draw" && screen.kind !== "avatar" && screen.kind !== "drawoff_draw") pad = null;
   appEl.dataset.screen = screen.kind;
+  if (newScreen) {
+    appEl.classList.remove("enter");
+    void appEl.offsetWidth;
+    appEl.classList.add("enter");
+  }
+  window.setTimeout(() => react(screen), 0);
 
   switch (screen.kind) {
     case "connecting":
@@ -201,6 +252,8 @@ function render(): void {
       return;
     case "lobby":
       return renderLobby(game!);
+    case "avatar":
+      return renderAvatar();
     case "intro":
       return renderIntro(game!);
     case "standings":
@@ -235,7 +288,12 @@ function render(): void {
       return renderClosestReveal(game!.round as ClosestView);
     // Drawing
     case "draw":
-      return renderDraw(screen.prompt);
+      return renderPad({
+        caption: "Draw this (shh, it's secret!)",
+        prompt: screen.prompt,
+        done: "I'm done!",
+        onDone: (strokes) => send({ type: "drawing", strokes }),
+      });
     case "drawn":
       return waitScreen("Masterpiece submitted!", "🎨", "Waiting for the other artists…");
     case "judge_wait":
@@ -252,6 +310,142 @@ function render(): void {
       return waitScreen("Locked in", "Watch the TV for the truth!", "");
     case "drawing_reveal":
       return renderDrawingReveal(game!.round as DrawingView);
+    // Draw-Off
+    case "drawoff_draw":
+      return renderPad({
+        caption: "Draw-Off! Everyone draws this",
+        prompt: screen.prompt,
+        done: "Hang it in the gallery!",
+        onDone: (strokes) => send({ type: "drawing", strokes }),
+      });
+    case "drawoff_drawn":
+      return waitScreen("Framed and hung!", "🖼️", "Waiting for the other artists…");
+    case "drawoff_vote":
+      return renderDrawOffVote(game!.round as DrawOffView);
+    case "drawoff_voted":
+      return waitScreen("Vote cast", "Look at the TV!", "Let's see who wins the gallery…");
+    case "drawoff_reveal":
+      return renderDrawOffReveal(game!.round as DrawOffView);
+  }
+}
+
+/** Sounds and effects that answer what just appeared on screen. */
+let reactedKey = "";
+function react(screen: Screen): void {
+  const game = app.game;
+  const player = me();
+  const key = `${screen.kind}:${game?.roundIndex}:${JSON.stringify(screen)}:${game?.round && "questionNumber" in game.round ? game.round.questionNumber : ""}:${game?.round?.kind === "drawing" ? game.round.drawingNumber + ":" + (game.round.reveal?.shown ?? 0) : ""}`;
+  if (key === reactedKey) return;
+  reactedKey = key;
+  const sfx = (name: SoundName) => play(name);
+  switch (screen.kind) {
+    case "reveal":
+      if (screen.correct) {
+        sfx("correct");
+        confetti();
+      } else {
+        sfx("wrong");
+        shake(appEl);
+      }
+      break;
+    case "closest_reveal": {
+      const result = (game?.round as ClosestView | null)?.reveal?.results.find((r) => r.playerId === player?.id);
+      if (result?.distance === 0) {
+        sfx("correct");
+        stamp("BULLSEYE!", "#f47a1f");
+        confetti(60);
+      } else if (result?.points) {
+        sfx("correct");
+        confetti(20);
+      } else sfx("wrong");
+      break;
+    }
+    case "steal_reveal": {
+      const steals = (game?.round as QuizView | null)?.steals ?? [];
+      if (steals.some((s) => s.thief === player?.id)) {
+        sfx("steal");
+        stamp("YOINK!", "#f47a1f");
+        confetti(24);
+      } else if (steals.some((s) => s.victim === player?.id && s.amount > 0)) {
+        sfx("steal");
+        stamp("ROBBED!", "#de4a3b");
+        shake(appEl);
+        buzz(200);
+      }
+      break;
+    }
+    case "drawing_reveal": {
+      const round = game?.round as DrawingView | null;
+      const truthShown = round?.reveal?.items.slice(0, round.reveal.shown).some((i) => i.truth);
+      if (truthShown && round?.artistId !== player?.id) {
+        const spotted = round?.reveal?.items.find((i) => i.truth)?.pickers.includes(player?.id ?? "");
+        if (spotted) {
+          sfx("correct");
+          confetti(24);
+        } else sfx("wrong");
+      }
+      break;
+    }
+    case "drawoff_reveal": {
+      const round = game?.round as DrawOffView | null;
+      const mine = round?.gallery.find((g) => g.artistId === player?.id);
+      if (mine && round?.gallery[0]?.id === mine.id && (mine.votes ?? 0) > 0) {
+        play("winner");
+        confetti(70);
+      } else if ((mine?.votes ?? 0) > 0) sfx("points");
+      break;
+    }
+    case "standings":
+      if (screen.final && player?.rank === 1) {
+        play("winner");
+        confetti(90);
+      } else if (player?.roundPoints) sfx("points");
+      break;
+    case "locked":
+    case "lied":
+    case "picked":
+    case "guessed":
+    case "drawoff_voted":
+      sfx("lock");
+      break;
+    case "wagered":
+      sfx("wager");
+      break;
+    case "voted":
+      sfx("vote");
+      break;
+    case "drawn":
+    case "drawoff_drawn":
+      sfx("drawing_done");
+      break;
+  }
+  // Count points up wherever they appear.
+  for (const el of appEl.querySelectorAll<HTMLElement>("[data-count]")) {
+    const to = Number(el.dataset.count);
+    countUp(el, to, (n) => (el.dataset.signed ? signedPoints(n) : formatPoints(n)) + (el.dataset.suffix ?? ""));
+  }
+}
+
+// ---- Emotes ----
+
+function renderEmotes(): void {
+  emotesEl.innerHTML = EMOTES.map(
+    (e) => `<button class="emote" data-emote="${e}" aria-label="${EMOTE_INFO[e].label}"><span>${EMOTE_INFO[e].emoji}</span></button>`,
+  ).join("");
+  for (const button of emotesEl.querySelectorAll<HTMLButtonElement>(".emote")) {
+    button.onclick = () => {
+      const now = performance.now();
+      if (now - lastEmoteAt < EMOTE_COOLDOWN_MS) return;
+      lastEmoteAt = now;
+      play("emote", 0.9 + Math.random() * 0.3);
+      buzz(15);
+      button.classList.remove("popped");
+      void button.offsetWidth;
+      button.classList.add("popped");
+      emotesEl.classList.add("cooling");
+      window.setTimeout(() => emotesEl.classList.remove("cooling"), EMOTE_COOLDOWN_MS);
+      send({ type: "emote", emote: button.dataset.emote as (typeof EMOTES)[number] });
+    };
   }
 }
 
@@ -289,7 +483,12 @@ function renderTop(screen: Screen): void {
   const round = game.phase !== "lobby" && game.roundCount ? `<span class="code">${escapeHtml(game.roundTitle ?? "")}</span>` : `<span class="code">${escapeHtml(game.code)}</span>`;
   topEl.innerHTML = `<div class="me"><img src="${portrait(player.animal)}" alt=""><span>${escapeHtml(player.name)}</span></div>
     ${round}
-    <span class="score">${formatPoints(player.score)}</span>`;
+    <span class="score">${formatPoints(player.score)}</span>
+    <button class="mute" id="mute" aria-label="Sound on or off">${isMuted() ? "🔇" : "🔊"}</button>`;
+  $<HTMLButtonElement>("#mute").onclick = () => {
+    setMuted(!isMuted());
+    renderTop(screen);
+  };
 }
 
 function renderOverlay(game: StateMessage | null): void {
@@ -313,6 +512,7 @@ function renderJoin(): void {
   const code = session?.code ?? linkCode ?? "";
   const name = session?.name ?? "";
   let animal: Animal = session?.animal ?? ANIMALS[Math.floor(Math.random() * ANIMALS.length)]!;
+  let accessory: Accessory = session?.accessory ?? "none";
   html(`
     <div class="brand"><h1>Trivia Party</h1><p class="muted">Join the game on the TV</p></div>
     <label class="field">Room code
@@ -324,6 +524,11 @@ function renderJoin(): void {
     <div class="field">Pick your animal
       <div class="animals">${ANIMALS.map(
         (a) => `<button type="button" class="animal" data-animal="${a}" aria-pressed="${a === animal}"><img src="${portrait(a)}" alt="">${a}</button>`,
+      ).join("")}</div>
+    </div>
+    <div class="field">Pick a hat
+      <div class="hats">${ACCESSORIES.map(
+        (h) => `<button type="button" class="hat" data-hat="${h}" aria-pressed="${h === accessory}" title="${ACCESSORY_LABELS[h]}"><span>${ACCESSORY_ICONS[h]}</span><small>${ACCESSORY_LABELS[h]}</small></button>`,
       ).join("")}</div>
     </div>
     <button class="primary" id="join">Join</button>`);
@@ -348,10 +553,17 @@ function renderJoin(): void {
       for (const b of appEl.querySelectorAll(".animal")) b.setAttribute("aria-pressed", String(b === button));
     };
   }
+  for (const button of appEl.querySelectorAll<HTMLButtonElement>(".hat")) {
+    button.onclick = () => {
+      accessory = button.dataset.hat as Accessory;
+      for (const b of appEl.querySelectorAll(".hat")) b.setAttribute("aria-pressed", String(b === button));
+    };
+  }
   joinButton.onclick = () => {
-    session = { code: codeInput.value, name: nameInput.value.trim(), animal, token: null };
+    session = { code: codeInput.value, name: nameInput.value.trim(), animal, accessory, token: null };
     saveSession(session);
-    send({ type: "join", code: session.code, name: session.name, animal });
+    firstJoin = true;
+    send({ type: "join", code: session.code, name: session.name, animal, accessory });
   };
   update();
   if (!code) codeInput.focus();
@@ -365,7 +577,34 @@ function renderLobby(game: StateMessage): void {
     <p class="muted">Waiting for the host to start the game…</p>
     <p><strong>${game.players.length}</strong> player${game.players.length === 1 ? "" : "s"} here</p>
     <div class="roster">${game.players.map((p) => `<span class="chip${p.connected ? "" : " away"}">${escapeHtml(p.name)}</span>`).join("")}</div>
+    <button class="secondary" id="portrait">${player?.hasAvatar ? "Redraw your portrait" : "Draw your portrait"}</button>
   </div>`);
+  $<HTMLButtonElement>("#portrait").onclick = () => {
+    app.drawingAvatar = true;
+    render();
+  };
+}
+
+function renderAvatar(): void {
+  renderPad({
+    caption: "Draw yourself! It goes on the TV",
+    prompt: "Your self-portrait",
+    done: "Looking good!",
+    maxStrokes: MAX_AVATAR_STROKES,
+    skip: "Skip",
+    onDone: (strokes) => {
+      send({ type: "avatar", strokes });
+      play("drawing_done");
+      app.drawingAvatar = false;
+      renderedKey = "";
+      render();
+    },
+    onSkip: () => {
+      app.drawingAvatar = false;
+      renderedKey = "";
+      render();
+    },
+  });
 }
 
 function renderIntro(game: StateMessage): void {
@@ -386,7 +625,7 @@ function renderStandings(game: StateMessage, final: boolean): void {
     <p class="muted">${final ? "Final result" : `After round ${game.roundIndex + 1} of ${game.roundCount}`}</p>
     <p class="big-number">${ordinal(player.rank)}</p>
     <h2>${final && player.rank === 1 ? "You win! 🏆" : `of ${game.players.length} players`}</h2>
-    <p class="points">${formatPoints(player.score)} pts</p>
+    <p class="points" data-count="${player.score}" data-suffix=" pts">${formatPoints(player.score)} pts</p>
     ${!final && player.roundPoints ? `<p class="muted">${signedPoints(player.roundPoints)} this round</p>` : ""}
     ${behind > 0 ? `<p class="muted">${formatPoints(behind)} behind ${escapeHtml(leader!.name)}</p>` : ""}
     ${final ? `<p class="muted">The host can start a new game from the TV.</p>` : ""}
@@ -466,7 +705,7 @@ function renderReveal(round: QuizView, screen: Extract<Screen, { kind: "reveal" 
   html(`<div class="center">
     ${player ? `<img class="portrait small ${screen.correct ? "hop" : "slump"}" src="${portrait(player.animal)}" alt="">` : ""}
     <p class="result ${screen.correct ? "good" : "bad"}">${headline}</p>
-    ${points !== 0 ? `<p class="points ${points < 0 ? "lost" : ""}">${signedPoints(points)}</p>` : ""}
+    ${points !== 0 ? `<p class="points ${points < 0 ? "lost" : ""}" data-count="${points}" data-signed="1">${signedPoints(points)}</p>` : ""}
     <p class="muted">The answer was</p>
     <h2>${label?.shape ?? ""} ${label?.letter ?? ""}: ${escapeHtml(round.question?.choices[correct] ?? "")}</h2>
     ${round.reveal?.fact ? `<p class="fact">💡 ${escapeHtml(round.reveal.fact)}</p>` : ""}
@@ -493,9 +732,14 @@ function renderStealReveal(round: QuizView): void {
   const steals = round.steals ?? [];
   const mine = steals.filter((s) => s.thief === myId);
   const robbed = steals.filter((s) => s.victim === myId);
+  const seed = round.questionNumber;
   const lines = [
-    ...mine.map((s) => `You stole <strong>${formatPoints(s.amount)}</strong> from ${escapeHtml(playerName(s.victim))}! 😈`),
-    ...robbed.map((s) => `${escapeHtml(playerName(s.thief))} stole <strong>${formatPoints(s.amount)}</strong> from you! 😱`),
+    ...mine.map((s) =>
+      s.amount > 0
+        ? `${escapeHtml(stealLine("You", playerName(s.victim), seed))} <strong>+${formatPoints(s.amount)}</strong> 😈`
+        : `You tried to rob ${escapeHtml(playerName(s.victim))}, but their pockets were empty! 🙃`,
+    ),
+    ...robbed.filter((s) => s.amount > 0).map((s) => `${escapeHtml(stealLine(playerName(s.thief), "you", seed))} <strong>-${formatPoints(s.amount)}</strong> 😱`),
   ];
   html(`<div class="center">
     <h1>${mine.length ? "Got 'em!" : robbed.length ? "Robbed!" : "Phew!"}</h1>
@@ -549,9 +793,20 @@ function renderClosestReveal(round: ClosestView): void {
 
 // ---- Drawing ----
 
-function renderDraw(prompt: string): void {
-  html(`<p class="category">Draw this (shh, it's secret!)</p>
-    <h2 class="prompt">${escapeHtml(prompt)}</h2>
+interface PadOptions {
+  caption: string;
+  prompt: string;
+  done: string;
+  onDone: (strokes: Stroke[]) => void;
+  maxStrokes?: number;
+  skip?: string;
+  onSkip?: () => void;
+}
+
+/** The drawing pad screen, used for Doodle Duel, Draw-Off and self-portraits. */
+function renderPad(options: PadOptions): void {
+  html(`<p class="category">${escapeHtml(options.caption)}</p>
+    <h2 class="prompt">${escapeHtml(options.prompt)}</h2>
     <canvas id="pad" class="pad"></canvas>
     <div class="pens">${PEN_COLORS.map((c, i) => `<button class="pen${i === 0 ? " on" : ""}" data-c="${i}" style="--pen:${c}" aria-label="color ${i + 1}"></button>`).join("")}</div>
     <div class="tools">
@@ -559,10 +814,13 @@ function renderDraw(prompt: string): void {
       <button class="secondary small" id="undo">Undo</button>
       <button class="secondary small" id="clear">Clear</button>
     </div>
-    <button class="primary" id="done" disabled>I'm done!</button>`);
+    <div class="pad-actions">
+      ${options.skip ? `<button class="secondary" id="skip">${escapeHtml(options.skip)}</button>` : ""}
+      <button class="primary" id="done" disabled>${escapeHtml(options.done)}</button>
+    </div>`);
   const canvas = $<HTMLCanvasElement>("#pad");
   const done = $<HTMLButtonElement>("#done");
-  pad = new DrawingPad(canvas, () => (done.disabled = pad!.strokes.length === 0));
+  pad = new DrawingPad(canvas, () => (done.disabled = pad!.strokes.length === 0), options.maxStrokes);
   for (const b of appEl.querySelectorAll<HTMLButtonElement>(".pen")) {
     b.onclick = () => {
       pad!.color = Number(b.dataset.c);
@@ -577,10 +835,11 @@ function renderDraw(prompt: string): void {
   }
   $<HTMLButtonElement>("#undo").onclick = () => pad!.undo();
   $<HTMLButtonElement>("#clear").onclick = () => pad!.clear();
+  if (options.onSkip) $<HTMLButtonElement>("#skip").onclick = options.onSkip;
   done.onclick = () => {
     if (!pad || pad.strokes.length === 0) return;
     buzz(40);
-    send({ type: "drawing", strokes: pad.strokes });
+    options.onDone(pad.strokes);
   };
 }
 
@@ -661,6 +920,39 @@ function renderDrawingReveal(round: DrawingView): void {
   </div>`);
 }
 
+// ---- Draw-Off ----
+
+function renderDrawOffVote(round: DrawOffView): void {
+  const own = round.me?.ownDrawing;
+  html(`<p class="category">Draw-Off · “${escapeHtml(round.prompt)}”</p>
+    <h2>Which drawing is the best?</h2>
+    <p class="muted">Look at the TV and vote by number. Not your own!</p>
+    <div class="gallery-votes">${round.gallery
+      .map((g) => `<button class="vote-number${g.id === own ? " own" : ""}" data-id="${g.id}" ${g.id === own ? "disabled" : ""}>#${g.number}${g.id === own ? "<small>yours</small>" : ""}</button>`)
+      .join("")}</div>`);
+  for (const button of appEl.querySelectorAll<HTMLButtonElement>(".vote-number:not(.own)")) {
+    button.onclick = () => {
+      buzz();
+      send({ type: "vote_drawing", drawing: button.dataset.id! });
+    };
+  }
+}
+
+function renderDrawOffReveal(round: DrawOffView): void {
+  const myId = app.game?.you?.playerId;
+  const mine = round.gallery.find((g) => g.artistId === myId);
+  const place = mine ? round.gallery.indexOf(mine) + 1 : 0;
+  const won = mine && place === 1 && (mine.votes ?? 0) > 0;
+  const player = me();
+  html(`<div class="center">
+    ${player ? `<img class="portrait small ${won ? "dance" : "bob"}" src="${portrait(player.animal)}" alt="">` : ""}
+    <p class="muted">Draw-Off results</p>
+    <h1>${won ? "Best in show! 🏆" : mine ? `${mine.votes ?? 0} vote${mine.votes === 1 ? "" : "s"} for you` : "Nice gallery!"}</h1>
+    ${mine ? `<p class="muted">Your drawing came ${ordinal(place)}</p>` : ""}
+    ${player?.lastPoints ? `<p class="points" data-count="${player.lastPoints}" data-signed="1">${signedPoints(player.lastPoints)}</p>` : ""}
+  </div>`);
+}
+
 // ---- Timer bar ----
 
 function tick(): void {
@@ -668,11 +960,30 @@ function tick(): void {
     const paused = app.game?.paused;
     const remaining = paused ? (app.game?.timer?.remainingMs ?? 0) : Math.max(0, timerDeadline - performance.now());
     timerFill.style.transform = `scaleX(${Math.min(1, remaining / timerDuration)})`;
-    timerFill.classList.toggle("urgent", remaining < 5000);
+    const urgent = remaining < 5000 && remaining > 0;
+    timerFill.classList.toggle("urgent", urgent);
+    // Last five seconds: a tick each second, but only if you still have to act.
+    const second = Math.ceil(remaining / 1000);
+    if (urgent && !paused && second !== lastTickSecond && ACT_SCREENS.has(screenFor(app).kind)) {
+      lastTickSecond = second;
+      play("tick_urgent", 1 + (5 - second) * 0.04, 0);
+    }
   }
   requestAnimationFrame(tick);
 }
 
+// Every tap: unlock sound (browsers need a tap first) and a soft click.
+document.addEventListener(
+  "pointerdown",
+  (e) => {
+    unlockAudio();
+    const target = e.target as HTMLElement;
+    if (target.closest("button:not(:disabled)") && !target.closest(".emote")) play("tap", 1, 0.08);
+  },
+  { capture: true },
+);
+
+renderEmotes();
 render();
 connection.start();
 requestAnimationFrame(tick);

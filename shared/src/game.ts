@@ -80,18 +80,18 @@ export type Stroke = z.infer<typeof StrokeSchema>;
 export const MAX_STROKES = 400;
 export const MAX_LIE_LENGTH = 45;
 
-/** Pen colors for drawings (index = Stroke.c). Asagi-shu palette first. Phones and TV share this. */
+/** Pen colors for drawings (index = Stroke.c). Game palette first. Phones and TV share this. */
 export const PEN_COLORS = [
-  "#2b2b2b", // sumi
-  "#d8453a", // shu
-  "#6b9bb0", // asagi
-  "#3f6e82", // deep asagi
-  "#f4eee0", // gofun (works as an eraser on the paper)
-  "#e8a33d", // ochre
-  "#7db58c", // leaf green
-  "#f0948a", // blush pink
-  "#8c6a4f", // wood brown
-  "#9b7cc4", // wisteria
+  "#1e1f22", // black
+  "#de4a3b", // red
+  "#f47a1f", // orange
+  "#ffc53d", // yellow
+  "#5b7486", // steel
+  "#34495a", // dark steel
+  "#ffffff", // white (works as an eraser on the paper)
+  "#a3a8ad", // grey
+  "#5fa85b", // leaf green
+  "#e88fb0", // pink
 ] as const;
 
 /** Pen widths in canvas units (index = Stroke.w). */
@@ -99,7 +99,7 @@ export const PEN_WIDTHS = [6, 14, 28, 60] as const;
 
 // ---- Rounds and rules ----
 
-export const ROUND_KINDS = ["classic", "wager", "closest", "steal", "drawing", "final"] as const;
+export const ROUND_KINDS = ["classic", "wager", "closest", "steal", "drawing", "drawoff", "final"] as const;
 export type RoundKind = (typeof ROUND_KINDS)[number];
 
 export const ROUND_INFO: Record<RoundKind, { title: string; blurb: string }> = {
@@ -108,11 +108,33 @@ export const ROUND_INFO: Record<RoundKind, { title: string; blurb: string }> = {
   closest: { title: "Closest Guess", blurb: "Type a number. Nearest guess wins big, and everyone close scores something." },
   steal: { title: "Sticky Fingers", blurb: "Answer right and you get to steal points from anyone you like." },
   drawing: { title: "Doodle Duel", blurb: "Draw your secret prompt. Then write fake titles for the other drawings and spot the real one." },
+  drawoff: { title: "Draw-Off", blurb: "Everyone draws the same thing. Then vote for your favorite. No voting for yourself!" },
   final: { title: "Final Showdown", blurb: "One hard question. Bet as much as you dare. Anyone can still win." },
 };
 
 export const GAME_LENGTHS = ["short", "standard", "long"] as const;
 export type GameLength = (typeof GAME_LENGTHS)[number];
+
+/** Game modes. Each has its own round plans and decides which questions it uses. */
+export const GAME_MODES = ["party", "doodle", "memes"] as const;
+export type GameMode = (typeof GAME_MODES)[number];
+
+export const MODE_INFO: Record<GameMode, { title: string; blurb: string }> = {
+  party: { title: "Trivia Party", blurb: "Quiz rounds, doodles, bets and steals." },
+  doodle: { title: "Doodle Party", blurb: "Nothing but drawing. Fake titles, draw-offs, bragging rights." },
+  memes: { title: "Meme Mode", blurb: "Name that meme, guess the year, find where it started." },
+};
+
+/** Meme Mode only uses categories starting with this; the other modes leave them out. */
+export const MEME_CATEGORY_PREFIX = "meme_";
+
+/** Does this question belong in this mode? */
+export function questionFitsMode(category: string, mode: GameMode): boolean {
+  const meme = category.startsWith(MEME_CATEGORY_PREFIX);
+  return mode === "memes" ? meme : !meme;
+}
+
+export type RoundPlans = Record<GameLength, RoundKind[]>;
 
 /** Gameplay numbers. Defaults here are only a fallback; edit host/config/game_rules.json. */
 export interface GameRules {
@@ -155,8 +177,14 @@ export interface GameRules {
   draw_truth_points: number;
   draw_artist_points: number;
   draw_fool_points: number;
-  // Session plans: which rounds, in order, for each length.
-  plans: Record<GameLength, RoundKind[]>;
+  // Draw-Off
+  drawoff_vote_points: number;
+  drawoff_winner_bonus: number;
+  drawoff_vote_seconds: number;
+  // Players
+  emote_cooldown_seconds: number;
+  // Session plans: which rounds, in order, for each mode and length.
+  modes: Record<GameMode, RoundPlans>;
 }
 
 export const DEFAULT_RULES: GameRules = {
@@ -193,15 +221,38 @@ export const DEFAULT_RULES: GameRules = {
   draw_truth_points: 1000,
   draw_artist_points: 500,
   draw_fool_points: 500,
-  plans: {
-    short: ["classic", "drawing", "final"],
-    standard: ["classic", "drawing", "closest", "steal", "drawing", "final"],
-    long: ["classic", "drawing", "wager", "closest", "drawing", "steal", "final"],
+  drawoff_vote_points: 400,
+  drawoff_winner_bonus: 600,
+  drawoff_vote_seconds: 25,
+  emote_cooldown_seconds: 1.2,
+  modes: {
+    party: {
+      short: ["classic", "drawing", "final"],
+      standard: ["classic", "drawing", "closest", "steal", "drawing", "final"],
+      long: ["classic", "drawing", "wager", "closest", "drawing", "steal", "final"],
+    },
+    doodle: {
+      short: ["drawing", "drawoff"],
+      standard: ["drawing", "drawoff", "drawing", "drawoff"],
+      long: ["drawing", "drawoff", "drawing", "drawoff", "drawing", "drawoff"],
+    },
+    memes: {
+      short: ["classic", "closest", "final"],
+      standard: ["classic", "closest", "steal", "wager", "final"],
+      long: ["classic", "closest", "steal", "classic", "wager", "closest", "final"],
+    },
   },
 };
 
 const num = z.number();
 const RoundKindSchema = z.enum(ROUND_KINDS);
+const PlansInput = z
+  .object({
+    short: z.array(RoundKindSchema).max(20),
+    standard: z.array(RoundKindSchema).max(20),
+    long: z.array(RoundKindSchema).max(20),
+  })
+  .partial();
 
 /** Rules as the host sends them: any subset, unknown keys (like "_comment") ignored. */
 export const GameRulesInput = z
@@ -239,18 +290,17 @@ export const GameRulesInput = z
     draw_truth_points: num,
     draw_artist_points: num,
     draw_fool_points: num,
-    plans: z
-      .object({
-        short: z.array(RoundKindSchema).max(20),
-        standard: z.array(RoundKindSchema).max(20),
-        long: z.array(RoundKindSchema).max(20),
-      })
-      .partial(),
+    drawoff_vote_points: num,
+    drawoff_winner_bonus: num,
+    drawoff_vote_seconds: num,
+    emote_cooldown_seconds: num,
+    modes: z.object({ party: PlansInput, doodle: PlansInput, memes: PlansInput }).partial(),
   })
   .partial();
 
 /** What the host picks in the lobby. */
 export const GameSettingsSchema = z.object({
+  mode: z.enum(GAME_MODES).default("party"),
   length: z.enum(GAME_LENGTHS).default("standard"),
   drawing: z.boolean().default(true),
   /** Category ids to use; empty = all. */
@@ -269,7 +319,16 @@ const points = (v: number) => Math.round(clamp(v, 0, 100000));
 
 /** Fill in defaults and keep every number in a sane range. */
 export function resolveRules(input: z.infer<typeof GameRulesInput>, maxPlayers: number): GameRules {
-  const r = { ...DEFAULT_RULES, ...input, plans: { ...DEFAULT_RULES.plans, ...(input.plans ?? {}) } };
+  const r = { ...DEFAULT_RULES, ...input };
+  const plans = (mode: GameMode): RoundPlans => {
+    const given = input.modes?.[mode] ?? {};
+    const fallback = DEFAULT_RULES.modes[mode];
+    return {
+      short: given.short?.length ? given.short : fallback.short,
+      standard: given.standard?.length ? given.standard : fallback.standard,
+      long: given.long?.length ? given.long : fallback.long,
+    };
+  };
   return {
     min_players: Math.round(clamp(r.min_players, 1, maxPlayers)),
     max_players: Math.round(clamp(r.max_players, 1, maxPlayers)),
@@ -304,11 +363,11 @@ export function resolveRules(input: z.infer<typeof GameRulesInput>, maxPlayers: 
     draw_truth_points: points(r.draw_truth_points),
     draw_artist_points: points(r.draw_artist_points),
     draw_fool_points: points(r.draw_fool_points),
-    plans: {
-      short: r.plans.short.length ? r.plans.short : DEFAULT_RULES.plans.short,
-      standard: r.plans.standard.length ? r.plans.standard : DEFAULT_RULES.plans.standard,
-      long: r.plans.long.length ? r.plans.long : DEFAULT_RULES.plans.long,
-    },
+    drawoff_vote_points: points(r.drawoff_vote_points),
+    drawoff_winner_bonus: points(r.drawoff_winner_bonus),
+    drawoff_vote_seconds: secs(r.drawoff_vote_seconds),
+    emote_cooldown_seconds: clamp(r.emote_cooldown_seconds, 0, 30),
+    modes: { party: plans("party"), doodle: plans("doodle"), memes: plans("memes") },
   };
 }
 
@@ -326,6 +385,9 @@ export const CATEGORY_NAMES: Record<string, string> = {
   video_games: "Video Games",
   art_literature: "Art & Literature",
   language_words: "Language & Words",
+  meme_names: "Name That Meme",
+  meme_origins: "Where It Started",
+  meme_years: "Meme Years",
 };
 
 export function categoryName(id: string): string {

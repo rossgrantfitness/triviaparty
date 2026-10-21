@@ -131,8 +131,8 @@ describe("relay server", () => {
     const { phone } = await joinRoom(code, "Ana");
     host.send({
       type: "start_game",
-      rules: { classic_questions: 2, reveal_seconds: 0.05, round_intro_seconds: 0.05, plans: { short: ["classic"] } },
-      settings: { length: "short", drawing: false, categories: [] },
+      rules: { classic_questions: 2, reveal_seconds: 0.05, round_intro_seconds: 0.05, modes: { party: { short: ["classic"] } } },
+      settings: { mode: "party", length: "short", drawing: false, categories: [] },
       questions: QUESTIONS,
     });
     await phone.waitForState((s) => s.phase === "intro" && s.roundTitle === "Quiz Time");
@@ -183,6 +183,16 @@ describe("relay server", () => {
     again.send({ type: "resume_room", code, hostToken });
     const created = await again.waitFor((m) => m.type === "room_created");
     expect(created).toMatchObject({ code });
+  });
+
+  it("passes emotes and self-portraits to the TV", async () => {
+    const { host, code } = await createRoom();
+    const { phone, joined } = await joinRoom(code, "Ana");
+    if (joined.type !== "joined") throw new Error("join failed");
+    phone.send({ type: "emote", emote: "laugh" });
+    expect(await host.waitFor((m) => m.type === "emote")).toMatchObject({ playerId: joined.playerId, emote: "laugh" });
+    phone.send({ type: "avatar", strokes: [{ c: 1, w: 1, p: [5, 5, 50, 50] }] });
+    expect(await host.waitFor((m) => m.type === "avatar")).toMatchObject({ playerId: joined.playerId });
   });
 
   it("stops players from sending host commands", async () => {

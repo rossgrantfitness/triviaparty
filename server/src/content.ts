@@ -1,5 +1,7 @@
 import {
   normalizeTitle,
+  questionFitsMode,
+  type GameMode,
   type ClosestGuessQuestion,
   type DrawingPrompt,
   type MultipleChoiceQuestion,
@@ -24,12 +26,13 @@ export class ContentPool {
     private readonly decoyPool: string[],
     private readonly rng: () => number,
     categories: string[] = [],
+    mode: GameMode = "party",
   ) {
-    const unique = [...new Map(questions.map((q) => [q.id, q])).values()];
+    const unique = [...new Map(questions.map((q) => [q.id, q])).values()].filter((q) => questionFitsMode(q.category, mode));
     const allowed = (q: Question) => categories.length === 0 || categories.includes(q.category);
     this.mc = unique.filter((q): q is MultipleChoiceQuestion => q.type === "multiple_choice" && allowed(q));
     this.closest = unique.filter((q): q is ClosestGuessQuestion => q.type === "closest_guess" && allowed(q));
-    // If the category filter leaves nothing, fall back to everything rather than an empty game.
+    // If the category filter leaves nothing, fall back to the whole mode rather than an empty game.
     if (this.mc.length === 0) this.mc = unique.filter((q): q is MultipleChoiceQuestion => q.type === "multiple_choice");
     if (this.closest.length === 0) this.closest = unique.filter((q): q is ClosestGuessQuestion => q.type === "closest_guess");
     this.prompts = [...new Map(prompts.map((p) => [p.id, p])).values()];

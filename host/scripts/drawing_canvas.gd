@@ -21,7 +21,7 @@ func _draw() -> void:
 	var side: float = minf(size.x, size.y)
 	var origin: Vector2 = (size - Vector2(side, side)) / 2.0
 	var frame: StyleBoxFlat = Look.panel(Look.PAPER, 28, 0)
-	frame.border_color = Look.SUMI
+	frame.border_color = Look.BLACK
 	frame.set_border_width_all(6)
 	draw_style_box(frame, Rect2(origin, Vector2(side, side)))
 	var scale: float = side / UNITS

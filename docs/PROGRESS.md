@@ -1,6 +1,6 @@
 # Progress
 
-Last updated: 2026-10-20
+Last updated: 2026-10-21
 
 ## Where we are: the full game is playable
 
@@ -8,9 +8,17 @@ Ross asked for "Drawful 2 and Papa's Quiz combined": fun, colorful trivia (never
 over-the-top quirky) plus drawing rounds, with any browser as a controller.
 That is now built end to end: TV (Godot), phones (any browser), server, content.
 
+### Three game modes (press G in the lobby)
+
+| Mode | What it is |
+|---|---|
+| Trivia Party | The full mix below: quiz, doodles, bets, closest guess, steals, final bet |
+| Doodle Party | Only drawing: Doodle Duel and the new Draw-Off, back to back |
+| Meme Mode | Name that meme, where it started, what year: quiz, closest-year guesses, steals, bets |
+
 ### The game
 
-A session is a plan of rounds (host picks Short / Standard / Long, drawing on/off):
+A session is a plan of rounds (host picks mode, Short / Standard / Long, drawing on/off):
 
 | Round | What happens |
 |---|---|
@@ -20,6 +28,7 @@ A session is a plan of rounds (host picks Short / Standard / Long, drawing on/of
 | Closest Guess | Type a number; nearest guesses score, shown on a number line. |
 | Sticky Fingers | Right answers steal points from a player they choose. |
 | Final Showdown | One hard question; everyone bets as much as they dare. |
+| Draw-Off | Everyone draws the same prompt, the gallery goes up on the TV, everyone votes for their favorite (not their own). |
 
 Standard game: Quiz Time, Doodle Duel, Closest Guess, Sticky Fingers, Doodle Duel,
 Final Showdown (about 18 minutes). Short is about 10, Long about 24.
@@ -38,11 +47,23 @@ Final Showdown (about 18 minutes). Short is about 10, Long about 24.
 - [x] Content: 172 multiple-choice questions in all 12 categories (with fun facts), 36 closest-guess numbers, 148 drawing prompts, 50 house lies
 - [x] Double-click launchers (`start_game.bat`, `start_game.command`)
 - [x] Tests: 87 TypeScript + 36 Godot; full games played here with the real TV, bots and a browser phone (4 and 9 players)
+- [x] Game modes: Trivia Party, Doodle Party (all drawing), Meme Mode (G in the lobby, or `--mode=` on the command line)
+- [x] Draw-Off round: same prompt for everyone, gallery vote, winner bonus
+- [x] Meme content: 38 "name that meme", 24 "where it started", 8 + 22 "what year" (text descriptions, no meme images)
+- [x] New palette: orange, yellow, reddish, steel, grey, black, white (TV and phones)
+- [x] Sound identity: one signature four-note jingle (G C E A), and every sound (taps, lock-ins, right, wrong, steal, winner) built from the same bright bell family so the game has a recognisable "voice". Synthesized by `tools/audio/make_sfx.py`; TV and phones both play them; M mutes the TV, a speaker button mutes the phone
+- [x] Juice: pop-ins and staggered entrances, screen shake on wrong answers and steals, count-up scores, confetti, big onomatopoeia stamps (ピンポーン! ブブー ヌスミ! ブラボー! やったー!), urgent ticking in the last seconds, phone buzz and confetti
+- [x] Avatars: pick a hat on the phone (party hat, headband, bow, crown, top hat, flower, glasses), and draw a self-portrait that hangs on a little sign by your podium
+- [x] Emotes: 8 emote buttons on every phone (laugh, wow, love, boo, clap, think, taunt, cry); the animal acts it out with a speech bubble on the TV
+- [x] Playful steals: coins fly from the victim to the thief, the victim slumps, cheeky lines on the phones ("YOINK!", "pockets empty")
+- [x] Tests: 97 TypeScript + 42 Godot; Doodle Party, Meme Mode and steal-heavy games played here with the real TV and bots
 
 ### Waiting on the creative director
 
 - [ ] Play a real game with friends (any phones, same Wi-Fi) and tell me what was fun, what dragged, what confused people
 - [ ] Verify the questions (each has a Wikipedia link; all are unverified drafts) and the drawing prompts
+- [ ] Listen to the sounds and tell me which ones you love or hate (they're placeholders made by code, easy to redo)
+- [ ] Check the meme questions too (dates and first appearances are drafts)
 - [ ] Tune pacing in `host/config/game_rules.json` (or tell me and I'll change it)
 - [ ] Working title, animals 5–8, swap the placeholder animal models when you have art
 
@@ -51,7 +72,8 @@ Final Showdown (about 18 minutes). Short is about 10, Long about 24.
 1. Fixes from your first real playtest
 2. Host the server online so phones on mobile data can join (manifest section 12)
 3. F1 debug menu on the TV; question validator script and review page (manifest Phase 3)
-4. Audio: music, sound effects, host voice lines (manifest Phase 5)
+4. Audio: background music and host voice lines (sound effects are in; music isn't)
+5. Meme Mode with real meme pictures (needs image rights checked first, so text-only for now)
 
 ## Known issues
 
@@ -65,7 +87,10 @@ Final Showdown (about 18 minutes). Short is about 10, Long about 24.
 ## Notes and decisions
 
 - **Tone change (Ross, 2026-10-20):** questions and answers are fun, funny, colorful and interesting, but never as quirky as Jackbox. Drawing prompts are normal things with a humorous twist, always drawable. This updates the manifest's "tension over jokes" pillar: the stakes still come from mechanics (wagers, steals, speed, the final bet).
-- Godot 4.7 with the Compatibility renderer. GUT 9.7.1. Protocol version 3.
+- Godot 4.7 with the Compatibility renderer. GUT 9.7.1. Protocol version 4.
 - Dev server port 8787, phone page port 5173.
 - `min_players` is 1 for testing; the manifest's v1 target is 3–16. Doodle Duel works best with 3+.
 - Commit Godot's `.uid` and `.import` files next to scripts and assets.
+- **Sound philosophy (Ross, 2026-10-21):** like great Japanese products, the game should have one iconic, memorable sound that makes it a pleasure to use. So there's a signature jingle, and every other sound is a short piece of the same family (same bell tone, same key), never a random mix of stock effects.
+- Meme Mode questions use `meme_` category ids; Meme Mode only uses those, the other modes never do.
+- Hats and portraits are cosmetic only and never affect scoring. Emotes are rate-limited (`emote_cooldown_seconds`).

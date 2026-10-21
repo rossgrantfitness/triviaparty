@@ -1,4 +1,4 @@
-import type { GameRules, PlayerInput, RoundKind, RoundView } from "@trivia/shared";
+import type { GameRules, PlayerInput, RoundKind, RoundView, Stroke } from "@trivia/shared";
 import type { ContentPool } from "../content";
 import type { Result } from "../util";
 
@@ -15,6 +15,10 @@ export interface Player {
   roundPoints: number;
   /** How many times this player has been an artist this session. */
   drawings: number;
+  accessory: string;
+  /** Self-portrait strokes, or null if they haven't drawn one. */
+  avatar: Stroke[] | null;
+  lastEmoteAt: number;
 }
 
 /** What a round can ask of the room it runs in. */

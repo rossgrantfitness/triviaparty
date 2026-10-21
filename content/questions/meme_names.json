@@ -1,0 +1,806 @@
+{
+  "pack": "meme_names",
+  "questions": [
+    {
+      "id": "memn-0001",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 1,
+      "question": "A Shiba Inu side-eyes the camera, surrounded by Comic Sans captions like 'such wow' and 'very amaze'. What's it called?",
+      "choices": [
+        "Doge",
+        "Cheems",
+        "Grumpy Cat",
+        "Nyan Cat"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Doge_(meme)",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false,
+      "fact": "The real dog was called Kabosu and lived in Japan."
+    },
+    {
+      "id": "memn-0002",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 1,
+      "question": "A man walking with his girlfriend turns to stare at another woman while his girlfriend glares at him. What's it called?",
+      "choices": [
+        "Hide the Pain Harold",
+        "Distracted Boyfriend",
+        "Roll Safe",
+        "Bad Luck Brian"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Distracted_boyfriend_meme",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0003",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 1,
+      "question": "A cartoon dog in a hat sips coffee in a room that's on fire and calmly says it's okay. What's it called?",
+      "choices": [
+        "Everything Is Awesome",
+        "Keep Calm and Carry On",
+        "This Is Fine",
+        "Dramatic Chipmunk"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/This_Is_Fine",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0004",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 1,
+      "question": "A pixel-art cat with a Pop-Tart body flies through space, leaving a rainbow trail. What's it called?",
+      "choices": [
+        "Keyboard Cat",
+        "Bongo Cat",
+        "Doge",
+        "Nyan Cat"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Nyan_Cat",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0005",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 1,
+      "question": "You click a link expecting something useful and get Rick Astley's 'Never Gonna Give You Up' instead. What's it called?",
+      "choices": [
+        "Rickrolling",
+        "Trolling",
+        "Bait and Switch",
+        "Catfishing"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Rickrolling",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0006",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 1,
+      "question": "A toddler on a beach clenches a fist full of sand with a very determined, victorious face. What's it called?",
+      "choices": [
+        "Bad Luck Brian",
+        "Success Kid",
+        "Disaster Girl",
+        "Charlie Bit My Finger"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Success_Kid",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0007",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 2,
+      "question": "A crudely drawn face with a huge mischievous grin, used whenever someone is pulling a prank. What's it called?",
+      "choices": [
+        "Rage Guy",
+        "Forever Alone",
+        "Trollface",
+        "Me Gusta"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Trollface",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0008",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 2,
+      "question": "A small girl smirks at the camera while a house burns in the background behind her. What's it called?",
+      "choices": [
+        "Success Kid",
+        "Overly Attached Girlfriend",
+        "Cash Me Outside",
+        "Disaster Girl"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Disaster_Girl",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false,
+      "fact": "The fire was a practice burn by the local fire department."
+    },
+    {
+      "id": "memn-0009",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 1,
+      "question": "A woman points and shouts across a table at a confused white cat sitting behind a dinner plate. What's it called?",
+      "choices": [
+        "Woman Yelling at a Cat",
+        "Grumpy Cat",
+        "Distracted Boyfriend",
+        "Surprised Pikachu"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Woman_yelling_at_a_cat",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0010",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 2,
+      "question": "An older man smiles in stock photos, but his eyes look like he's quietly suffering. What's it called?",
+      "choices": [
+        "Roll Safe",
+        "Hide the Pain Harold",
+        "Bad Luck Brian",
+        "Salt Bae"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Hide_the_Pain_Harold",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0011",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 1,
+      "question": "SpongeBob bent over like a chicken, with text written in aLtErNaTiNg CaPs to mock someone. What's it called?",
+      "choices": [
+        "Surprised Pikachu",
+        "Big Chungus",
+        "Mocking SpongeBob",
+        "Arthur's Fist"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Mocking_SpongeBob",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0012",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 2,
+      "question": "A guy smiles and taps his temple, as if he just had a genius (but terrible) idea. What's it called?",
+      "choices": [
+        "Hide the Pain Harold",
+        "Salt Bae",
+        "Distracted Boyfriend",
+        "Roll Safe"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Roll_Safe",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0013",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 1,
+      "question": "A chef in sunglasses sprinkles salt off his forearm onto a steak with a dramatic flick. What's it called?",
+      "choices": [
+        "Salt Bae",
+        "Gordon Ramsay",
+        "Roll Safe",
+        "Bad Luck Brian"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Salt_Bae",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0014",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 1,
+      "question": "Pikachu with its mouth wide open, looking shocked about something that was totally predictable. What's it called?",
+      "choices": [
+        "Detective Pikachu",
+        "Surprised Pikachu",
+        "Mocking SpongeBob",
+        "Dramatic Chipmunk"
+      ],
+      "answer": 1,
+      "source": "https://knowyourmeme.com/memes/surprised-pikachu",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0015",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 2,
+      "question": "An enormous, round Bugs Bunny standing still, given a very grand-sounding name. What's it called?",
+      "choices": [
+        "Big Floppa",
+        "Stonks",
+        "Big Chungus",
+        "Dat Boi"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Big_Chungus",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0016",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 2,
+      "question": "Drake in an orange jacket, holding up a hand to say no to one thing and pointing happily at another. What's it called?",
+      "choices": [
+        "Roll Safe",
+        "Hotline Bling Dance",
+        "Two Buttons",
+        "Drakeposting"
+      ],
+      "answer": 3,
+      "source": "https://knowyourmeme.com/memes/drakeposting",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0017",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 2,
+      "question": "A small animal whips its head toward the camera while dramatic music plays. What's it called?",
+      "choices": [
+        "Dramatic Chipmunk",
+        "Keyboard Cat",
+        "Hamster Dance",
+        "Surprised Pikachu"
+      ],
+      "answer": 0,
+      "source": "https://knowyourmeme.com/memes/dramatic-chipmunk",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false,
+      "fact": "It's actually a prairie dog, not a chipmunk."
+    },
+    {
+      "id": "memn-0018",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 2,
+      "question": "Pallbearers in suits dance while carrying a coffin, set to the song 'Astronomia'. What's it called?",
+      "choices": [
+        "Harlem Shake",
+        "Coffin Dance",
+        "Gangnam Style",
+        "Floss Dance"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Dancing_pallbearers",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0019",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 2,
+      "question": "A cat in a blue shirt plays an electric keyboard, and is used to 'play someone off' after a fail. What's it called?",
+      "choices": [
+        "Nyan Cat",
+        "Bongo Cat",
+        "Keyboard Cat",
+        "Grumpy Cat"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Keyboard_Cat",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0020",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 2,
+      "question": "A cartoon cat taps a table with its paws in time to music. What's it called?",
+      "choices": [
+        "Keyboard Cat",
+        "Nyan Cat",
+        "Pop Cat",
+        "Bongo Cat"
+      ],
+      "answer": 3,
+      "source": "https://knowyourmeme.com/memes/bongo-cat",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0021",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 2,
+      "question": "Kermit the Frog sips from a cup of tea next to a snippy remark, adding 'but that's none of my business'. What's it called?",
+      "choices": [
+        "But That's None of My Business",
+        "Evil Kermit",
+        "Mocking SpongeBob",
+        "This Is Fine"
+      ],
+      "answer": 0,
+      "source": "https://knowyourmeme.com/memes/but-thats-none-of-my-business",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0022",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 3,
+      "question": "A cartoon aardvark's clenched fist, used to show quiet rage. What's it called?",
+      "choices": [
+        "Rage Guy",
+        "Arthur's Fist",
+        "Big Chungus",
+        "Mocking SpongeBob"
+      ],
+      "answer": 1,
+      "source": "https://knowyourmeme.com/memes/arthurs-fist",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0023",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 2,
+      "question": "A bald, 3D-rendered head in a suit stands in front of a rising stock chart, with a misspelled word. What's it called?",
+      "choices": [
+        "Big Chungus",
+        "Hide the Pain Harold",
+        "Stonks",
+        "Dat Boi"
+      ],
+      "answer": 2,
+      "source": "https://knowyourmeme.com/memes/stonks",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0024",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 3,
+      "question": "A teenage girl with a hard stare on a talk show challenges the audience to 'catch her outside'. What's it called?",
+      "choices": [
+        "Leave Britney Alone",
+        "Overly Attached Girlfriend",
+        "Disaster Girl",
+        "Cash Me Outside"
+      ],
+      "answer": 3,
+      "source": "https://knowyourmeme.com/memes/cash-me-ousside-howbow-dah",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0025",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 2,
+      "question": "Someone in a video game charges into a room yelling his own name, ruining his team's careful plan. What's it called?",
+      "choices": [
+        "Leeroy Jenkins",
+        "All Your Base",
+        "Fus Ro Dah",
+        "Gangnam Style"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Leeroy_Jenkins",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0026",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 3,
+      "question": "A badly translated video game line declares that every one of your bases now belongs to them. What's it called?",
+      "choices": [
+        "Leeroy Jenkins",
+        "All Your Base Are Belong to Us",
+        "It's Dangerous to Go Alone",
+        "The Cake Is a Lie"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/All_your_base_are_belong_to_us",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0027",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 3,
+      "question": "A guy lip-syncs passionately in his chair to a Romanian pop song from his webcam. What's it called?",
+      "choices": [
+        "Chocolate Rain",
+        "Star Wars Kid",
+        "Numa Numa",
+        "Charlie Bit My Finger"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Numa_Numa_(video)",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0028",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 1,
+      "question": "A little boy bites his big brother's finger, and the brother says the famous line from the title. What's it called?",
+      "choices": [
+        "Numa Numa",
+        "Success Kid",
+        "David After Dentist",
+        "Charlie Bit My Finger"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Charlie_Bit_My_Finger",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0029",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 3,
+      "question": "A 3D-animated baby in a diaper does the cha-cha. One of the internet's very first viral videos. What's it called?",
+      "choices": [
+        "Dancing Baby",
+        "Hamster Dance",
+        "Badger Badger Badger",
+        "Charlie Bit My Finger"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Dancing_baby",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0030",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 3,
+      "question": "A man watches a rainbow in Yosemite and gets overwhelmed with joy, asking what it all means. What's it called?",
+      "choices": [
+        "Chocolate Rain",
+        "Double Rainbow",
+        "Numa Numa",
+        "Leave Britney Alone"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Double_Rainbow_(viral_video)",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0031",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 3,
+      "question": "A singer with a deep voice performs a slow song about weather, stepping back from the mic to breathe. What's it called?",
+      "choices": [
+        "Double Rainbow",
+        "Numa Numa",
+        "Chocolate Rain",
+        "Friday"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Chocolate_Rain",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0032",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 2,
+      "question": "Lots of people dancing wildly in costumes the moment the beat drops, after one person dances alone. What's it called?",
+      "choices": [
+        "Gangnam Style",
+        "Coffin Dance",
+        "Floss Dance",
+        "Harlem Shake"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Harlem_Shake_(meme)",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0033",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 1,
+      "question": "People dump buckets of ice water on their heads and challenge their friends to do the same. What's it called?",
+      "choices": [
+        "Ice Bucket Challenge",
+        "Mannequin Challenge",
+        "Cinnamon Challenge",
+        "Planking"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Ice_Bucket_Challenge",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0034",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 1,
+      "question": "Everyone freezes in place like statues while a camera moves around them. What's it called?",
+      "choices": [
+        "Planking",
+        "Mannequin Challenge",
+        "Ice Bucket Challenge",
+        "Harlem Shake"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Mannequin_Challenge",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0035",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 1,
+      "question": "People lie face down and stiff as a board in odd places, then post the photo. What's it called?",
+      "choices": [
+        "Owling",
+        "Mannequin Challenge",
+        "Planking",
+        "Dabbing"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Planking_(fad)",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0036",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 1,
+      "question": "A kid swings his arms back and forth around his hips in a dance that took over playgrounds. What's it called?",
+      "choices": [
+        "The Dab",
+        "The Worm",
+        "Gangnam Style",
+        "The Floss"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Floss_(dance)",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0037",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 1,
+      "question": "A grumpy-faced cat with a permanent frown, often captioned with a single gloomy word: 'No.' What's it called?",
+      "choices": [
+        "Grumpy Cat",
+        "Doge",
+        "Keyboard Cat",
+        "Woman Yelling at a Cat"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Grumpy_Cat",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memn-0038",
+      "type": "multiple_choice",
+      "category": "meme_names",
+      "difficulty": 2,
+      "question": "A kid in a school photo with braces, freckles and a plaid sweater vest, captioned with terrible luck. What's it called?",
+      "choices": [
+        "Success Kid",
+        "Bad Luck Brian",
+        "Hide the Pain Harold",
+        "Scumbag Steve"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Bad_Luck_Brian",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    }
+  ]
+}

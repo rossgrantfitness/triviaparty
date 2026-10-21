@@ -1,7 +1,7 @@
 extends Node3D
 ## The host game: 3D stage behind, flat UI in front, both driven by server state.
 ## Keyboard: Enter start / play again · Space pause · N next · Tab players · F11 fullscreen.
-## In the lobby: L changes game length, D turns drawing rounds on or off.
+## In the lobby: G changes game mode, L game length, D drawing rounds on or off. M mutes sound.
 
 const NETWORK_CONFIG_PATH: String = "res://config/network.json"
 ## Questions seen in recent games, so the next game prefers fresh ones.
@@ -16,6 +16,7 @@ var _questions: Array = []
 var _rules: Dictionary = {}
 var _drawing_pack: Dictionary = {}
 var _recent: Array = []
+var _cues: Cues = null
 ## Testing aid: start automatically once this many players joined (--autostart=N).
 var _autostart_players: int = 0
 
@@ -23,6 +24,7 @@ var _autostart_players: int = 0
 func _ready() -> void:
 	add_child(_stage)
 	add_child(_ui)
+	_cues = Cues.new(_ui, _stage)
 	_ui.join_url = phone_url()
 	_rules = ContentLoader.load_rules()
 	_questions = ContentLoader.load_questions()
@@ -34,6 +36,8 @@ func _ready() -> void:
 			_autostart_players = int(arg.trim_prefix("--autostart="))
 		elif arg.begins_with("--length="):
 			_ui.settings["length"] = arg.trim_prefix("--length=")
+		elif arg.begins_with("--mode="):
+			_ui.settings["mode"] = arg.trim_prefix("--mode=")
 	print("[host] loaded %d questions in %d categories and %d drawing prompts from %s" % [_questions.size(), ContentLoader.categories(_questions).size(), (_drawing_pack.get("prompts", []) as Array).size(), ContentLoader.questions_dir()])
 
 	_ui.start_pressed.connect(_start_game)
@@ -45,6 +49,10 @@ func _ready() -> void:
 	Server.state_changed.connect(_on_server_state_changed)
 	Server.game_state_received.connect(_on_game_state)
 	Server.server_error.connect(func(_code: String, message: String) -> void: _ui.show_toast(message))
+	Server.avatar_received.connect(func(id: String, strokes: Array) -> void: _stage.set_avatar(id, strokes))
+	Server.emote_received.connect(_on_emote)
+	for id: Variant in Server.avatars:
+		_stage.set_avatar(str(id), Server.avatars[id])
 	Server.room_ready.connect(func(code: String) -> void: print("[host] room %s ready, phones join at %s" % [code, phone_url()]))
 	_on_server_state_changed(Server.state, "")
 	if not Server.game_state.is_empty():
@@ -63,9 +71,15 @@ func _on_game_state(game: Dictionary) -> void:
 	_stage.sync_players(players, str(game.get("phase", "")))
 	_stage.apply_state(game)
 	_ui.show_state(game)
+	_cues.on_state(game)
 	if _autostart_players > 0 and str(game.get("phase", "")) == "lobby" and players.size() >= _autostart_players:
 		_autostart_players = 0
 		_start_game()
+
+
+func _on_emote(player_id: String, emote: String) -> void:
+	_stage.show_emote(player_id, emote)
+	Sfx.play("emote", randf_range(0.85, 1.2), 0.0, -4.0)
 
 
 func _start_game() -> void:
@@ -133,6 +147,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		KEY_D:
 			if phase == "lobby":
 				_ui.toggle_drawing()
+		KEY_G:
+			if phase == "lobby":
+				_ui.cycle_mode()
+		KEY_M:
+			Sfx.toggle_mute()
+			_ui.show_toast("Sound off" if Sfx.muted else "Sound on")
 		KEY_N, KEY_RIGHT:
 			Server.send_text(Protocol.skip())
 		KEY_TAB:

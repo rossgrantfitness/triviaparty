@@ -1,0 +1,528 @@
+{
+  "pack": "meme_years",
+  "questions": [
+    {
+      "id": "memy-0001",
+      "type": "multiple_choice",
+      "category": "meme_years",
+      "difficulty": 2,
+      "question": "In what year did 'Gangnam Style' come out?",
+      "choices": [
+        "2009",
+        "2012",
+        "2015",
+        "2017"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Gangnam_Style",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false,
+      "fact": "It was the first YouTube video to hit one billion views."
+    },
+    {
+      "id": "memy-0002",
+      "type": "multiple_choice",
+      "category": "meme_years",
+      "difficulty": 2,
+      "question": "In what year did the Ice Bucket Challenge take over the internet?",
+      "choices": [
+        "2010",
+        "2014",
+        "2016",
+        "2019"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Ice_Bucket_Challenge",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memy-0003",
+      "type": "multiple_choice",
+      "category": "meme_years",
+      "difficulty": 3,
+      "question": "In what year did Nyan Cat first fly across YouTube?",
+      "choices": [
+        "2007",
+        "2011",
+        "2014",
+        "2018"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Nyan_Cat",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memy-0004",
+      "type": "multiple_choice",
+      "category": "meme_years",
+      "difficulty": 3,
+      "question": "In what year did the Harlem Shake dance craze explode?",
+      "choices": [
+        "2009",
+        "2013",
+        "2016",
+        "2019"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Harlem_Shake_(meme)",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memy-0005",
+      "type": "multiple_choice",
+      "category": "meme_years",
+      "difficulty": 3,
+      "question": "In what year did the Mannequin Challenge freeze the internet?",
+      "choices": [
+        "2012",
+        "2014",
+        "2016",
+        "2019"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Mannequin_Challenge",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memy-0006",
+      "type": "multiple_choice",
+      "category": "meme_years",
+      "difficulty": 3,
+      "question": "In what year did the 'Woman Yelling at a Cat' meme go viral?",
+      "choices": [
+        "2013",
+        "2016",
+        "2019",
+        "2021"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Woman_yelling_at_a_cat",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memy-0007",
+      "type": "multiple_choice",
+      "category": "meme_years",
+      "difficulty": 3,
+      "question": "Rick Astley's 'Never Gonna Give You Up', the song behind Rickrolling, came out in which year?",
+      "choices": [
+        "1979",
+        "1987",
+        "1993",
+        "2001"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Never_Gonna_Give_You_Up",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memy-0008",
+      "type": "multiple_choice",
+      "category": "meme_years",
+      "difficulty": 2,
+      "question": "In what year did the 'Coffin Dance' meme spread around the world?",
+      "choices": [
+        "2014",
+        "2017",
+        "2020",
+        "2022"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Dancing_pallbearers",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memc-0001",
+      "type": "closest_guess",
+      "category": "meme_years",
+      "difficulty": 3,
+      "question": "In what year did Rickrolling start?",
+      "answer": 2007,
+      "unit": "year",
+      "source": "https://en.wikipedia.org/wiki/Rickrolling",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memc-0002",
+      "type": "closest_guess",
+      "category": "meme_years",
+      "difficulty": 3,
+      "question": "In what year did the 'Distracted Boyfriend' meme go viral?",
+      "answer": 2017,
+      "unit": "year",
+      "source": "https://en.wikipedia.org/wiki/Distracted_boyfriend_meme",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memc-0003",
+      "type": "closest_guess",
+      "category": "meme_years",
+      "difficulty": 3,
+      "question": "In what year did the Doge meme take off?",
+      "answer": 2013,
+      "unit": "year",
+      "source": "https://en.wikipedia.org/wiki/Doge_(meme)",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memc-0004",
+      "type": "closest_guess",
+      "category": "meme_years",
+      "difficulty": 3,
+      "question": "In what year did Grumpy Cat first become famous?",
+      "answer": 2012,
+      "unit": "year",
+      "source": "https://en.wikipedia.org/wiki/Grumpy_Cat",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memc-0005",
+      "type": "closest_guess",
+      "category": "meme_years",
+      "difficulty": 4,
+      "question": "In what year was the 'This Is Fine' comic first published?",
+      "answer": 2013,
+      "unit": "year",
+      "source": "https://en.wikipedia.org/wiki/This_Is_Fine",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memc-0006",
+      "type": "closest_guess",
+      "category": "meme_years",
+      "difficulty": 4,
+      "question": "In what year was the Trollface first drawn?",
+      "answer": 2008,
+      "unit": "year",
+      "source": "https://en.wikipedia.org/wiki/Trollface",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false,
+      "fact": "It was drawn in Microsoft Paint."
+    },
+    {
+      "id": "memc-0007",
+      "type": "closest_guess",
+      "category": "meme_years",
+      "difficulty": 4,
+      "question": "In what year was the 'Success Kid' photo taken?",
+      "answer": 2007,
+      "unit": "year",
+      "source": "https://en.wikipedia.org/wiki/Success_Kid",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memc-0008",
+      "type": "closest_guess",
+      "category": "meme_years",
+      "difficulty": 4,
+      "question": "In what year was the 'Disaster Girl' photo taken?",
+      "answer": 2004,
+      "unit": "year",
+      "source": "https://en.wikipedia.org/wiki/Disaster_Girl",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memc-0009",
+      "type": "closest_guess",
+      "category": "meme_years",
+      "difficulty": 3,
+      "question": "In what year was the 'Charlie Bit My Finger' video uploaded?",
+      "answer": 2007,
+      "unit": "year",
+      "source": "https://en.wikipedia.org/wiki/Charlie_Bit_My_Finger",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memc-0010",
+      "type": "closest_guess",
+      "category": "meme_years",
+      "difficulty": 4,
+      "question": "In what year did the 'Leeroy Jenkins' video come out?",
+      "answer": 2005,
+      "unit": "year",
+      "source": "https://en.wikipedia.org/wiki/Leeroy_Jenkins",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memc-0011",
+      "type": "closest_guess",
+      "category": "meme_years",
+      "difficulty": 4,
+      "question": "In what year was the 'Keep Calm and Carry On' poster first printed?",
+      "answer": 1939,
+      "unit": "year",
+      "source": "https://en.wikipedia.org/wiki/Keep_Calm_and_Carry_On",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false,
+      "fact": "It was mostly never displayed, and was rediscovered in a bookshop in 2000."
+    },
+    {
+      "id": "memc-0012",
+      "type": "closest_guess",
+      "category": "meme_years",
+      "difficulty": 4,
+      "question": "In what year did the 'Numa Numa' video come out?",
+      "answer": 2004,
+      "unit": "year",
+      "source": "https://en.wikipedia.org/wiki/Numa_Numa_(video)",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memc-0013",
+      "type": "closest_guess",
+      "category": "meme_years",
+      "difficulty": 4,
+      "question": "In what year did the 'Dancing Baby' animation first spread?",
+      "answer": 1996,
+      "unit": "year",
+      "source": "https://en.wikipedia.org/wiki/Dancing_baby",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memc-0014",
+      "type": "closest_guess",
+      "category": "meme_years",
+      "difficulty": 3,
+      "question": "In what year did the 'Double Rainbow' video go viral?",
+      "answer": 2010,
+      "unit": "year",
+      "source": "https://en.wikipedia.org/wiki/Double_Rainbow_(viral_video)",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memc-0015",
+      "type": "closest_guess",
+      "category": "meme_years",
+      "difficulty": 4,
+      "question": "In what year did 'Chocolate Rain' become a hit on YouTube?",
+      "answer": 2007,
+      "unit": "year",
+      "source": "https://en.wikipedia.org/wiki/Chocolate_Rain",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memc-0016",
+      "type": "closest_guess",
+      "category": "meme_years",
+      "difficulty": 3,
+      "question": "In what year did the 'Mocking SpongeBob' meme take off?",
+      "answer": 2017,
+      "unit": "year",
+      "source": "https://en.wikipedia.org/wiki/Mocking_SpongeBob",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memc-0017",
+      "type": "closest_guess",
+      "category": "meme_years",
+      "difficulty": 3,
+      "question": "In what year did the Salt Bae video go viral?",
+      "answer": 2017,
+      "unit": "year",
+      "source": "https://en.wikipedia.org/wiki/Salt_Bae",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memc-0018",
+      "type": "closest_guess",
+      "category": "meme_years",
+      "difficulty": 3,
+      "question": "In what year did 'Big Chungus' become a meme?",
+      "answer": 2018,
+      "unit": "year",
+      "source": "https://en.wikipedia.org/wiki/Big_Chungus",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memc-0019",
+      "type": "closest_guess",
+      "category": "meme_years",
+      "difficulty": 4,
+      "question": "In what year did 'Bad Luck Brian' first appear?",
+      "answer": 2012,
+      "unit": "year",
+      "source": "https://en.wikipedia.org/wiki/Bad_Luck_Brian",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memc-0020",
+      "type": "closest_guess",
+      "category": "meme_years",
+      "difficulty": 3,
+      "question": "In what year did planking become a craze?",
+      "answer": 2011,
+      "unit": "year",
+      "source": "https://en.wikipedia.org/wiki/Planking_(fad)",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memc-0021",
+      "type": "closest_guess",
+      "category": "meme_years",
+      "difficulty": 5,
+      "question": "In what year did the 'Zero Wing' line 'All your base are belong to us' go viral?",
+      "answer": 2000,
+      "unit": "year",
+      "source": "https://en.wikipedia.org/wiki/All_your_base_are_belong_to_us",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memc-0022",
+      "type": "closest_guess",
+      "category": "meme_years",
+      "difficulty": 3,
+      "question": "In what year did 'The Floss' dance go mainstream after Saturday Night Live?",
+      "answer": 2017,
+      "unit": "year",
+      "source": "https://en.wikipedia.org/wiki/Floss_(dance)",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    }
+  ]
+}

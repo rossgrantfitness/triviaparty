@@ -12,6 +12,10 @@ signal room_ready(code: String)
 signal game_state_received(game_state: Dictionary)
 ## The server rejected something (e.g. starting with no players).
 signal server_error(code: String, message: String)
+## A player drew (or redrew) their self-portrait.
+signal avatar_received(player_id: String, strokes: Array)
+## A player sent an emote from their phone.
+signal emote_received(player_id: String, emote: String)
 
 enum State { CONNECTING, CONNECTED, DISCONNECTED, ERROR }
 
@@ -25,6 +29,8 @@ var room_code: String = ""
 var host_token: String = ""
 ## The latest game state from the server, or empty before the first one arrives.
 var game_state: Dictionary = {}
+## Self-portraits by player id (strokes arrays).
+var avatars: Dictionary = {}
 
 var _socket: WebSocketPeer = null
 var _was_open: bool = false
@@ -148,6 +154,13 @@ func _handle_raw(raw: String) -> void:
 		"state":
 			game_state = message
 			game_state_received.emit(message)
+		"avatar":
+			var player_id: String = str(message.get("playerId", ""))
+			var strokes: Array = message.get("strokes", []) if typeof(message.get("strokes")) == TYPE_ARRAY else []
+			avatars[player_id] = strokes
+			avatar_received.emit(player_id, strokes)
+		"emote":
+			emote_received.emit(str(message.get("playerId", "")), str(message.get("emote", "")))
 		"error":
 			var code: String = str(message.get("code", ""))
 			var text: String = str(message.get("message", ""))
@@ -156,6 +169,7 @@ func _handle_raw(raw: String) -> void:
 				room_code = ""
 				host_token = ""
 				game_state = {}
+				avatars = {}
 				send_text(Protocol.create_room())
 			elif code == "protocol_mismatch":
 				_set_state(State.ERROR, text)

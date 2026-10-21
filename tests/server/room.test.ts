@@ -3,7 +3,9 @@ import {
   DEFAULT_RULES,
   type ClosestView,
   type DrawingPrompt,
+  type DrawOffView,
   type DrawingView,
+  type GameMode,
   type GameRules,
   type Question,
   type QuizView,
@@ -13,6 +15,7 @@ import { ContentPool } from "../../server/src/content";
 import { Room, buildPlan, cleanName, pickVoteWinner, scoreAnswer } from "../../server/src/room";
 import { rankGuesses } from "../../server/src/rounds/closest";
 import { scoreDrawing } from "../../server/src/rounds/drawing";
+import { scoreDrawOff } from "../../server/src/rounds/drawoff";
 
 function mc(category: string, count: number, difficulty = 2): Question[] {
   return Array.from({ length: count }, (_, i) => ({
@@ -40,7 +43,7 @@ function closest(count: number): Question[] {
 
 const PROMPTS: DrawingPrompt[] = Array.from({ length: 10 }, (_, i) => ({ id: `p${i}`, prompt: `A cat wearing hat number ${i}` }));
 const DECOYS = ["A sad toaster", "Grandma's jet ski", "Moon cheese", "A very tired cloud", "Spaghetti tornado"];
-const QUESTIONS = [...mc("science", 8), ...mc("history", 8), ...mc("geography", 8), ...mc("music", 3, 5), ...closest(4)];
+const QUESTIONS = [...mc("science", 8), ...mc("history", 8), ...mc("geography", 8), ...mc("music", 3, 5), ...closest(4), ...mc("meme_names", 4), ...mc("meme_origins", 4)];
 
 let room: Room;
 let phases: string[];
@@ -65,10 +68,10 @@ function join(name: string) {
   return result.value;
 }
 
-function start(plan: GameRules["plans"]["short"], rules: Partial<GameRules> = {}, drawing = true) {
+function start(plan: GameRules["modes"]["party"]["short"], rules: Partial<GameRules> = {}, drawing = true, mode: GameMode = "party") {
   return room.start({
-    rules: { ...rules, plans: { short: plan } },
-    settings: { length: "short", drawing, categories: [] },
+    rules: { ...rules, modes: { [mode]: { short: plan } } },
+    settings: { mode, length: "short", drawing, categories: [] },
     questions: QUESTIONS,
     prompts: PROMPTS,
     decoys: DECOYS,
@@ -436,5 +439,101 @@ describe("drawing round", () => {
     skipIntro();
     const second = drawing().artistIds;
     expect(second.some((id) => first.has(id))).toBe(false);
+  });
+});
+
+// ---- Modes ----
+
+describe("game modes", () => {
+  it("Party mode never asks meme questions; Meme Mode asks only those", () => {
+    join("Ana");
+    start(["classic"], { classic_questions: 30 });
+    vi.advanceTimersByTime(DEFAULT_RULES.round_intro_seconds * 1000);
+    const seen = new Set<string>();
+    for (let i = 0; i < 200 && room.phase === "round"; i++) {
+      const q = quiz().question;
+      if (q) seen.add(q.category);
+      room.skip();
+    }
+    expect([...seen].some((c) => c.startsWith("meme_"))).toBe(false);
+
+    room.backToLobby();
+    start(["classic"], { classic_questions: 30 }, true, "memes");
+    vi.advanceTimersByTime(DEFAULT_RULES.round_intro_seconds * 1000);
+    expect(quiz().vote!.categories.map((c) => c.id).sort()).toEqual(["meme_names", "meme_origins"]);
+    const memeSeen = new Set<string>();
+    for (let i = 0; i < 200 && room.phase === "round"; i++) {
+      const q = quiz().question;
+      if (q) memeSeen.add(q.category);
+      room.skip();
+    }
+    expect([...memeSeen].every((c) => c.startsWith("meme_"))).toBe(true);
+  });
+
+  it("Doodle Party plays drawing rounds even with the drawing switch off", () => {
+    join("Ana");
+    expect(start(["drawing", "drawoff"], {}, false, "doodle").ok).toBe(true);
+    expect(host()).toMatchObject({ roundKind: "drawing", roundCount: 2 });
+  });
+});
+
+// ---- Draw-Off ----
+
+describe("draw-off round", () => {
+  const stroke = { c: 2, w: 1, p: [100, 100, 600, 600] };
+
+  it("scores votes plus a bonus for the favorite", () => {
+    const entries = [{ id: "d1", artistId: "a" }, { id: "d2", artistId: "b" }, { id: "d3", artistId: "c" }];
+    const votes = new Map([["a", "d2"], ["b", "d3"], ["c", "d2"], ["d", "d3"]]);
+    const points = scoreDrawOff(entries, votes, DEFAULT_RULES);
+    expect(points.get("b")).toBe(2 * 400 + 600);
+    expect(points.get("c")).toBe(2 * 400 + 600);
+    expect(points.get("a")).toBeUndefined();
+  });
+
+  it("everyone draws one prompt, votes by number, can't vote for themselves", () => {
+    const a = join("Ana");
+    const b = join("Ben");
+    const c = join("Cy");
+    start(["drawoff"]);
+    vi.advanceTimersByTime(DEFAULT_RULES.round_intro_seconds * 1000);
+    const view = () => room.snapshotFor(null).round as DrawOffView;
+    const phoneView = (id: string) => room.snapshotFor(id).round as DrawOffView;
+    expect(view()).toMatchObject({ step: "drawing" });
+    expect(view().prompt).toMatch(/^A cat wearing hat/);
+    for (const p of [a, b, c]) room.input(p.id, { type: "drawing", strokes: [stroke] });
+    expect(view().step).toBe("voting");
+    expect(view().gallery).toHaveLength(3);
+    expect(view().gallery[0]!.strokes).toEqual([stroke]); // the TV gets drawings
+    expect(phoneView(a.id).gallery[0]!.strokes).toBeNull(); // phones vote by number
+    expect(view().gallery.every((g) => g.artistId === null)).toBe(true); // artists stay secret
+    const own = phoneView(a.id).me!.ownDrawing!;
+    expect(room.input(a.id, { type: "vote_drawing", drawing: own }).ok).toBe(false);
+    const ben = phoneView(b.id).me!.ownDrawing!;
+    room.input(a.id, { type: "vote_drawing", drawing: ben });
+    room.input(c.id, { type: "vote_drawing", drawing: ben });
+    room.input(b.id, { type: "vote_drawing", drawing: own });
+    expect(view().step).toBe("reveal");
+    expect(view().gallery[0]).toMatchObject({ artistId: b.id, votes: 2 });
+    expect(host().players.find((p) => p.id === b.id)!.score).toBe(2 * 400 + 600);
+  });
+});
+
+// ---- Avatars and emotes ----
+
+describe("avatars and emotes", () => {
+  it("stores a self-portrait and the hat", () => {
+    const r = room.join("Ana", "cat", undefined, "crown");
+    if (!r.ok) throw new Error("join");
+    room.setAvatar(r.value.id, [{ c: 0, w: 1, p: [1, 1, 2, 2] }]);
+    expect(host().players[0]).toMatchObject({ accessory: "crown", hasAvatar: true });
+    expect(room.avatars()).toHaveLength(1);
+  });
+
+  it("limits emote spam", () => {
+    const a = join("Ana");
+    expect(room.allowEmote(a.id, 10_000)).toBe(true);
+    expect(room.allowEmote(a.id, 10_500)).toBe(false);
+    expect(room.allowEmote(a.id, 11_300)).toBe(true);
   });
 });

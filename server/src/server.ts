@@ -107,6 +107,7 @@ export async function startServer(options: ServerOptions): Promise<RunningServer
     hostlessTimers.delete(room.code);
     room.setHostConnected(true);
     send(conn.socket, { type: "room_created", code: room.code, hostToken: room.hostToken });
+    for (const avatar of room.avatars()) send(conn.socket, { type: "avatar", ...avatar });
     send(conn.socket, room.snapshotFor(null));
   }
 
@@ -178,7 +179,7 @@ export async function startServer(options: ServerOptions): Promise<RunningServer
         sendError(socket, "room_not_found", `No room with code ${message.code}. Check the TV.`);
         return;
       }
-      const result = room.join(message.name, message.animal, message.token);
+      const result = room.join(message.name, message.animal, message.token, message.accessory);
       if (!result.ok) {
         sendError(socket, result.code, result.message);
         return;
@@ -206,6 +207,20 @@ export async function startServer(options: ServerOptions): Promise<RunningServer
       return;
     }
     switch (message.type) {
+      case "avatar": {
+        room.setAvatar(conn.playerId, message.strokes);
+        const host = hostConnectionFor(room);
+        if (host) send(host.socket, { type: "avatar", playerId: conn.playerId, strokes: message.strokes });
+        return;
+      }
+      case "emote": {
+        // Too fast? Quietly drop it: emotes are just for fun.
+        if (!room.allowEmote(conn.playerId)) return;
+        const host = hostConnectionFor(room);
+        if (host) send(host.socket, { type: "emote", playerId: conn.playerId, emote: message.emote });
+        return;
+      }
+      case "vote_drawing":
       case "vote":
       case "answer":
       case "wager":

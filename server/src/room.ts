@@ -4,6 +4,7 @@ import {
   MAX_PLAYERS,
   ROUND_INFO,
   resolveRules,
+  type Accessory,
   type Animal,
   type GameRules,
   type Phase,
@@ -12,10 +13,12 @@ import {
   type RoundKind,
   type StartGameMessage,
   type StateMessage,
+  type Stroke,
 } from "@trivia/shared";
 import { ContentPool } from "./content";
 import { ClosestRound } from "./rounds/closest";
 import { DrawingRound } from "./rounds/drawing";
+import { DrawOffRound } from "./rounds/drawoff";
 import { QuizRound } from "./rounds/quiz";
 import type { Player, Round, RoundContext } from "./rounds/types";
 import { cleanName, fail, ok, type Result } from "./util";
@@ -27,7 +30,7 @@ export { cleanName, pickVoteWinner, scoreAnswer, type Result } from "./util";
 export function buildPlan(plan: RoundKind[], options: { drawing: boolean; content: ContentPool }): RoundKind[] {
   const { content } = options;
   return plan.filter((kind) => {
-    if (kind === "drawing") return options.drawing && content.promptCount > 0;
+    if (kind === "drawing" || kind === "drawoff") return options.drawing && content.promptCount > 0;
     if (kind === "closest") return content.closestCount > 0;
     return content.multipleChoiceCount > 0;
   });
@@ -65,12 +68,15 @@ export class Room {
 
   // ---- Players ----
 
-  join(rawName: string, animal: Animal, token?: string): Result<Player> {
+  join(rawName: string, animal: Animal, token?: string, accessory: Accessory = "none"): Result<Player> {
     if (token) {
       const existing = [...this.players.values()].find((p) => p.token === token);
       if (existing) {
         existing.connected = true;
-        if (this.phase === "lobby") existing.animal = animal;
+        if (this.phase === "lobby") {
+          existing.animal = animal;
+          existing.accessory = accessory;
+        }
         this.onChange();
         return ok(existing);
       }
@@ -100,6 +106,9 @@ export class Room {
       lastPoints: 0,
       roundPoints: 0,
       drawings: 0,
+      accessory,
+      avatar: null,
+      lastEmoteAt: 0,
     };
     this.players.set(player.id, player);
     this.onChange();
@@ -119,6 +128,28 @@ export class Room {
     if (!this.players.delete(playerId)) return false;
     this.onChange();
     if (!this.paused) this.round?.playersChanged();
+    return true;
+  }
+
+  /** Store a self-portrait. Returns false if the player isn't here. */
+  setAvatar(playerId: string, strokes: Stroke[]): boolean {
+    const player = this.players.get(playerId);
+    if (!player) return false;
+    player.avatar = strokes.length ? strokes : null;
+    this.onChange();
+    return true;
+  }
+
+  avatars(): { playerId: string; strokes: Stroke[] }[] {
+    return [...this.players.values()].filter((p) => p.avatar).map((p) => ({ playerId: p.id, strokes: p.avatar! }));
+  }
+
+  /** True if the emote may be shown (players are limited to one every emote_cooldown_seconds). */
+  allowEmote(playerId: string, now = Date.now()): boolean {
+    const player = this.players.get(playerId);
+    if (!player) return false;
+    if (now - player.lastEmoteAt < this.rules.emote_cooldown_seconds * 1000) return false;
+    player.lastEmoteAt = now;
     return true;
   }
 
@@ -154,11 +185,10 @@ export class Room {
       return fail("not_enough_players", `Need at least ${this.rules.min_players} player(s) to start.`);
     }
     const settings = message.settings;
-    this.content = new ContentPool(message.questions, message.prompts, message.decoys, this.rng, settings.categories);
-    if (this.content.multipleChoiceCount === 0 && this.content.closestCount === 0) {
-      return fail("no_questions", "No questions were sent.");
-    }
-    this.plan = buildPlan(this.rules.plans[settings.length], { drawing: settings.drawing, content: this.content });
+    this.content = new ContentPool(message.questions, message.prompts, message.decoys, this.rng, settings.categories, settings.mode);
+    // Doodle Party is all drawing, whatever the drawing switch says.
+    const drawing = settings.mode === "doodle" || settings.drawing;
+    this.plan = buildPlan(this.rules.modes[settings.mode][settings.length], { drawing, content: this.content });
     if (this.plan.length === 0) return fail("no_questions", "Nothing to play with these settings.");
 
     for (const p of this.players.values()) {
@@ -248,7 +278,14 @@ export class Room {
   private beginRound(): void {
     const kind = this.plan[this.roundIndex]!;
     const ctx = this.context();
-    this.round = kind === "closest" ? new ClosestRound(ctx) : kind === "drawing" ? new DrawingRound(ctx) : new QuizRound(kind, ctx);
+    this.round =
+      kind === "closest"
+        ? new ClosestRound(ctx)
+        : kind === "drawing"
+          ? new DrawingRound(ctx)
+          : kind === "drawoff"
+            ? new DrawOffRound(ctx)
+            : new QuizRound(kind, ctx);
     this.phase = "round";
     this.round.start();
   }
@@ -364,6 +401,8 @@ export class Room {
         id: p.id,
         name: p.name,
         animal: p.animal as Animal,
+        accessory: p.accessory as Accessory,
+        hasAvatar: p.avatar !== null,
         seat: p.seat,
         score: p.score,
         connected: p.connected,

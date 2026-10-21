@@ -1,0 +1,514 @@
+{
+  "pack": "meme_origins",
+  "questions": [
+    {
+      "id": "memo-0001",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 2,
+      "question": "Where did the 'Distracted Boyfriend' photo come from before it was a meme?",
+      "choices": [
+        "A stock photo website",
+        "A movie poster",
+        "A TV advert",
+        "A newspaper"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Distracted_boyfriend_meme",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false,
+      "fact": "It was shot by Spanish photographer Antonio Guillem."
+    },
+    {
+      "id": "memo-0002",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 2,
+      "question": "The 'This Is Fine' dog first appeared in what?",
+      "choices": [
+        "A Disney cartoon",
+        "A webcomic",
+        "A cereal advert",
+        "A children's book"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/This_Is_Fine",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false,
+      "fact": "It's from KC Green's comic 'Gunshow'."
+    },
+    {
+      "id": "memo-0003",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 3,
+      "question": "Rickrolling first spread on which website?",
+      "choices": [
+        "Facebook",
+        "MySpace",
+        "4chan",
+        "Twitter"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Rickrolling",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memo-0004",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 3,
+      "question": "The Shiba Inu behind 'Doge' first appeared in photos on what?",
+      "choices": [
+        "A dog food advert",
+        "A Japanese game show",
+        "A movie",
+        "Her owner's blog"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Doge_(meme)",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memo-0005",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 3,
+      "question": "Where was the 'Grumpy Cat' photo first posted?",
+      "choices": [
+        "Reddit",
+        "Instagram",
+        "A cat show",
+        "The evening news"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Grumpy_Cat",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memo-0006",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 2,
+      "question": "The 'Mocking SpongeBob' picture comes from what?",
+      "choices": [
+        "A SpongeBob video game",
+        "An episode of SpongeBob SquarePants",
+        "A fan drawing",
+        "A SpongeBob toy advert"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Mocking_SpongeBob",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memo-0007",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 3,
+      "question": "The 'Woman Yelling at a Cat' meme combines a cat photo with a scene from which kind of TV show?",
+      "choices": [
+        "A cooking show",
+        "A soap opera",
+        "A reality TV show",
+        "A news broadcast"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Woman_yelling_at_a_cat",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false,
+      "fact": "The woman is from 'The Real Housewives of Beverly Hills'."
+    },
+    {
+      "id": "memo-0008",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 2,
+      "question": "'Surprised Pikachu' is a screenshot from what?",
+      "choices": [
+        "A Pokémon card",
+        "A Pokémon movie poster",
+        "The first Pokémon game",
+        "The Pokémon anime"
+      ],
+      "answer": 3,
+      "source": "https://knowyourmeme.com/memes/surprised-pikachu",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memo-0009",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 4,
+      "question": "'Big Chungus' comes from a cartoon short made in which decade?",
+      "choices": [
+        "The 1940s",
+        "The 1960s",
+        "The 1980s",
+        "The 2000s"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Big_Chungus",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false,
+      "fact": "The short is 'Wabbit Twouble' from 1941."
+    },
+    {
+      "id": "memo-0010",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 3,
+      "question": "'Drakeposting' uses frames from which Drake music video?",
+      "choices": [
+        "God's Plan",
+        "Hotline Bling",
+        "One Dance",
+        "Started From the Bottom"
+      ],
+      "answer": 1,
+      "source": "https://knowyourmeme.com/memes/drakeposting",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memo-0011",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 4,
+      "question": "The 'Dramatic Chipmunk' clip comes from a TV show in which country?",
+      "choices": [
+        "Canada",
+        "Brazil",
+        "Japan",
+        "Australia"
+      ],
+      "answer": 2,
+      "source": "https://knowyourmeme.com/memes/dramatic-chipmunk",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memo-0012",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 4,
+      "question": "The dancing pallbearers of 'Coffin Dance' are from which country?",
+      "choices": [
+        "Brazil",
+        "Jamaica",
+        "Nigeria",
+        "Ghana"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Dancing_pallbearers",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memo-0013",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 2,
+      "question": "'Leeroy Jenkins' comes from a video of which online game?",
+      "choices": [
+        "World of Warcraft",
+        "Counter-Strike",
+        "Minecraft",
+        "Halo"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Leeroy_Jenkins",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memo-0014",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 4,
+      "question": "'All your base are belong to us' comes from the opening of which kind of game?",
+      "choices": [
+        "A racing game",
+        "A space shoot-'em-up",
+        "A strategy game",
+        "A boxing game"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/All_your_base_are_belong_to_us",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false,
+      "fact": "The game is 'Zero Wing'."
+    },
+    {
+      "id": "memo-0015",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 2,
+      "question": "'Keep Calm and Carry On' started as what?",
+      "choices": [
+        "A tea advert",
+        "A song lyric",
+        "A British wartime poster",
+        "A self-help book"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Keep_Calm_and_Carry_On",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memo-0016",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 4,
+      "question": "The 'Roll Safe' guy tapping his head comes from what?",
+      "choices": [
+        "A football match",
+        "A rap music video",
+        "A stock photo",
+        "A BBC comedy series"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Roll_Safe",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memo-0017",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 1,
+      "question": "Salt Bae became famous from a video of him doing what?",
+      "choices": [
+        "Seasoning a steak",
+        "Juggling knives",
+        "Making pizza",
+        "Pouring coffee"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Salt_Bae",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memo-0018",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 2,
+      "question": "The 'Ice Bucket Challenge' raised money for research into which disease?",
+      "choices": [
+        "Malaria",
+        "ALS",
+        "Diabetes",
+        "Measles"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Ice_Bucket_Challenge",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memo-0019",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 4,
+      "question": "'Hide the Pain Harold' is a real man from which country?",
+      "choices": [
+        "Germany",
+        "Sweden",
+        "Hungary",
+        "Canada"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Hide_the_Pain_Harold",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memo-0020",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 4,
+      "question": "'The Floss' dance blew up after a kid did it on stage with which singer on Saturday Night Live?",
+      "choices": [
+        "Taylor Swift",
+        "Beyoncé",
+        "Lady Gaga",
+        "Katy Perry"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Floss_(dance)",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memo-0021",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 4,
+      "question": "The 'Numa Numa' guy was lip-syncing to a song by which band?",
+      "choices": [
+        "O-Zone",
+        "ABBA",
+        "Aqua",
+        "Vengaboys"
+      ],
+      "answer": 0,
+      "source": "https://en.wikipedia.org/wiki/Numa_Numa_(video)",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memo-0022",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 5,
+      "question": "The 'Dancing Baby' famously showed up on which TV show in the 1990s?",
+      "choices": [
+        "Friends",
+        "Ally McBeal",
+        "Seinfeld",
+        "The X-Files"
+      ],
+      "answer": 1,
+      "source": "https://en.wikipedia.org/wiki/Dancing_baby",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memo-0023",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 4,
+      "question": "Where was the 'Double Rainbow' video filmed?",
+      "choices": [
+        "At Niagara Falls",
+        "In the Grand Canyon",
+        "Near Yosemite National Park",
+        "On a Hawaiian beach"
+      ],
+      "answer": 2,
+      "source": "https://en.wikipedia.org/wiki/Double_Rainbow_(viral_video)",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    },
+    {
+      "id": "memo-0024",
+      "type": "multiple_choice",
+      "category": "meme_origins",
+      "difficulty": 1,
+      "question": "Nyan Cat's body is made of what?",
+      "choices": [
+        "A slice of pizza",
+        "A waffle",
+        "A taco",
+        "A Pop-Tart"
+      ],
+      "answer": 3,
+      "source": "https://en.wikipedia.org/wiki/Nyan_Cat",
+      "verified_by": null,
+      "verified_on": null,
+      "tags": [
+        "memes"
+      ],
+      "time_sensitive": false
+    }
+  ]
+}

@@ -10,14 +10,17 @@
 //   --fast                    answer within a second (for quick load tests)
 //   --churn                   bots randomly drop and rejoin, to test reconnects
 //   --quiet                   less logging
-//   --length short|standard|long, --no-drawing   (with --host) game settings
+//   --length short|standard|long, --mode party|doodle|memes, --no-drawing   (with --host) game settings
+//   --emotes                  bots react with random emotes now and then
 
 import { readFileSync, readdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { WebSocket } from "ws";
 import {
+  ACCESSORIES,
   ANIMALS,
+  EMOTES,
   DrawingPackSchema,
   PEN_COLORS,
   DEFAULT_SERVER_PORT,
@@ -25,6 +28,7 @@ import {
   QuestionPackSchema,
   type ClientMessage,
   type Question,
+  type QuizView,
   type ServerMessage,
   type StateMessage,
   type Stroke,
@@ -95,6 +99,7 @@ function doodle(): Stroke[] {
 async function runBot(code: string, index: number): Promise<void> {
   const name = `${NAMES[index % NAMES.length]}${index >= NAMES.length ? index : ""}`.slice(0, 12);
   const animal = pick(ANIMALS);
+  const accessory = pick(ACCESSORIES);
   let token: string | undefined;
   let lastKey = "";
   let liesTried = 0;
@@ -105,7 +110,7 @@ async function runBot(code: string, index: number): Promise<void> {
     const round = state.round;
     if (state.phase !== "round" || !round || state.paused) return;
     const step = "step" in round ? round.step : "";
-    const number = round.kind === "drawing" ? round.drawingNumber : round.questionNumber;
+    const number = round.kind === "drawing" ? round.drawingNumber : round.kind === "drawoff" ? 0 : round.questionNumber;
     const key = `${state.roundIndex}:${round.kind}:${step}:${number}`;
     if (key === lastKey) return;
     const windowMs = state.timer?.remainingMs;
@@ -117,6 +122,21 @@ async function runBot(code: string, index: number): Promise<void> {
       await delay(2000, 6000, windowMs);
       const year = /year/i.test(round.question.unit ?? "");
       send({ type: "guess", value: year ? 1850 + Math.floor(Math.random() * 170) : Math.floor(Math.random() * 300) });
+      return;
+    }
+
+    if (round.kind === "drawoff") {
+      const me = round.me;
+      if (round.step === "drawing" && me && !me.submitted) {
+        lastKey = key;
+        await delay(4000, 8000, windowMs);
+        send({ type: "drawing", strokes: doodle() });
+      } else if (round.step === "voting" && me && !me.vote) {
+        lastKey = key;
+        await delay(1500, 4000, windowMs);
+        const choices = round.gallery.filter((g) => g.id !== me.ownDrawing);
+        if (choices.length) send({ type: "vote_drawing", drawing: pick(choices).id });
+      }
       return;
     }
 
@@ -143,7 +163,7 @@ async function runBot(code: string, index: number): Promise<void> {
     }
 
     // Quiz rounds.
-    const me = round.me;
+    const me = round.me as QuizView["me"];
     if (round.step === "vote" && round.vote && !me?.vote) {
       lastKey = key;
       await delay(800, 3000, windowMs);
@@ -165,9 +185,13 @@ async function runBot(code: string, index: number): Promise<void> {
 
   const join = async (): Promise<WebSocket> =>
     connect("player", (message, send) => {
-      if (message.type === "welcome") send({ type: "join", code, name, animal, token });
+      if (message.type === "welcome") send({ type: "join", code, name, animal, accessory, token });
       else if (message.type === "joined") {
-        if (!token) log(`[bot] ${name} joined as ${animal}`);
+        if (!token) {
+          log(`[bot] ${name} joined as ${animal} (${accessory})`);
+          // Most bots draw a quick self-portrait.
+          if (Math.random() < 0.7) send({ type: "avatar", strokes: doodle() });
+        }
         token = message.token;
       } else if (message.type === "state") void play(message, send);
       else if (message.type === "error") {
@@ -179,6 +203,15 @@ async function runBot(code: string, index: number): Promise<void> {
     });
 
   let socket = await join();
+  if (flag("--emotes")) {
+    const emoteLoop = async () => {
+      for (;;) {
+        await sleep(3000 + Math.random() * 9000);
+        if (socket.readyState === socket.OPEN) socket.send(JSON.stringify({ type: "emote", emote: pick(EMOTES) }));
+      }
+    };
+    void emoteLoop();
+  }
   if (!churn) return;
   for (;;) {
     await sleep(10_000 + Math.random() * 30_000);
@@ -208,6 +241,7 @@ async function runFakeHost(waitFor: number): Promise<string> {
   const questions = loadQuestions();
   const drawing = loadDrawingPack();
   const length = (option("--length") ?? "standard") as "short" | "standard" | "long";
+  const mode = (option("--mode") ?? "party") as "party" | "doodle" | "memes";
   return new Promise((resolveCode) => {
     let started = false;
     let lastKey = "";
@@ -231,11 +265,11 @@ async function runFakeHost(waitFor: number): Promise<string> {
         }
         if (!started && message.phase === "lobby" && message.players.filter((p) => p.connected).length >= waitFor) {
           started = true;
-          log(`[host] ${waitFor} players here, starting a ${length} game`);
+          log(`[host] ${waitFor} players here, starting a ${length} ${mode} game`);
           send({
             type: "start_game",
             rules,
-            settings: { length, drawing: !flag("--no-drawing"), categories: [] },
+            settings: { mode, length, drawing: !flag("--no-drawing"), categories: [] },
             questions,
             prompts: drawing.prompts,
             decoys: drawing.decoys,
