@@ -25,3 +25,6 @@ Thumbs.db
 
 # Blender autosave backups
 *.blend1
+
+# Packaged game builds (the zip for the website is in docs/download/)
+build/

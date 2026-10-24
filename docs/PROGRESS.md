@@ -1,8 +1,18 @@
 # Progress
 
-Last updated: 2026-10-21
+Last updated: 2026-10-24
 
-## Where we are: the full game is playable
+## Where we are: a double-click Windows game with a join website
+
+- **The game:** `docs/download/TriviaParty-Windows.zip` (built by `npm run build:windows`).
+  Unzip, double-click `TriviaParty.exe`. It starts its own server; no Node or Godot install needed.
+- **The website:** https://rossgrantfitness.github.io/triviaparty (GitHub Pages from the
+  `docs/` folder). Phones type the room code there and get sent to the game PC.
+- How the code works: the room code is the PC's Wi-Fi address scrambled into letters
+  (`shared/src/join_code.ts`), so the website needs no server of its own. Phones must be
+  on the same Wi-Fi as the PC.
+
+## The full game is playable
 
 Ross asked for "Drawful 2 and Papa's Quiz combined": fun, colorful trivia (never
 over-the-top quirky) plus drawing rounds, with any browser as a controller.
@@ -57,6 +67,10 @@ Final Showdown (about 18 minutes). Short is about 10, Long about 24.
 - [x] Emotes: 8 emote buttons on every phone (laugh, wow, love, boo, clap, think, taunt, cry); the animal acts it out with a speech bubble on the TV
 - [x] Playful steals: coins fly from the victim to the thief, the victim slumps, cheeky lines on the phones ("YOINK!", "pockets empty")
 - [x] Tests: 97 TypeScript + 42 Godot; Doodle Party, Meme Mode and steal-heavy games played here with the real TV and bots
+- [x] Packaged Windows game (`npm run build:windows`): TriviaParty.exe starts the bundled server (Node), which also serves the phone page; content/ sits next to the exe so packs can be edited
+- [x] Website on GitHub Pages (`docs/index.html`): type the room code → sent to the game PC; download button for the Windows zip
+- [x] Room codes spell the PC's home-network address; the TV shows the website and the code
+- [x] Tests: 106 TypeScript + 42 Godot; the packaged game tested here (Linux copy of the same package): starts its server, website → code → join works, server stops when the game closes
 
 ### Waiting on the creative director
 
@@ -76,6 +90,11 @@ Final Showdown (about 18 minutes). Short is about 10, Long about 24.
 5. Meme Mode with real meme pictures (needs image rights checked first, so text-only for now)
 
 ## Known issues
+
+- Windows asks twice on first run: SmartScreen ("More info → Run anyway", the exe isn't signed) and the firewall (click Allow, or phones can't connect).
+- The Windows build hasn't been run on a real Windows PC by me (only the Linux copy of the same package); Ross's first run is the real test.
+- Phones must be on the same Wi-Fi as the PC (guest networks that isolate devices won't work). Playing over the internet needs an online server (manifest section 12).
+- The zip is committed to git (about 74 MB per build). Move it to GitHub Releases once builds settle.
 
 - With 9+ players, back-row name plates are partly hidden behind front-row animals.
 - Emoji in names and fake titles are removed (the TV font has no emoji).

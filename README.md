@@ -9,7 +9,13 @@ Three modes: Trivia Party (the mix), Doodle Party (only drawing) and Meme Mode.
 Players pick a hat, draw a self-portrait and send emotes from their phone. See `docs/MANIFEST.md` for the full plan and
 `docs/PROGRESS.md` for where things stand.
 
-## Easiest way to play (no typing)
+## Play it (Windows, nothing to install)
+
+1. Download **[TriviaParty-Windows.zip](https://github.com/rossgrantfitness/triviaparty/raw/claude/vibrant-wright-ddb63o/docs/download/TriviaParty-Windows.zip)** (also on the website).
+2. Unzip it, double-click **TriviaParty.exe**. Windows may say it protected your PC: **More info → Run anyway**. If it asks about network access, click **Allow**.
+3. On each phone (same Wi-Fi), open **rossgrantfitness.github.io/triviaparty** and type the room code from the TV.
+
+## Easiest way to run from the source code (no typing)
 
 1. Install [Node.js](https://nodejs.org/) (the LTS version) and [Godot 4.7](https://godotengine.org/download) (standard version, unzip it anywhere).
 2. Windows: double-click **`start_game.bat`** in this folder. Mac: double-click **`start_game.command`**.

@@ -1,6 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { WebSocket } from "ws";
-import { PROTOCOL_VERSION, type Question, type QuizView, type ServerMessage, type StateMessage } from "@trivia/shared";
+import { mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { PROTOCOL_VERSION, decodeJoinCode, type Question, type QuizView, type ServerMessage, type StateMessage } from "@trivia/shared";
 import { generateRoomCode, startServer, type RunningServer } from "../../server/src/server";
 
 let server: RunningServer;
@@ -206,6 +209,41 @@ describe("relay server", () => {
     const host = await connect("host");
     host.send("not json at all" as unknown as object);
     expect(await host.waitFor((m) => m.type === "error")).toMatchObject({ code: "bad_message" });
+  });
+
+  it("names the room after the PC's address and serves the phone page in the packaged game", async () => {
+    await server.close();
+    const dir = mkdtempSync(join(tmpdir(), "phone-"));
+    writeFileSync(join(dir, "index.html"), "<p>phone</p>");
+    writeFileSync(join(dir, "app.js"), "ok()");
+    server = await startServer({ port: 0, quiet: true, lanAddress: "192.168.1.20", phoneDir: dir });
+    const host = await connect("host");
+    host.send({ type: "create_room" });
+    const created = await host.waitFor<Extract<ServerMessage, { type: "room_created" }>>((m) => m.type === "room_created");
+    expect(created.code).toHaveLength(4);
+    expect(decodeJoinCode(created.code)).toBe("192.168.1.20");
+    expect(created.phoneUrl).toBe(`http://192.168.1.20:${server.port}`);
+    // Recreating the room keeps the same code.
+    host.send({ type: "create_room" });
+    const again = await host.waitFor<Extract<ServerMessage, { type: "room_created" }>>(
+      (m) => m.type === "room_created" && m !== created,
+    );
+    expect(again.code).toBe(created.code);
+
+    const base = `http://localhost:${server.port}`;
+    expect(await (await fetch(`${base}/?room=${created.code}`)).text()).toBe("<p>phone</p>");
+    const js = await fetch(`${base}/app.js`);
+    expect(js.headers.get("content-type")).toContain("javascript");
+    expect((await fetch(`${base}/../../etc/passwd`)).status).not.toBe(500);
+    expect(await (await fetch(`${base}/missing.png`)).status).toBe(404);
+  });
+
+  it("uses random codes and no phone link in development", async () => {
+    const host = await connect("host");
+    host.send({ type: "create_room" });
+    const created = await host.waitFor<Extract<ServerMessage, { type: "room_created" }>>((m) => m.type === "room_created");
+    expect(created.phoneUrl).toBeNull();
+    expect((await fetch(`http://localhost:${server.port}/`)).status).toBe(404);
   });
 
   it("serves a health check", async () => {

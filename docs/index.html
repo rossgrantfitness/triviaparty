@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Trivia Party</title>
+  <meta name="description" content="A party trivia and drawing game. Type the code from the TV to join.">
+  <meta name="theme-color" content="#f47a1f">
+  <link rel="icon" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    /* Same palette as the game: orange, yellow, red, steel, grey, black, white. */
+    :root {
+      --orange: #f47a1f;
+      --orange-deep: #c85a12;
+      --yellow: #ffc53d;
+      --red: #de4a3b;
+      --steel: #5b7486;
+      --steel-dark: #34495a;
+      --grey: #a3a8ad;
+      --page: #f2f3f5;
+      --black: #1e1f22;
+      --white: #ffffff;
+      --muted: #6b7076;
+      --line: #dcdee1;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      background: var(--steel);
+      color: var(--black);
+      font-family: "M PLUS Rounded 1c", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-weight: 700;
+      min-height: 100vh;
+      padding: 24px 16px 48px;
+    }
+    main { max-width: 520px; margin: 0 auto; }
+    h1 {
+      color: var(--white);
+      font-size: clamp(44px, 13vw, 68px);
+      font-weight: 800;
+      line-height: 1;
+      text-align: center;
+      margin: 8px 0 4px;
+      letter-spacing: -0.02em;
+      text-shadow: 0 4px 0 var(--steel-dark);
+    }
+    h1 span { color: var(--yellow); }
+    .tagline { color: var(--white); opacity: 0.85; text-align: center; margin: 0 0 18px; }
+    .animals { display: flex; justify-content: center; gap: 4px; margin: 0 0 8px; }
+    .animals img { width: 22%; max-width: 104px; aspect-ratio: 1; object-fit: contain; animation: bob 2.4s ease-in-out infinite; }
+    .animals img:nth-child(2) { animation-delay: -0.6s; }
+    .animals img:nth-child(3) { animation-delay: -1.2s; }
+    .animals img:nth-child(4) { animation-delay: -1.8s; }
+    @keyframes bob { 50% { transform: translateY(-8px) rotate(-3deg); } }
+    @media (prefers-reduced-motion: reduce) { .animals img { animation: none; } }
+    .card {
+      background: var(--white);
+      border-radius: 24px;
+      padding: 22px 20px;
+      margin: 0 0 16px;
+      box-shadow: 0 6px 0 var(--steel-dark);
+    }
+    .card h2 { margin: 0 0 6px; font-size: 26px; font-weight: 800; }
+    .card p { margin: 6px 0; color: var(--muted); line-height: 1.45; }
+    label { display: block; color: var(--muted); font-size: 15px; margin: 14px 0 6px; }
+    #code {
+      width: 100%;
+      font: inherit;
+      font-size: 44px;
+      font-weight: 800;
+      letter-spacing: 0.25em;
+      text-align: center;
+      text-transform: uppercase;
+      padding: 12px 8px 12px calc(8px + 0.25em);
+      border: 3px solid var(--line);
+      border-radius: 16px;
+      color: var(--black);
+      background: var(--page);
+    }
+    #code:focus { outline: none; border-color: var(--orange); background: var(--white); }
+    button {
+      width: 100%;
+      font: inherit;
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--white);
+      background: var(--orange);
+      border: 0;
+      border-radius: 16px;
+      padding: 16px;
+      margin-top: 14px;
+      box-shadow: 0 5px 0 var(--orange-deep);
+      cursor: pointer;
+      transition: transform 0.08s, box-shadow 0.08s;
+    }
+    button:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--orange-deep); }
+    button:disabled { background: var(--grey); box-shadow: 0 5px 0 #868b90; cursor: default; }
+    .error { color: var(--red) !important; min-height: 1.45em; }
+    .error.shake { animation: shake 0.35s; }
+    @keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+    ol { margin: 8px 0 0; padding-left: 22px; color: var(--muted); line-height: 1.5; }
+    ol li { margin: 6px 0; }
+    ol b, .card p b { color: var(--black); }
+    a.download {
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--white);
+      background: var(--steel-dark);
+      border-radius: 16px;
+      padding: 14px;
+      margin: 14px 0 4px;
+      box-shadow: 0 5px 0 var(--black);
+    }
+    .small { font-size: 14px; }
+    footer { color: var(--white); opacity: 0.7; text-align: center; font-size: 13px; margin-top: 24px; }
+    footer a { color: inherit; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Trivia <span>Party</span></h1>
+    <p class="tagline">Quiz, doodle, bet and steal, with your phone as the controller.</p>
+    <div class="animals" aria-hidden="true">
+      <img src="assets/dog.png" alt=""><img src="assets/cat.png" alt=""><img src="assets/bunny.png" alt=""><img src="assets/frog.png" alt="">
+    </div>
+
+    <section class="card" id="join-card">
+      <h2>Join a game</h2>
+      <p>Type the room code from the TV.</p>
+      <form id="join" autocomplete="off">
+        <label for="code">Room code</label>
+        <input id="code" inputmode="text" autocapitalize="characters" spellcheck="false" maxlength="6" placeholder="ABCD" aria-describedby="error">
+        <p class="error" id="error" role="alert"></p>
+        <button id="go" type="submit" disabled>Join</button>
+      </form>
+      <p class="small">Your phone needs to be on the <b>same Wi-Fi</b> as the TV.</p>
+    </section>
+
+    <section class="card">
+      <h2>Host a game</h2>
+      <p>The game runs on a Windows PC hooked up to the TV. Everyone else just uses this page.</p>
+      <a class="download" href="download/TriviaParty-Windows.zip">Download for Windows</a>
+      <ol>
+        <li>Unzip it anywhere (right-click → <b>Extract All</b>).</li>
+        <li>Double-click <b>TriviaParty.exe</b>. If Windows says it protected your PC, click <b>More info → Run anyway</b>.</li>
+        <li>If Windows asks about network access, click <b>Allow</b> so phones can connect.</li>
+        <li>Everyone opens this page on their phone and types the code on the TV.</li>
+      </ol>
+    </section>
+
+    <footer>Early test version · <a href="https://github.com/rossgrantfitness/triviaparty">source on GitHub</a></footer>
+  </main>
+
+  <script type="module">
+    import { decodeJoinCode } from "./join_code.js";
+
+    // The game PC serves the phone page on this port (DEFAULT_SERVER_PORT in shared/src/protocol.ts).
+    const GAME_PORT = 8787;
+    const ALLOWED = /[^ABCDEFGHJKLMNPQRSTUVWXYZ]/g;
+    const form = document.getElementById("join");
+    const input = document.getElementById("code");
+    const button = document.getElementById("go");
+    const error = document.getElementById("error");
+
+    function showError(text) {
+      error.textContent = text;
+      error.classList.remove("shake");
+      void error.offsetWidth;
+      error.classList.add("shake");
+    }
+
+    input.addEventListener("input", () => {
+      // Codes never use I, O or numbers, so those are typos.
+      input.value = input.value.toUpperCase().replace(ALLOWED, "");
+      button.disabled = input.value.length < 4;
+      error.textContent = "";
+    });
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const code = input.value;
+      const address = decodeJoinCode(code);
+      if (!address) {
+        showError("Hmm, that code doesn't look right. Check the TV and try again.");
+        return;
+      }
+      button.disabled = true;
+      button.textContent = "Joining…";
+      location.href = `http://${address}:${GAME_PORT}/?room=${code}`;
+      // If nothing loads, the phone probably isn't on the game's Wi-Fi.
+      setTimeout(() => {
+        button.disabled = false;
+        button.textContent = "Join";
+        showError("Still loading? Make sure your phone is on the same Wi-Fi as the TV.");
+      }, 6000);
+    });
+
+    // A link like ...?code=ABCD fills the code in.
+    const fromLink = new URLSearchParams(location.search).get("code");
+    if (fromLink) {
+      input.value = fromLink;
+      input.dispatchEvent(new Event("input"));
+    }
+    input.focus();
+  </script>
+</body>
+</html>

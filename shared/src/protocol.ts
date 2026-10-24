@@ -23,6 +23,8 @@ export const DEFAULT_SERVER_PORT = 8787;
 /** Characters used in room codes: no I or O, so they can't be confused with 1 and 0. */
 export const ROOM_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ";
 export const ROOM_CODE_LENGTH = 4;
+/** Codes that spell a 10.x or 172.x address are longer (see join_code.ts). */
+export const MAX_ROOM_CODE_LENGTH = 6;
 
 /** Hard limit from the manifest. Rules can lower it, never raise it. */
 export const MAX_PLAYERS = 16;
@@ -68,7 +70,8 @@ const RoomCode = z
   .string()
   .trim()
   .toUpperCase()
-  .regex(new RegExp(`^[${ROOM_CODE_ALPHABET}]{${ROOM_CODE_LENGTH}}$`));
+  // 4 letters, or 5–6 when the code spells a 10.x / 172.x home address (see join_code.ts).
+  .regex(new RegExp(`^[${ROOM_CODE_ALPHABET}]{${ROOM_CODE_LENGTH},${MAX_ROOM_CODE_LENGTH}}$`));
 
 export const ClientMessageSchema = z.discriminatedUnion("type", [
   // Every client, first message after the socket opens.
@@ -294,7 +297,16 @@ export interface StateMessage {
 export type ServerMessage =
   | { type: "welcome"; connectionId: string; role: ClientRole; protocolVersion: number }
   | { type: "error"; code: ErrorCode; message: string }
-  | { type: "room_created"; code: string; hostToken: string }
+  | {
+      type: "room_created";
+      code: string;
+      hostToken: string;
+      /**
+       * Where phones open the game when this server serves the phone page itself
+       * (the packaged game): e.g. "http://192.168.1.20:8787". Null in development.
+       */
+      phoneUrl: string | null;
+    }
   | { type: "joined"; code: string; playerId: string; token: string }
   | { type: "kicked" }
   /** To the TV: a player's self-portrait (sent when drawn, and for everyone when the TV connects). */

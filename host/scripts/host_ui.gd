@@ -12,6 +12,8 @@ signal kick_pressed(player_id: String)
 const BASE_FONT_SIZE: int = 32
 
 var join_url: String = ""
+## The game's website, where phones type the room code (packaged game only; empty in development).
+var website_url: String = ""
 
 var _root: Control = Control.new()
 var _content: VBoxContainer = VBoxContainer.new()
@@ -161,7 +163,7 @@ func show_state(game: Dictionary) -> void:
 	var round: Dictionary = _round(game)
 	var step: String = str(round.get("step", ""))
 	_timer.visible = typeof(timer) == TYPE_DICTIONARY and phase == "round" and step in TIMED_STEPS
-	_join_label.text = "Join at  %s   ·   Code  %s" % [join_url, str(game.get("code", ""))]
+	_join_label.text = "Join at  %s   ·   Code  %s" % [website_url if not website_url.is_empty() else join_url, str(game.get("code", ""))]
 	_header.get_child(0).visible = phase != "lobby"
 	_counter_label.get_parent().visible = phase in ["intro", "round", "scoreboard"]
 	_counter_label.text = _counter_text(game, round)
@@ -242,7 +244,7 @@ func _screen_key(game: Dictionary) -> String:
 	var reveal: Dictionary = _dict(round.get("reveal"))
 	var question: Dictionary = _dict(round.get("question"))
 	return JSON.stringify([
-		game.get("phase"), game.get("roundIndex"), game.get("code"), join_url, players.size(), acted,
+		game.get("phase"), game.get("roundIndex"), game.get("code"), join_url, website_url, players.size(), acted,
 		round.get("kind"), round.get("step"), round.get("questionNumber"), round.get("drawingNumber"),
 		question.get("id"), round.get("vote"), reveal.get("shown"), settings,
 	])
@@ -262,9 +264,15 @@ func _render_lobby(game: Dictionary) -> void:
 	row.add_theme_constant_override("separation", 28)
 	_content.add_child(row)
 	var join_card: VBoxContainer = VBoxContainer.new()
-	join_card.add_child(_label("On your phone, open", 32, Look.MUTED))
-	join_card.add_child(_label(join_url, 52, Look.STEEL_DARK))
-	join_card.add_child(_label("Any phone, tablet or laptop with a browser", 24, Look.MUTED))
+	if not website_url.is_empty():
+		join_card.add_child(_label("On your phone, go to", 32, Look.MUTED))
+		join_card.add_child(_label(website_url, 52, Look.STEEL_DARK))
+		join_card.add_child(_label("and type the room code  →", 32, Look.MUTED))
+		join_card.add_child(_label("Same Wi-Fi as this PC  ·  or open %s" % join_url, 22, Look.MUTED))
+	else:
+		join_card.add_child(_label("On your phone, open", 32, Look.MUTED))
+		join_card.add_child(_label(join_url, 52, Look.STEEL_DARK))
+		join_card.add_child(_label("Any phone, tablet or laptop with a browser", 24, Look.MUTED))
 	row.add_child(_card(join_card, Look.PAPER))
 	var code_card: VBoxContainer = VBoxContainer.new()
 	code_card.alignment = BoxContainer.ALIGNMENT_CENTER

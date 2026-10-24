@@ -53,10 +53,25 @@ func _ready() -> void:
 	Server.emote_received.connect(_on_emote)
 	for id: Variant in Server.avatars:
 		_stage.set_avatar(str(id), Server.avatars[id])
-	Server.room_ready.connect(func(code: String) -> void: print("[host] room %s ready, phones join at %s" % [code, phone_url()]))
+	Server.room_ready.connect(_on_room_ready)
+	if not Server.room_code.is_empty():
+		_on_room_ready(Server.room_code)
 	_on_server_state_changed(Server.state, "")
 	if not Server.game_state.is_empty():
 		_on_game_state(Server.game_state)
+
+
+## The packaged game serves the phone page itself; then phones use the website and the code.
+func _on_room_ready(code: String) -> void:
+	if not Server.phone_url.is_empty():
+		_ui.join_url = Server.phone_url
+		_ui.website_url = website_url()
+	else:
+		_ui.join_url = phone_url()
+		_ui.website_url = ""
+	print("[host] room %s ready, phones join at %s %s" % [code, _ui.website_url, _ui.join_url])
+	if not Server.game_state.is_empty():
+		_ui.show_state(Server.game_state)
 
 
 func _on_server_state_changed(state: ServerConnection.State, detail: String) -> void:
@@ -165,7 +180,15 @@ func _unhandled_input(event: InputEvent) -> void:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if fullscreen else DisplayServer.WINDOW_MODE_FULLSCREEN)
 
 
-## The address phones should open: phone_url from config/network.json, or this PC's Wi-Fi address.
+## The game's website (website_url in config/network.json), shown without "https://".
+static func website_url() -> String:
+	var json: JSON = JSON.new()
+	if json.parse(FileAccess.get_file_as_string(NETWORK_CONFIG_PATH)) == OK and typeof(json.data) == TYPE_DICTIONARY:
+		return str(json.data.get("website_url", "")).trim_prefix("https://").trim_prefix("http://").trim_suffix("/")
+	return ""
+
+
+## The address phones should open in development: phone_url from config/network.json, or this PC's Wi-Fi address.
 static func phone_url() -> String:
 	var config: Dictionary = {}
 	var json: JSON = JSON.new()

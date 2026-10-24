@@ -11,6 +11,7 @@ import {
   PEN_COLORS,
   PEN_WIDTHS,
   ROOM_CODE_ALPHABET,
+  MAX_ROOM_CODE_LENGTH,
   ROOM_CODE_LENGTH,
   type Accessory,
   type Animal,
@@ -516,7 +517,7 @@ function renderJoin(): void {
   html(`
     <div class="brand"><h1>Trivia Party</h1><p class="muted">Join the game on the TV</p></div>
     <label class="field">Room code
-      <input id="code" class="code-input" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="${ROOM_CODE_LENGTH}" value="${escapeHtml(code)}" placeholder="ABCD">
+      <input id="code" class="code-input" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="${MAX_ROOM_CODE_LENGTH}" value="${escapeHtml(code)}" placeholder="ABCD">
     </label>
     <label class="field">Your name
       <input id="name" autocomplete="nickname" maxlength="${MAX_NAME_LENGTH}" value="${escapeHtml(name)}" placeholder="Name">
@@ -538,12 +539,12 @@ function renderJoin(): void {
   const joinButton = $<HTMLButtonElement>("#join");
   const allowed = new RegExp(`[^${ROOM_CODE_ALPHABET}]`, "g");
   const update = () => {
-    joinButton.disabled = codeInput.value.length !== ROOM_CODE_LENGTH || nameInput.value.trim() === "";
+    joinButton.disabled = codeInput.value.length < ROOM_CODE_LENGTH || nameInput.value.trim() === "";
   };
   codeInput.addEventListener("input", () => {
     // Codes never use I or O (or digits), so anything else is a typo.
     codeInput.value = codeInput.value.toUpperCase().replace(allowed, "");
-    if (codeInput.value.length === ROOM_CODE_LENGTH && !nameInput.value) nameInput.focus();
+    if (codeInput.value.length === MAX_ROOM_CODE_LENGTH && !nameInput.value) nameInput.focus();
     update();
   });
   nameInput.addEventListener("input", update);

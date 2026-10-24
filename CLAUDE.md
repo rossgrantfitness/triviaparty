@@ -93,6 +93,8 @@ Run from the repo root (needs Node.js 22+; Godot 4.7 for the host).
 | `npm run bots -- ABCD 15` | 15 fake players join room ABCD (`--fast`, `--churn` for drop/rejoin) |
 | `npm run bots -- --host 3 2` | Fake TV: create a room, 2 bots join, start when 3 players are in (`--length short`, `--no-drawing`) |
 | `npm run sync-art` | Copy `art/export/<animal>/` models and portraits, and `art/export/audio/` sounds, into the host and phone page |
+| `npm run build:windows` | Build the double-click Windows game into `build/TriviaParty-Windows/` and `docs/download/TriviaParty-Windows.zip` (needs Godot + 4.7 export templates) |
+| `npm run build:site` | Rebuild `docs/join_code.js` (the website's room-code decoder) after changing `shared/src/join_code.ts` |
 | `python tools/audio/make_sfx.py` | Rebuild the sound effects (needs numpy), then `npm run sync-art` |
 | `python tools/art/make_chibi_animals.py` | Rebuild the placeholder animals (needs `pip install bpy`) |
 
@@ -116,7 +118,8 @@ file at the repo root (untracked), then PATH, then common install folders.
 
 ```
 CLAUDE.md          this file
-docs/              MANIFEST, PROGRESS, PROTOCOL, ART_SPECS
+docs/              MANIFEST, PROGRESS, PROTOCOL, ART_SPECS; also the website (index.html,
+                   GitHub Pages from this folder) and download/ (the Windows zip)
 host/              Godot 4 project (config/, scenes/, scripts/, tests/, addons/gut)
 client/            phone web app
 server/            relay server
@@ -128,4 +131,5 @@ art/source/        working files (.blend, .kra) — never delete without asking
 art/export/        finished exports the game imports (.glb, .png)
 tools/             scripts: host launcher, validators, bot players, build scripts
 tests/             TypeScript automated tests
+build/             packaged game output (not committed)
 ```

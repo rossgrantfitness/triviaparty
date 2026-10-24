@@ -27,6 +27,9 @@ var reconnect_delay_seconds: float = 2.0
 var connection_id: String = ""
 var room_code: String = ""
 var host_token: String = ""
+## Where phones open the game, when the server serves the phone page itself (the
+## packaged game), e.g. "http://192.168.1.20:8787". Empty in development.
+var phone_url: String = ""
 ## The latest game state from the server, or empty before the first one arrives.
 var game_state: Dictionary = {}
 ## Self-portraits by player id (strokes arrays).
@@ -36,13 +39,19 @@ var _socket: WebSocketPeer = null
 var _was_open: bool = false
 var _retry_in: float = 0.0
 var _running: bool = false
+static var _ever_connected: bool = false
 
 
 func _ready() -> void:
 	load_config(NETWORK_CONFIG_PATH)
 	_apply_command_line()
 	if not _is_running_tests():
+		LocalServer.start()
 		start()
+
+
+func _exit_tree() -> void:
+	LocalServer.stop()
 
 
 func load_config(path: String) -> void:
@@ -82,11 +91,11 @@ func send_text(text: String) -> bool:
 static func status_text(for_state: State, detail: String = "") -> String:
 	match for_state:
 		State.CONNECTING:
-			return "Connecting to server…"
+			return "Starting the game…" if LocalServer.is_running() else "Connecting to server…"
 		State.CONNECTED:
 			return "Connected to server"
 		State.DISCONNECTED:
-			return "Disconnected — retrying…"
+			return "Starting the game…" if LocalServer.is_running() and not _ever_connected else "Disconnected — retrying…"
 		State.ERROR:
 			return "Server error: %s" % detail if not detail.is_empty() else "Server error"
 	return ""
@@ -129,7 +138,8 @@ func _open() -> void:
 func _drop_and_retry() -> void:
 	_socket = null
 	connection_id = ""
-	_retry_in = reconnect_delay_seconds
+	# While our own server is still starting up, knock often so the game appears quickly.
+	_retry_in = 0.4 if LocalServer.is_running() and not _ever_connected else reconnect_delay_seconds
 	_set_state(State.DISCONNECTED)
 
 
@@ -141,6 +151,7 @@ func _handle_raw(raw: String) -> void:
 	match message["type"]:
 		"welcome":
 			connection_id = str(message.get("connectionId", ""))
+			_ever_connected = true
 			_set_state(State.CONNECTED)
 			# Keep the same room (and everyone's seats) across a network blip.
 			if room_code.is_empty():
@@ -150,6 +161,7 @@ func _handle_raw(raw: String) -> void:
 		"room_created":
 			room_code = str(message.get("code", ""))
 			host_token = str(message.get("hostToken", ""))
+			phone_url = str(message.get("phoneUrl", "")) if typeof(message.get("phoneUrl")) == TYPE_STRING else ""
 			room_ready.emit(room_code)
 		"state":
 			game_state = message

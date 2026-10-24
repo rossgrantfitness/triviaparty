@@ -1,10 +1,13 @@
 import { randomUUID } from "node:crypto";
-import { createServer, type Server } from "node:http";
+import { readFile } from "node:fs/promises";
+import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import type { AddressInfo } from "node:net";
+import { extname, join, normalize, resolve as resolvePath, sep } from "node:path";
 import { WebSocketServer, type WebSocket } from "ws";
 import {
   PROTOCOL_VERSION,
   ROOM_CODE_ALPHABET,
+  encodeJoinCode,
   ROOM_CODE_LENGTH,
   encodeMessage,
   parseClientMessage,
@@ -24,6 +27,13 @@ export interface ServerOptions {
   hostlessRoomTtlMs?: number;
   /** Random source for room codes and shuffles (tests pass a seeded one). */
   rng?: () => number;
+  /**
+   * This PC's home-network address. The first room's code then spells it, so the
+   * website can send phones here (see shared/src/join_code.ts).
+   */
+  lanAddress?: string | null;
+  /** Serve the built phone page from this folder (the packaged game does). */
+  phoneDir?: string | null;
 }
 
 export interface RunningServer {
@@ -56,10 +66,50 @@ export function generateRoomCode(taken: (code: string) => boolean, rng: () => nu
   }
 }
 
+const CONTENT_TYPES: Record<string, string> = {
+  ".html": "text/html; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".json": "application/json",
+  ".svg": "image/svg+xml",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".webp": "image/webp",
+  ".wav": "audio/wav",
+  ".ogg": "audio/ogg",
+  ".woff2": "font/woff2",
+  ".woff": "font/woff",
+  ".ico": "image/x-icon",
+  ".webmanifest": "application/manifest+json",
+};
+
+/** Serve a file from the built phone page; unknown paths get index.html. */
+async function servePhonePage(root: string, req: IncomingMessage, res: ServerResponse): Promise<void> {
+  const path = decodeURIComponent((req.url ?? "/").split("?")[0]!);
+  const file = normalize(join(root, path));
+  const inside = file === root || file.startsWith(root + sep);
+  const target = inside && extname(file) ? file : join(root, "index.html");
+  try {
+    const body = await readFile(target);
+    res.writeHead(200, {
+      "content-type": CONTENT_TYPES[extname(target).toLowerCase()] ?? "application/octet-stream",
+      // The page itself must never be cached, so an updated game always serves its own page.
+      "cache-control": target.endsWith("index.html") ? "no-store" : "max-age=3600",
+    });
+    res.end(req.method === "HEAD" ? undefined : body);
+  } catch {
+    res.writeHead(404, { "content-type": "text/plain" });
+    res.end("Not found");
+  }
+}
+
 export async function startServer(options: ServerOptions): Promise<RunningServer> {
   const log = options.quiet ? () => {} : (msg: string) => console.log(msg);
   const rng = options.rng ?? Math.random;
   const hostlessTtl = options.hostlessRoomTtlMs ?? 10 * 60 * 1000;
+  const lanCode = options.lanAddress ? encodeJoinCode(options.lanAddress) : null;
+  const phoneDir = options.phoneDir ? resolvePath(options.phoneDir) : null;
+  let phoneUrl: string | null = null;
   const connections = new Map<WebSocket, Connection>();
   const rooms = new Map<string, Room>();
   const hostlessTimers = new Map<string, ReturnType<typeof setTimeout>>();
@@ -106,7 +156,7 @@ export async function startServer(options: ServerOptions): Promise<RunningServer
     clearTimeout(hostlessTimers.get(room.code));
     hostlessTimers.delete(room.code);
     room.setHostConnected(true);
-    send(conn.socket, { type: "room_created", code: room.code, hostToken: room.hostToken });
+    send(conn.socket, { type: "room_created", code: room.code, hostToken: room.hostToken, phoneUrl });
     for (const avatar of room.avatars()) send(conn.socket, { type: "avatar", ...avatar });
     send(conn.socket, room.snapshotFor(null));
   }
@@ -116,7 +166,7 @@ export async function startServer(options: ServerOptions): Promise<RunningServer
     if (message.type === "create_room") {
       if (conn.room) closeRoom(conn.room);
       let room!: Room;
-      const code = generateRoomCode((c) => rooms.has(c), rng);
+      const code = lanCode && !rooms.has(lanCode) ? lanCode : generateRoomCode((c) => rooms.has(c), rng);
       room = new Room(code, () => broadcast(room), rng);
       rooms.set(code, room);
       log(`[room] ${code} created`);
@@ -247,6 +297,10 @@ export async function startServer(options: ServerOptions): Promise<RunningServer
       );
       return;
     }
+    if (phoneDir && (req.method === "GET" || req.method === "HEAD")) {
+      void servePhonePage(phoneDir, req, res);
+      return;
+    }
     res.writeHead(404, { "content-type": "text/plain" });
     res.end("Not found");
   });
@@ -311,9 +365,11 @@ export async function startServer(options: ServerOptions): Promise<RunningServer
     http.once("error", reject);
     http.listen(options.port, () => resolve());
   });
+  const port = (http.address() as AddressInfo).port;
+  phoneUrl = phoneDir && options.lanAddress ? `http://${options.lanAddress}:${port}` : null;
 
   return {
-    port: (http.address() as AddressInfo).port,
+    port,
     connectionCount: () => connections.size,
     roomCount: () => rooms.size,
     close: () =>

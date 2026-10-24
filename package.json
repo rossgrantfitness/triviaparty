@@ -22,12 +22,15 @@
     "test:host": "node tools/run_host.mjs --test",
     "typecheck": "tsc -p shared && tsc -p server && tsc -p client && tsc -p tests && tsc -p tools",
     "sync-art": "node tools/sync_art.mjs",
-    "bots": "tsx tools/bots.ts"
+    "bots": "tsx tools/bots.ts",
+    "build:windows": "node tools/build_windows.mjs",
+    "build:site": "node tools/build_site.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.20.5",
     "@types/ws": "^8.18.2",
     "concurrently": "^10.0.5",
+    "esbuild": "^0.28.2",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vitest": "^5.0.3",

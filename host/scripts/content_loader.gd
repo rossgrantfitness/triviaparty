@@ -3,8 +3,8 @@ extends RefCounted
 ## Loads gameplay rules and question packs from disk.
 ##
 ## Question packs live in the repo's content/questions folder (outside the Godot
-## project, so writers never touch Godot files). Exported builds will bundle a
-## copy under res://content/questions; that folder is checked first.
+## project, so writers never touch Godot files). The packaged game keeps a copy in
+## content/ next to TriviaParty.exe.
 
 const RULES_PATH: String = "res://config/game_rules.json"
 const BUNDLED_QUESTIONS_DIR: String = "res://content/questions"
@@ -22,6 +22,11 @@ static func load_rules(path: String = RULES_PATH) -> Dictionary:
 static func questions_dir() -> String:
 	if DirAccess.dir_exists_absolute(BUNDLED_QUESTIONS_DIR):
 		return BUNDLED_QUESTIONS_DIR
+	# The packaged game keeps content/ next to the program, so packs can be added without rebuilding.
+	if not OS.has_feature("editor"):
+		var beside: String = OS.get_executable_path().get_base_dir().path_join("content/questions")
+		if DirAccess.dir_exists_absolute(beside):
+			return beside
 	return ProjectSettings.globalize_path("res://").path_join("../content/questions").simplify_path()
 
 

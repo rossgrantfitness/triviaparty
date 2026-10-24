@@ -15,7 +15,12 @@ mirrors what it sends in `host/scripts/protocol.gd`. Change them together and bu
 
 **Host (TV):**
 1. Open socket → `hello {role: "host"}` → `welcome`.
-2. `create_room` → `room_created {code, hostToken}` + `state`.
+2. `create_room` → `room_created {code, hostToken, phoneUrl}` + `state`.
+   If the server knows the PC's home-network address, the room code spells it
+   (`shared/src/join_code.ts`): 4 letters for 192.168.x.x, 5 for 172.16–31.x.x,
+   6 for 10.x.x.x. The website (`docs/index.html`) decodes it and sends the phone
+   to `http://<address>:8787/?room=<code>`. `phoneUrl` is that address when the
+   server serves the phone page itself (the packaged game), else null.
 3. After a network drop: `hello` again, then `resume_room {code, hostToken}`.
    Same room, same players. If the room expired (`error room_not_found`), the
    host creates a new one.
@@ -83,7 +88,7 @@ All numbers live in `host/config/game_rules.json`.
 | `set_paused` | host | `paused` | Freezes the timer |
 | `skip` | host | | Ends the current step now |
 | `back_to_lobby` | host | | After game over: keeps players, resets scores |
-| `join` | phone | `code` (4 letters, no I/O), `name`, `animal` (`dog`/`cat`/`bunny`/`frog`), `accessory` (`none`/`party_hat`/`headband`/`bow`/`crown`/`top_hat`/`flower`/`glasses`, default `none`), `token?` | Name trimmed to 12 chars, emoji removed; duplicates get " 2". Rejoining can change the hat |
+| `join` | phone | `code` (4–6 letters, no I/O), `name`, `animal` (`dog`/`cat`/`bunny`/`frog`), `accessory` (`none`/`party_hat`/`headband`/`bow`/`crown`/`top_hat`/`flower`/`glasses`, default `none`), `token?` | Name trimmed to 12 chars, emoji removed; duplicates get " 2". Rejoining can change the hat |
 | `avatar` | phone | `strokes[]` (≤ `MAX_AVATAR_STROKES` = 150) | Any time; replaces the old portrait |
 | `emote` | phone | `emote` (`laugh`/`wow`/`love`/`boo`/`clap`/`think`/`taunt`/`cry`) | Any time; forwarded to the host. Faster than `emote_cooldown_seconds` is quietly dropped |
 | `vote` | phone | `category` | `vote` step; can change vote |
@@ -104,7 +109,7 @@ coordinates 0–1000 on a square canvas (`PEN_COLORS`, `PEN_WIDTHS` in `shared/s
 | Type | Fields |
 |---|---|
 | `welcome` | `connectionId`, `role`, `protocolVersion` |
-| `room_created` | `code`, `hostToken` (host only) |
+| `room_created` | `code`, `hostToken`, `phoneUrl` (host only; null in development) |
 | `joined` | `code`, `playerId`, `token` (phone only) |
 | `kicked` | — |
 | `error` | `code`, `message` (safe to show on screen) |
@@ -153,3 +158,9 @@ sorted by votes.
 ## HTTP
 
 `GET /health` → `200 {ok, protocolVersion, connections, rooms}`. For uptime checks.
+
+Started with `--phone-dir=<folder>` (the packaged game), the server also serves
+the built phone page from that folder on the same port; unknown paths get
+`index.html`. Other server options: `--log-file=<path>`, `--parent-pid=<pid>`
+(quit when the TV game is gone), env `PORT`, env `TRIVIA_LAN_ADDRESS` (override
+the address the room code spells).
